@@ -55,6 +55,14 @@ impl Presentation {
         self.audio.iter().flat_map(|x| x.tracks())
     }
 
+    pub fn video_tracks_mut(&mut self) -> impl Iterator<Item=&mut VideoTrack> {
+        self.video.iter().flat_map(|x| x.tracks())
+    }
+
+    pub fn audio_tracks_mut(&mut self) -> impl Iterator<Item=&mut AudioTrack> {
+        self.audio.iter().flat_map(|x| x.tracks())
+    }
+
     fn validate_track<T: MediaTrack>(&self, track: &T) -> Result<()> {
         let transmission = self.transmission.get_type();
         if track.transmission().get_type() != transmission {
@@ -65,6 +73,16 @@ impl Presentation {
             })
         } else {
             Ok(())
+        }
+    }
+
+    pub fn set_unicast(&mut self) {
+        self.transmission = PresentationTransmission::Unicast;
+        for track in self.video_tracks_mut() {
+            track.transmission = TrackTransmission::Unicast
+        }
+        for track in self.audio_tracks_mut() {
+            track.transmission = TrackTransmission::Unicast
         }
     }
 }

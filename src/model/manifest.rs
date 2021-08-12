@@ -58,6 +58,30 @@ pub struct LiveStream {
     time_source: Option<TimeSource>,
 }
 
+impl From<MulticastManifest> for Manifest {
+    fn from(input: MulticastManifest) -> Self {
+        let MulticastManifest {
+            creation_date,
+            fallback_poll_rate,
+            mut presentations,
+            live_data,
+            content_base_url,
+            ..
+        } = input;
+        for mut presentation in presentations {
+            presentation.set_unicast();
+        }
+        Manifest {
+            creation_date,
+            fallback_poll_rate,
+            manifest_version: ManifestVersion::V1_0_0,
+            presentations,
+            stream_type: StreamType::Live(live_data),
+            content_base_url,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

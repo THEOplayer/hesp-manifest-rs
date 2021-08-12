@@ -24,7 +24,7 @@ pub struct AudioTrack {
     media_time_offset: ScaledValue,
     sample_rate: u64,
     segment_duration: Option<ScaledValue>,
-    transmission: TrackTransmission,
+    pub(crate) transmission: TrackTransmission,
 }
 
 impl Entity for AudioTrack {

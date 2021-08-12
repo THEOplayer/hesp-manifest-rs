@@ -23,7 +23,7 @@ pub struct VideoTrack {
     initialization_pattern: InitializationPattern,
     media_time_offset: ScaledValue,
     segment_duration: Option<ScaledValue>,
-    transmission: TrackTransmission,
+    pub(crate) transmission: TrackTransmission,
 }
 
 impl Entity for VideoTrack {

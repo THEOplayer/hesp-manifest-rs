@@ -47,5 +47,3 @@ impl Validate for MulticastManifest {
             .validate_active()
     }
 }
-
-impl MulticastManifest {}

@@ -20,7 +20,7 @@ impl TryFrom<String> for AudioMimeType {
     type Error = Error;
     fn try_from(value: String) -> Result<Self> {
         if !value.starts_with("audio/") {
-            Err(Error::InvalidAudioMime(value.to_owned()))
+            Err(Error::InvalidAudioMime(value))
         } else {
             Ok(AudioMimeType(value))
         }
@@ -45,7 +45,7 @@ impl TryFrom<String> for VideoMimeType {
     type Error = Error;
     fn try_from(value: String) -> Result<Self> {
         if !value.starts_with("video/") {
-            Err(Error::InvalidAudioMime(value.to_owned()))
+            Err(Error::InvalidAudioMime(value))
         } else {
             Ok(VideoMimeType(value))
         }

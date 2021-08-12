@@ -1,4 +1,6 @@
-use serde::{Deserialize, Deserializer, Serialize};
+use std::convert::{TryInto, TryFrom};
+
+use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 use crate::*;
@@ -6,8 +8,8 @@ use crate::*;
 use super::VideoTrackDef;
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Serialize, Clone, Deserialize)]
+#[serde(rename_all = "camelCase", try_from="VideoSwitchingSetDef")]
 pub struct VideoSwitchingSet {
     id: String,
     tracks: EntityVec<VideoTrack>,
@@ -26,13 +28,12 @@ impl Entity for VideoSwitchingSet {
 impl SwitchingSet for VideoSwitchingSet {
     type Track = VideoTrack;
     fn tracks(&self) -> &[Self::Track] { &self.tracks }
+    fn tracks_mut(&mut self) -> &mut [Self::Track] { &mut self.tracks }
     fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
     fn mime_type(&self) -> &str { self.mime_type.as_ref() }
 }
 
-impl MediaSwitchingSet for VideoSwitchingSet {
-
-}
+impl MediaSwitchingSet for VideoSwitchingSet {}
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -53,8 +54,9 @@ pub struct VideoSwitchingSetDef {
     protection: Option<SwitchingSetProtection>,
 }
 
-impl VideoSwitchingSet {
-    fn new(def: VideoSwitchingSetDef) -> Result<Self> {
+impl TryFrom<VideoSwitchingSetDef> for VideoSwitchingSet {
+    type Error = Error;
+    fn try_from(def: VideoSwitchingSetDef) -> Result<Self> {
         let VideoSwitchingSetDef {
             id,
             tracks,
@@ -78,16 +80,8 @@ impl VideoSwitchingSet {
                 initialization_pattern.as_ref(),
                 media_time_offset,
             )
-        ).collect::<Result<Vec<VideoTrack>>>()?;
-        let tracks = EntityVec::new(tracks)?;
+        ).collect::<Result<Vec<VideoTrack>>>()?.try_into()?;
         Ok(VideoSwitchingSet { id, tracks, align_id, base_url, label, mime_type, protection })
-    }
-}
-
-impl<'de> Deserialize<'de> for VideoSwitchingSet {
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> std::result::Result<Self, D::Error> {
-        let def = VideoSwitchingSetDef::deserialize(deserializer)?;
-        VideoSwitchingSet::new(def).map_err(serde::de::Error::custom)
     }
 }
 

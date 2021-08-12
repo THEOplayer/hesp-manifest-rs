@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 use crate::*;
-use crate::model::manifest::LiveStream;
 
 validate_on_deserialize!(MulticastManifest);
 #[skip_serializing_none]
@@ -45,5 +44,29 @@ impl Validate for MulticastManifest {
         self.presentation(active_id)
             .ok_or_else(|| Error::InvalidActivePresentationId(active_id.to_owned()))?
             .validate_active()
+    }
+}
+
+impl From<MulticastManifest> for Manifest {
+    fn from(input: MulticastManifest) -> Self {
+        let MulticastManifest {
+            creation_date,
+            fallback_poll_rate,
+            mut presentations,
+            live_data,
+            content_base_url,
+            ..
+        } = input;
+        for presentation in &mut presentations[..] {
+            presentation.set_unicast();
+        }
+        Manifest {
+            creation_date,
+            fallback_poll_rate,
+            manifest_version: ManifestVersion::V1_0_0,
+            presentations,
+            stream_type: StreamType::Live(live_data),
+            content_base_url,
+        }
     }
 }

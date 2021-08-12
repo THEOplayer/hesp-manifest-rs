@@ -56,11 +56,11 @@ impl Presentation {
     }
 
     pub fn video_tracks_mut(&mut self) -> impl Iterator<Item=&mut VideoTrack> {
-        self.video.iter().flat_map(|x| x.tracks())
+        self.video.iter_mut().flat_map(|x| x.tracks_mut())
     }
 
     pub fn audio_tracks_mut(&mut self) -> impl Iterator<Item=&mut AudioTrack> {
-        self.audio.iter().flat_map(|x| x.tracks())
+        self.audio.iter_mut().flat_map(|x| x.tracks_mut())
     }
 
     fn validate_track<T: MediaTrack>(&self, track: &T) -> Result<()> {
@@ -85,6 +85,9 @@ impl Presentation {
             track.transmission = TrackTransmission::Unicast
         }
     }
+
+
+
 }
 
 impl Entity for Presentation {

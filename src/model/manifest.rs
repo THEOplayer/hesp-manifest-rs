@@ -7,13 +7,13 @@ validate_on_deserialize!(Manifest);
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase", remote = "Self")]
 pub struct Manifest {
-    creation_date: DateTime,
-    fallback_poll_rate: Number,
-    manifest_version: ManifestVersion,
-    presentations: EntityVec<Presentation>,
+    pub(super) creation_date: DateTime,
+    pub(super) fallback_poll_rate: Number,
+    pub(super) manifest_version: ManifestVersion,
+    pub(super) presentations: EntityVec<Presentation>,
     #[serde(flatten)]
-    stream_type: StreamType,
-    content_base_url: Option<RelativeBaseUrl>,
+    pub(super) stream_type: StreamType,
+    pub(super) content_base_url: Option<RelativeBaseUrl>,
 }
 
 impl Manifest {
@@ -38,7 +38,7 @@ impl Validate for Manifest {
 }
 
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash)]
-enum ManifestVersion {
+pub enum ManifestVersion {
     #[serde(rename = "1.0.0")]
     V1_0_0,
 }
@@ -56,30 +56,6 @@ pub struct LiveStream {
     availability_duration: ScaledValue,
     pub(crate) active_presentation: String,
     time_source: Option<TimeSource>,
-}
-
-impl From<MulticastManifest> for Manifest {
-    fn from(input: MulticastManifest) -> Self {
-        let MulticastManifest {
-            creation_date,
-            fallback_poll_rate,
-            mut presentations,
-            live_data,
-            content_base_url,
-            ..
-        } = input;
-        for mut presentation in presentations {
-            presentation.set_unicast();
-        }
-        Manifest {
-            creation_date,
-            fallback_poll_rate,
-            manifest_version: ManifestVersion::V1_0_0,
-            presentations,
-            stream_type: StreamType::Live(live_data),
-            content_base_url,
-        }
-    }
 }
 
 #[cfg(test)]

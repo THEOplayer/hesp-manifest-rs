@@ -31,7 +31,7 @@ impl Validate for TimeBounds {
         if self.start_time.is_none() && self.end_time.is_none() {
             return Err(Error::EmptyTimeBounds);
         }
-        if let &TimeBounds { start_time: Some(start), end_time: Some(end), .. } = self {
+        if let TimeBounds { start_time: Some(start), end_time: Some(end), .. } = *self {
             if start >= end {
                 return Err(Error::ReverseTimeBounds{start, end});
             }

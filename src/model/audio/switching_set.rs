@@ -1,3 +1,5 @@
+use std::convert::{TryInto, TryFrom};
+
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
@@ -6,8 +8,8 @@ use crate::*;
 use super::AudioTrackDef;
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Serialize, Clone, Deserialize)]
+#[serde(rename_all = "camelCase", try_from="AudioSwitchingSetDef")]
 pub struct AudioSwitchingSet {
     id: String,
     language: Language,
@@ -28,13 +30,12 @@ impl Entity for AudioSwitchingSet {
 impl SwitchingSet for AudioSwitchingSet {
     type Track = AudioTrack;
     fn tracks(&self) -> &[Self::Track] { &self.tracks }
+    fn tracks_mut(&mut self) -> &mut [Self::Track] { &mut self.tracks }
     fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
     fn mime_type(&self) -> &str { self.mime_type.as_ref() }
 }
 
-impl MediaSwitchingSet for AudioSwitchingSet {
-
-}
+impl MediaSwitchingSet for AudioSwitchingSet {}
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -61,8 +62,11 @@ pub struct AudioSwitchingSetDef {
 
 impl AudioSwitchingSet {
     fn default_frame_rate() -> u64 { 1024 }
+}
 
-    fn new(def: AudioSwitchingSetDef) -> Result<Self> {
+impl TryFrom<AudioSwitchingSetDef> for AudioSwitchingSet {
+    type Error = Error;
+    fn try_from(def: AudioSwitchingSetDef) -> Result<Self> {
         let AudioSwitchingSetDef {
             id,
             language,
@@ -90,11 +94,11 @@ impl AudioSwitchingSet {
                 media_time_offset,
                 sample_rate,
             )
-        ).collect::<Result<Vec<AudioTrack>>>()?;
+        ).collect::<Result<Vec<AudioTrack>>>()?.try_into()?;
         Ok(AudioSwitchingSet {
             id,
             language,
-            tracks: EntityVec::new(tracks)?,
+            tracks,
             align_id,
             base_url,
             channels,
@@ -105,14 +109,6 @@ impl AudioSwitchingSet {
     }
 }
 
-impl<'de> Deserialize<'de> for AudioSwitchingSet {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-        where D: serde::Deserializer<'de>
-    {
-        let def = AudioSwitchingSetDef::deserialize(deserializer)?;
-        AudioSwitchingSet::new(def).map_err(serde::de::Error::custom)
-    }
-}
 
 #[cfg(test)]
 mod tests {

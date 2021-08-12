@@ -1,4 +1,6 @@
-use serde::{Deserialize, Deserializer, Serialize};
+use std::convert::{TryInto, TryFrom};
+
+use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 use crate::*;
@@ -6,8 +8,8 @@ use crate::*;
 use super::MetadataTrackDef;
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Serialize, Clone, Deserialize)]
+#[serde(rename_all = "camelCase", try_from="MetadataSwitchingSetDef")]
 pub struct MetadataSwitchingSet {
     id: String,
     language: Option<Language>,
@@ -41,8 +43,9 @@ pub struct MetadataSwitchingSetDef {
     media_time_offset: ScaledValue,
 }
 
-impl MetadataSwitchingSet {
-    fn new(def: MetadataSwitchingSetDef) -> Result<Self> {
+impl TryFrom<MetadataSwitchingSetDef> for MetadataSwitchingSet {
+    type Error = Error;
+    fn try_from(def: MetadataSwitchingSetDef) -> Result<Self> {
         let MetadataSwitchingSetDef {
             id,
             scheme_id,
@@ -57,23 +60,16 @@ impl MetadataSwitchingSet {
         } = def;
         let tracks = tracks.into_iter().map(|track|
             MetadataTrack::new(track, continuation_pattern.as_ref(), media_time_offset)
-        ).collect::<Result<Vec<MetadataTrack>>>()?;
+        ).collect::<Result<Vec<MetadataTrack>>>()?.try_into()?;
         Ok(MetadataSwitchingSet {
             id,
             language,
-            tracks: EntityVec::new(tracks)?,
+            tracks,
             scheme_id,
             align_id,
             base_url,
             label,
             mime_type,
         })
-    }
-}
-
-impl<'de> Deserialize<'de> for MetadataSwitchingSet {
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> std::result::Result<Self, D::Error> {
-        let def = MetadataSwitchingSetDef::deserialize(deserializer)?;
-        MetadataSwitchingSet::new(def).map_err(serde::de::Error::custom)
     }
 }

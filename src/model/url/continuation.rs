@@ -6,7 +6,7 @@ use crate::*;
 use super::relative_base::validate_relative;
 
 #[derive(Debug, Deserialize, Clone, Serialize)]
-#[serde(try_from = "String", into = "String")]
+#[serde(try_from = "String")]
 pub struct ContinuationPattern(String);
 
 impl ContinuationPattern {
@@ -29,10 +29,4 @@ impl TryFrom<String> for ContinuationPattern {
 
 impl AsRef<str> for ContinuationPattern {
     fn as_ref(&self) -> &str { &self.0 }
-}
-
-impl From<ContinuationPattern> for String {
-    fn from(value: ContinuationPattern) -> Self {
-        value.0
-    }
 }

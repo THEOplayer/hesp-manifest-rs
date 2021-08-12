@@ -16,7 +16,7 @@ mod tests {
 
     #[test]
     fn deserialize_example_manifest() -> Result<()> {
-        let input = fs::read_to_string("../tests/example-manifest.json")?;
+        let input = fs::read_to_string("tests/example-manifest.json")?;
 
         let result = deserialize(&input)?;
         let json = serde_json::to_string(&result)?;
@@ -27,7 +27,7 @@ mod tests {
 
     #[test]
     fn validate_empty_manifest() -> Result<()> {
-        let input = fs::read_to_string("../tests/empty-manifest.json")?;
+        let input = fs::read_to_string("tests/empty-manifest.json")?;
 
         let result = deserialize(&input);
 

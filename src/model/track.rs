@@ -24,7 +24,7 @@ pub trait MediaTrack: Track {
     fn bandwidth(&self) -> f64;
     fn initialization_pattern(&self) -> &InitializationPattern;
     fn active_sequence_number(&self) -> Option<u64>;
-    fn toi_limits(&self) -> Option<&TransferObjectIdentifierLimits>;
+    fn transmission(&self) -> &TrackTransmission;
 }
 
 pub type TransferObjectIdentifierLimits = Range<u32>;

@@ -23,7 +23,7 @@ pub struct VideoTrack {
     initialization_pattern: InitializationPattern,
     media_time_offset: ScaledValue,
     segment_duration: Option<ScaledValue>,
-    toi_limits: Option<TransferObjectIdentifierLimits>,
+    transmission: TrackTransmission,
 }
 
 impl Entity for VideoTrack {
@@ -46,7 +46,7 @@ impl MediaTrack for VideoTrack {
     fn bandwidth(&self) -> f64 { self.bandwidth.as_f64().unwrap() }
     fn initialization_pattern(&self) -> &InitializationPattern { &self.initialization_pattern }
     fn active_sequence_number(&self) -> Option<u64> { self.active_sequence_number }
-    fn toi_limits(&self) -> Option<&TransferObjectIdentifierLimits> { self.toi_limits.as_ref() }
+    fn transmission(&self) -> &TrackTransmission { &self.transmission }
 }
 
 impl VideoTrack {
@@ -74,7 +74,7 @@ impl VideoTrack {
             initialization_pattern,
             media_time_offset,
             segment_duration,
-            toi_limits
+            transmission
         } = def;
         validate_segments(&id, segment_duration, &segments)?;
         default!(id, codecs, default_codecs, Error::MissingCodecs);
@@ -97,7 +97,7 @@ impl VideoTrack {
             initialization_pattern,
             media_time_offset: media_time_offset.unwrap_or(default_media_time_offset),
             segment_duration,
-            toi_limits,
+            transmission,
         })
     }
 }
@@ -121,7 +121,7 @@ pub(super) struct VideoTrackDef {
     initialization_pattern: Option<InitializationPattern>,
     media_time_offset: Option<ScaledValue>,
     segment_duration: Option<ScaledValue>,
-    toi_limits: Option<TransferObjectIdentifierLimits>,
+    transmission: TrackTransmission,
 }
 
 impl Entity for VideoTrackDef {

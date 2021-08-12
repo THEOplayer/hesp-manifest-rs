@@ -1,4 +1,5 @@
 use thiserror::Error;
+use crate::TransmissionType;
 
 #[derive(Error, Debug)]
 pub enum Error {
@@ -36,6 +37,10 @@ pub enum Error {
     InvalidContinuationPattern(String),
     #[error("InitializationPattern '{0}' must contain {{initId}}")]
     InvalidInitializationPattern(String),
+    #[error("Presentation '{0}' must not contain multicast data")]
+    InvalidUnicastPresentation(String),
+    #[error("Presentation '{presentation}' is {transmission:?} therefore Track '{track}' must be {transmission:?}")]
+    InvalidTrackTransmission { presentation:String, track:String, transmission:TransmissionType },
     #[error(transparent)]
     UrlParseError(#[from] url::ParseError),
 }

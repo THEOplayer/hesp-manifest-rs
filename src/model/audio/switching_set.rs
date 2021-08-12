@@ -6,7 +6,7 @@ use crate::*;
 use super::AudioTrackDef;
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AudioSwitchingSet {
     id: String,
@@ -33,7 +33,7 @@ impl SwitchingSet for AudioSwitchingSet {
 }
 
 impl MediaSwitchingSet for AudioSwitchingSet {
-    type MediaTrack = AudioTrack;
+
 }
 
 #[derive(Deserialize, Debug)]

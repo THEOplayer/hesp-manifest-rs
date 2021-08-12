@@ -7,7 +7,7 @@ use crate::*;
 use super::relative_base::validate_relative;
 
 #[derive(Debug, Deserialize, Clone, Serialize)]
-#[serde(try_from = "String", into = "String")]
+#[serde(try_from = "String")]
 pub struct InitializationPattern(String);
 
 impl InitializationPattern {
@@ -33,10 +33,4 @@ impl TryFrom<String> for InitializationPattern {
 
 impl AsRef<str> for InitializationPattern {
     fn as_ref(&self) -> &str { &self.0 }
-}
-
-impl From<InitializationPattern> for String {
-    fn from(value: InitializationPattern) -> Self {
-        value.0
-    }
 }

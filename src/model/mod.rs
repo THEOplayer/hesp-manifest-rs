@@ -1,19 +1,20 @@
 pub use audio::*;
 pub use date_time::DateTime;
 pub use language::Language;
-pub use manifest::{Manifest, StreamType};
+pub use manifest::*;
 pub use metadata::*;
-pub use mime::{AudioMimeType, VideoMimeType};
+pub use mime::*;
+pub use multicast::*;
 pub use presentation::Presentation;
 pub use presentation_event::PresentationEvent;
 pub use resolution::Resolution;
 pub use scaled_value::ScaledValue;
-pub use segment::{Segment, Segments};
-pub use switching_set::{MediaSwitchingSet, SwitchingSet};
+pub use segment::*;
+pub use switching_set::*;
 pub use switching_set_protection::SwitchingSetProtection;
 pub use time_bounds::TimeBounds;
 pub use time_source::TimeSource;
-pub use track::{MediaTrack, Track, TransferObjectIdentifierLimits};
+pub use track::*;
 pub use video::*;
 
 pub use self::url::*;
@@ -37,5 +38,6 @@ mod track;
 mod switching_set;
 mod url;
 mod video;
+mod multicast;
 
 pub type Number = serde_json::Number;

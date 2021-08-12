@@ -4,7 +4,7 @@ use crate::Entity;
 
 use super::*;
 
-#[derive(Deserialize, Debug, Serialize)]
+#[derive(Deserialize, Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct PresentationEvent {
     data: String,

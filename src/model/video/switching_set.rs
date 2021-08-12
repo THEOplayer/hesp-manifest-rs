@@ -31,7 +31,7 @@ impl SwitchingSet for VideoSwitchingSet {
 }
 
 impl MediaSwitchingSet for VideoSwitchingSet {
-    type MediaTrack = VideoTrack;
+
 }
 
 #[derive(Deserialize, Debug)]

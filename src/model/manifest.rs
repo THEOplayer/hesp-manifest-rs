@@ -16,24 +16,24 @@ pub struct Manifest {
     content_base_url: Option<RelativeBaseUrl>,
 }
 
-
 impl Manifest {
     pub fn stream_type(&self) -> &StreamType { &self.stream_type }
     pub fn presentations(&self) -> &[Presentation] { &self.presentations }
     pub fn content_base_url(&self) -> &Option<RelativeBaseUrl> { &self.content_base_url }
+    pub fn presentation(&self, id: &str) -> Option<&Presentation> {
+        self.presentations.iter().find(|p| p.id() == id)
+    }
 }
 
 impl Validate for Manifest {
     fn validate(&self) -> Result<()> {
-        if let StreamType::Live { active_presentation, .. } = &self.stream_type {
-            self.presentations
-                .iter()
-                .find(|p| p.id() == active_presentation)
-                .ok_or_else(||Error::InvalidActivePresentationId(active_presentation.to_owned()))?
-                .validate_active()
-        } else {
-            Ok(())
+        if let StreamType::Live(LiveStream { active_presentation, .. }) = &self.stream_type {
+            self.presentation(active_presentation)
+                .ok_or_else(|| Error::InvalidActivePresentationId(active_presentation.to_owned()))?
+                .validate_active()?;
         }
+        for presentation in self.presentations() { presentation.ensure_unicast()?; }
+        Ok(())
     }
 }
 
@@ -41,20 +41,21 @@ impl Validate for Manifest {
 enum ManifestVersion {
     #[serde(rename = "1.0.0")]
     V1_0_0,
-    #[serde(rename = "1.0.0-multicast")]
-    V1_0_0Multicast,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "streamType", rename_all = "lowercase")]
 pub enum StreamType {
-    #[serde(rename_all = "camelCase")]
-    Live {
-        availability_duration: ScaledValue,
-        active_presentation: String,
-        time_source: Option<TimeSource>,
-    },
+    Live(LiveStream),
     Vod,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct LiveStream {
+    availability_duration: ScaledValue,
+    pub(crate) active_presentation: String,
+    time_source: Option<TimeSource>,
 }
 
 #[cfg(test)]

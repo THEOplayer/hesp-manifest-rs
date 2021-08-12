@@ -5,7 +5,7 @@ use crate::*;
 use crate::model::track::validate_segments;
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AudioTrack {
     bandwidth: Number,
@@ -24,7 +24,7 @@ pub struct AudioTrack {
     media_time_offset: ScaledValue,
     sample_rate: u64,
     segment_duration: Option<ScaledValue>,
-    toi_limits: Option<TransferObjectIdentifierLimits>,
+    transmission: TrackTransmission,
 }
 
 impl Entity for AudioTrack {
@@ -47,7 +47,7 @@ impl MediaTrack for AudioTrack {
     fn bandwidth(&self) -> f64 { self.bandwidth.as_f64().unwrap() }
     fn initialization_pattern(&self) -> &InitializationPattern { &self.initialization_pattern }
     fn active_sequence_number(&self) -> Option<u64> { self.active_sequence_number }
-    fn toi_limits(&self) -> Option<&TransferObjectIdentifierLimits> { self.toi_limits.as_ref() }
+    fn transmission(&self) -> &TrackTransmission { &self.transmission }
 }
 
 impl AudioTrack {
@@ -77,7 +77,7 @@ impl AudioTrack {
             media_time_offset,
             sample_rate,
             segment_duration,
-            toi_limits
+            transmission
         } = def;
         default!(id, codecs, default_codecs, Error::MissingCodecs);
         default!(id, continuation_pattern, default_continuation_pattern, Error::MissingContinuationPattern);
@@ -101,7 +101,7 @@ impl AudioTrack {
             media_time_offset: media_time_offset.unwrap_or(default_media_time_offset),
             sample_rate,
             segment_duration,
-            toi_limits,
+            transmission,
         })
     }
 }
@@ -125,7 +125,7 @@ pub(super) struct AudioTrackDef {
     media_time_offset: Option<ScaledValue>,
     sample_rate: Option<u64>,
     segment_duration: Option<ScaledValue>,
-    toi_limits: Option<TransferObjectIdentifierLimits>,
+    transmission: TrackTransmission,
 }
 
 impl Entity for AudioTrackDef {

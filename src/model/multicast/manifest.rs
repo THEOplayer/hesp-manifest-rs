@@ -50,10 +50,10 @@ impl Validate for MulticastManifest {
 }
 
 impl MulticastManifest {
-    pub fn from_unicast<F>(manifest: Manifest, presentation_transformer: F) -> Result<Self>
+    pub fn from_unicast<F>(manifest: UnicastManifest, presentation_transformer: F) -> Result<Self>
         where F: FnMut(Presentation) -> Presentation
     {
-        let Manifest {
+        let UnicastManifest {
             creation_date,
             fallback_poll_rate,
             manifest_version: _manifest_version,
@@ -82,7 +82,7 @@ impl MulticastManifest {
     }
 }
 
-impl From<MulticastManifest> for Manifest {
+impl From<MulticastManifest> for UnicastManifest {
     fn from(input: MulticastManifest) -> Self {
         let MulticastManifest {
             creation_date,
@@ -95,7 +95,7 @@ impl From<MulticastManifest> for Manifest {
         for presentation in &mut presentations[..] {
             presentation.set_unicast();
         }
-        Manifest {
+        UnicastManifest {
             creation_date,
             fallback_poll_rate,
             manifest_version: ManifestVersion::V1_0_0,

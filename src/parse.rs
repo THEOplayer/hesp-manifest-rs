@@ -1,7 +1,7 @@
 use crate::*;
 
 //TODO use own error
-pub fn deserialize(input: &str) -> std::result::Result<Manifest, serde_path_to_error::Error<serde_json::Error>> {
+pub fn deserialize(input: &str) -> std::result::Result<UnicastManifest, serde_path_to_error::Error<serde_json::Error>> {
     let deserializer = &mut serde_json::Deserializer::from_str(input);
     serde_path_to_error::deserialize(deserializer)
 }

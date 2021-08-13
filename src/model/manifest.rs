@@ -2,11 +2,11 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use crate::*;
 
-validate_on_deserialize!(Manifest);
+validate_on_deserialize!(UnicastManifest);
 #[skip_serializing_none]
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase", remote = "Self")]
-pub struct Manifest {
+pub struct UnicastManifest {
     pub(super) creation_date: DateTime,
     pub(super) fallback_poll_rate: Number,
     pub(super) manifest_version: ManifestVersion,
@@ -16,7 +16,7 @@ pub struct Manifest {
     pub(super) content_base_url: Option<RelativeBaseUrl>,
 }
 
-impl Manifest {
+impl UnicastManifest {
     pub fn stream_type(&self) -> &StreamType { &self.stream_type }
     pub fn presentations(&self) -> &[Presentation] { &self.presentations }
     pub fn content_base_url(&self) -> &Option<RelativeBaseUrl> { &self.content_base_url }
@@ -25,7 +25,7 @@ impl Manifest {
     }
 }
 
-impl Validate for Manifest {
+impl Validate for UnicastManifest {
     fn validate(&self) -> Result<()> {
         if let StreamType::Live(LiveStream { active_presentation, .. }) = &self.stream_type {
             self.presentation(active_presentation)
@@ -83,7 +83,7 @@ mod tests {
                 "streamType": "live",
                 "activePresentation": "0",
             }"#;
-        let result = serde_json::from_str::<Manifest>(data);
+        let result = serde_json::from_str::<UnicastManifest>(data);
 
         assert!(result.is_err());
         let error = result.unwrap_err().to_string();
@@ -111,7 +111,7 @@ mod tests {
                 "streamType": "live",
                 "activePresentation": "0"
             }"#;
-        let result = serde_json::from_str::<Manifest>(data);
+        let result = serde_json::from_str::<UnicastManifest>(data);
 
         assert!(result.is_err());
         let error = result.unwrap_err().to_string();

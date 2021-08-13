@@ -46,30 +46,24 @@ impl Presentation {
     }
 
     pub fn video_tracks(&self) -> impl Iterator<Item=(TrackPathRef, &VideoTrack)> {
-        let presentation_id = self.id();
-        self.video.iter().flat_map(move |set| {
-            let set_id = set.id();
-            set.tracks().iter().map(move |track| {
-                let path = TrackPathRef::new(
-                    presentation_id,
-                    set_id,
-                    MediaType::Video,
-                    track.id(),
-                );
-                (path, track)
-            })
-        })
+        self.tracks(&self.video)
     }
 
     pub fn audio_tracks(&self) -> impl Iterator<Item=(TrackPathRef, &AudioTrack)> {
+        self.tracks(&self.audio)
+    }
+
+    fn tracks<'a, S>(&'a self, selection_set: &'a [S]) -> impl Iterator<Item=(TrackPathRef, &'a S::MediaTrack)>
+        where S: MediaSwitchingSet
+    {
         let presentation_id = self.id();
-        self.audio.iter().flat_map(move |set| {
-            let set_id = set.id();
-            set.tracks().iter().map(move |track| {
+        selection_set.iter().flat_map(move |switching_set| {
+            let switching_set_id = switching_set.id();
+            switching_set.tracks().iter().map(move |track| {
                 let path = TrackPathRef::new(
                     presentation_id,
-                    set_id,
-                    MediaType::Audio,
+                    switching_set_id,
+                    S::MEDIA_TYPE,
                     track.id(),
                 );
                 (path, track)
@@ -144,21 +138,3 @@ impl Validate for Presentation {
         Ok(())
     }
 }
-//
-// macro_rules! tracks {
-//     ($self:expr, $media: ident, $iter) => {
-//         let presentation_id = $self.id();
-//         self.$media.iter().flat_map(move |set| {
-//             let set_id = set.id();
-//             set.tracks().iter().map(move |track| {
-//                 let path = TrackPath::new(
-//                     presentation_id.to_owned(),
-//                     set_id.to_owned(),
-//                     MediaType::Audio,
-//                     track.id().to_owned()
-//                 );
-//                 (path, track)
-//             })
-//         })
-//     };
-// }

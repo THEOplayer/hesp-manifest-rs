@@ -43,6 +43,7 @@ impl Track for VideoTrack {
 }
 
 impl MediaTrack for VideoTrack {
+    const MEDIA_TYPE: MediaType = MediaType::Video;
     fn bandwidth(&self) -> f64 { self.bandwidth.as_f64().unwrap() }
     fn initialization_pattern(&self) -> &InitializationPattern { &self.initialization_pattern }
     fn active_sequence_number(&self) -> Option<u64> { self.active_sequence_number }

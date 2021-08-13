@@ -35,7 +35,10 @@ impl SwitchingSet for AudioSwitchingSet {
     fn mime_type(&self) -> &str { self.mime_type.as_ref() }
 }
 
-impl MediaSwitchingSet for AudioSwitchingSet {}
+impl MediaSwitchingSet for AudioSwitchingSet {
+    type MediaTrack = AudioTrack;
+    const MEDIA_TYPE: MediaType = MediaType::Audio;
+}
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]

@@ -9,7 +9,7 @@ use super::VideoTrackDef;
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Clone, Deserialize)]
-#[serde(rename_all = "camelCase", try_from="VideoSwitchingSetDef")]
+#[serde(rename_all = "camelCase", try_from = "VideoSwitchingSetDef")]
 pub struct VideoSwitchingSet {
     id: String,
     tracks: EntityVec<VideoTrack>,
@@ -33,7 +33,10 @@ impl SwitchingSet for VideoSwitchingSet {
     fn mime_type(&self) -> &str { self.mime_type.as_ref() }
 }
 
-impl MediaSwitchingSet for VideoSwitchingSet {}
+impl MediaSwitchingSet for VideoSwitchingSet {
+    type MediaTrack = VideoTrack;
+    const MEDIA_TYPE: MediaType = MediaType::Video;
+}
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]

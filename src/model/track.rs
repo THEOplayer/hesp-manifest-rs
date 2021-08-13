@@ -21,6 +21,7 @@ pub trait Track: Entity<Id=str> {
 }
 
 pub trait MediaTrack: Track {
+    const MEDIA_TYPE: MediaType;
     fn bandwidth(&self) -> f64;
     fn initialization_pattern(&self) -> &InitializationPattern;
     fn active_sequence_number(&self) -> Option<u64>;

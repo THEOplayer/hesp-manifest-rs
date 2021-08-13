@@ -44,6 +44,7 @@ impl Track for AudioTrack {
 }
 
 impl MediaTrack for AudioTrack {
+    const MEDIA_TYPE: MediaType = MediaType::Audio;
     fn bandwidth(&self) -> f64 { self.bandwidth.as_f64().unwrap() }
     fn initialization_pattern(&self) -> &InitializationPattern { &self.initialization_pattern }
     fn active_sequence_number(&self) -> Option<u64> { self.active_sequence_number }

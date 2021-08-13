@@ -23,8 +23,6 @@ pub struct Presentation {
     transmission: PresentationTransmission,
 }
 
-
-
 impl Presentation {
     pub fn audio(&self) -> &[AudioSwitchingSet] { &self.audio }
     pub fn metadata(&self) -> &[MetadataSwitchingSet] { &self.metadata }
@@ -47,20 +45,44 @@ impl Presentation {
         }
     }
 
-    pub fn video_tracks(&self) -> impl Iterator<Item=&VideoTrack> {
-        self.video.iter().flat_map(|x| x.tracks())
+    pub fn video_tracks(&self) -> impl Iterator<Item=(TrackPathRef, &VideoTrack)> {
+        let presentation_id = self.id();
+        self.video.iter().flat_map(move |set| {
+            let set_id = set.id();
+            set.tracks().iter().map(move |track| {
+                let path = TrackPathRef::new(
+                    presentation_id,
+                    set_id,
+                    MediaType::Video,
+                    track.id(),
+                );
+                (path, track)
+            })
+        })
     }
 
-    pub fn audio_tracks(&self) -> impl Iterator<Item=&AudioTrack> {
-        self.audio.iter().flat_map(|x| x.tracks())
+    pub fn audio_tracks(&self) -> impl Iterator<Item=(TrackPathRef, &AudioTrack)> {
+        let presentation_id = self.id();
+        self.audio.iter().flat_map(move |set| {
+            let set_id = set.id();
+            set.tracks().iter().map(move |track| {
+                let path = TrackPathRef::new(
+                    presentation_id,
+                    set_id,
+                    MediaType::Audio,
+                    track.id(),
+                );
+                (path, track)
+            })
+        })
     }
 
     pub fn video_tracks_mut(&mut self) -> impl Iterator<Item=&mut VideoTrack> {
-        self.video.iter_mut().flat_map(|x| x.tracks_mut())
+        self.video.iter_mut().flat_map(|set| set.tracks_mut())
     }
 
     pub fn audio_tracks_mut(&mut self) -> impl Iterator<Item=&mut AudioTrack> {
-        self.audio.iter_mut().flat_map(|x| x.tracks_mut())
+        self.audio.iter_mut().flat_map(|set| set.tracks_mut())
     }
 
     fn validate_track<T: MediaTrack>(&self, track: &T) -> Result<()> {
@@ -79,15 +101,35 @@ impl Presentation {
     pub fn set_unicast(&mut self) {
         self.transmission = PresentationTransmission::Unicast;
         for track in self.video_tracks_mut() {
-            track.transmission = TrackTransmission::Unicast
+            track.transmission = TrackTransmission::Unicast;
         }
         for track in self.audio_tracks_mut() {
-            track.transmission = TrackTransmission::Unicast
+            track.transmission = TrackTransmission::Unicast;
         }
     }
 
-
-
+    pub fn into_multicast<F>(self, meta: PresentationMulticastMetadata, toi_provider: F) -> Self
+        where F: Fn(TrackPathRef) -> TransferObjectIdentifierLimits
+    {
+        let mut result = self;
+        let id = result.id.clone();
+        result.transmission = PresentationTransmission::Multicast(meta);
+        for set in &mut result.video[..] {
+            let set_id = set.id().to_owned();
+            for track in set.tracks_mut() {
+                let path = TrackPathRef::new(&id, &set_id, MediaType::Video, track.id());
+                track.transmission = TrackTransmission::Multicast { toi_limits: toi_provider(path) }
+            }
+        }
+        for set in &mut result.audio[..] {
+            let set_id = set.id().to_owned();
+            for track in set.tracks_mut() {
+                let path = TrackPathRef::new(&id, &set_id, MediaType::Audio, track.id());
+                track.transmission = TrackTransmission::Multicast { toi_limits: toi_provider(path) }
+            }
+        }
+        result
+    }
 }
 
 impl Entity for Presentation {
@@ -97,10 +139,26 @@ impl Entity for Presentation {
 
 impl Validate for Presentation {
     fn validate(&self) -> Result<()> {
-        for track in self.video_tracks() { self.validate_track(track)? }
-        for track in self.audio_tracks() { self.validate_track(track)? }
+        for (_, track) in self.video_tracks() { self.validate_track(track)? }
+        for (_, track) in self.audio_tracks() { self.validate_track(track)? }
         Ok(())
     }
 }
-
-
+//
+// macro_rules! tracks {
+//     ($self:expr, $media: ident, $iter) => {
+//         let presentation_id = $self.id();
+//         self.$media.iter().flat_map(move |set| {
+//             let set_id = set.id();
+//             set.tracks().iter().map(move |track| {
+//                 let path = TrackPath::new(
+//                     presentation_id.to_owned(),
+//                     set_id.to_owned(),
+//                     MediaType::Audio,
+//                     track.id().to_owned()
+//                 );
+//                 (path, track)
+//             })
+//         })
+//     };
+// }

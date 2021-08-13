@@ -16,6 +16,8 @@ pub use time_bounds::TimeBounds;
 pub use time_source::TimeSource;
 pub use track::*;
 pub use video::*;
+pub use track_path::*;
+pub use media::MediaType;
 
 pub use self::url::*;
 
@@ -39,5 +41,7 @@ mod switching_set;
 mod url;
 mod video;
 mod multicast;
+mod track_path;
+mod media;
 
 pub type Number = serde_json::Number;

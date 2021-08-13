@@ -17,7 +17,7 @@ pub trait Entity {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(try_from = "Vec<E>")]
-pub struct EntityVec<E: Entity>(Vec<E>);
+pub struct EntityVec<E: Entity>(pub(crate) Vec<E>);
 
 impl<E: Entity> TryFrom<Vec<E>> for EntityVec<E> {
     type Error = Error;

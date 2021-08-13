@@ -1,3 +1,5 @@
+use std::convert::TryInto;
+
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
@@ -44,6 +46,39 @@ impl Validate for MulticastManifest {
         self.presentation(active_id)
             .ok_or_else(|| Error::InvalidActivePresentationId(active_id.to_owned()))?
             .validate_active()
+    }
+}
+
+impl MulticastManifest {
+    pub fn from_unicast<F>(manifest: Manifest, presentation_transformer: F) -> Result<Self>
+        where F: FnMut(Presentation) -> Presentation
+    {
+        let Manifest {
+            creation_date,
+            fallback_poll_rate,
+            manifest_version: _manifest_version,
+            presentations,
+            stream_type,
+            content_base_url
+        } = manifest;
+        let live_data = if let StreamType::Live(live_data) = stream_type {
+            live_data
+        } else {
+            return Err(Error::InvalidMulticastStreamType);
+        };
+        let presentations = presentations.into_iter()
+            .map(presentation_transformer)
+            .collect::<Vec<Presentation>>()
+            .try_into()?;
+        Ok(MulticastManifest {
+            creation_date,
+            fallback_poll_rate,
+            manifest_version: MulticastManifestVersion::V1_0_0,
+            presentations,
+            stream_type: MulticastStreamType::Live,
+            live_data,
+            content_base_url,
+        })
     }
 }
 

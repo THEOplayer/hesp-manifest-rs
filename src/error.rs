@@ -41,6 +41,8 @@ pub enum Error {
     InvalidUnicastPresentation(String),
     #[error("Presentation '{presentation}' is {transmission:?} therefore Track '{track}' must be {transmission:?}")]
     InvalidTrackTransmission { presentation:String, track:String, transmission:TransmissionType },
+    #[error("Multicast presentation must have streamType 'live'")]
+    InvalidMulticastStreamType,
     #[error(transparent)]
     UrlParseError(#[from] url::ParseError),
 }

@@ -11,8 +11,8 @@ pub struct PresentationMulticastMetadata {
 }
 
 impl PresentationMulticastMetadata {
-    pub fn new(fec: FecMetadata, transport_session_id: u32, address:String) -> Self{
-        Self{ fec, transport_session_id, address }
+    pub fn new(fec: FecMetadata, transport_session_id: u32, address: String) -> Self {
+        Self { fec, transport_session_id, address }
     }
 
     pub fn transport_session_id(&self) -> u32 { self.transport_session_id }
@@ -21,17 +21,17 @@ impl PresentationMulticastMetadata {
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FecMetadata {
-    encoding_id: u8,
-    encoding_symbol_length: u32,
-    maximum_source_block_length: u32,
+    pub encoding_id: u8,
+    pub encoding_symbol_length: u32,
+    pub maximum_source_block_length: u32,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(from="Option<PresentationMulticastMetadata>", into="Option<PresentationMulticastMetadata>")]
-#[serde(rename="multicast_metadata", rename_all = "camelCase")]
+#[serde(from = "Option<PresentationMulticastMetadata>", into = "Option<PresentationMulticastMetadata>")]
+#[serde(rename = "multicast_metadata", rename_all = "camelCase")]
 pub enum PresentationTransmission {
     Unicast,
-    Multicast (PresentationMulticastMetadata),
+    Multicast(PresentationMulticastMetadata),
 }
 
 impl From<Option<PresentationMulticastMetadata>> for PresentationTransmission {

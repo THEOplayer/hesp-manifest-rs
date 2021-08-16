@@ -10,6 +10,12 @@ pub struct PresentationMulticastMetadata {
     address: String,
 }
 
+impl PresentationMulticastMetadata {
+    fn new(fec: FecMetadata, transport_session_id: u32, address:String) -> Self{
+        Self{ fec, transport_session_id, address }
+    }
+}
+
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FecMetadata {

@@ -38,18 +38,23 @@ impl MulticastManifest {
     pub fn presentation(&self, id: &str) -> Option<&Presentation> {
         self.presentations.iter().find(|p| p.id() == id)
     }
-}
 
-impl Validate for MulticastManifest {
-    fn validate(&self) -> Result<()> {
-        let active_id = &self.live_data.active_presentation;
-        self.presentation(active_id)
-            .ok_or_else(|| Error::InvalidActivePresentationId(active_id.to_owned()))?
-            .validate_active()
+    pub fn transport_session_id(&self, presentation_id: &str) -> Option<u32> {
+        multicast_tsi(self.presentation(presentation_id)?)
     }
-}
 
-impl MulticastManifest {
+    pub fn toi_limits(&self) -> impl Iterator<Item=(TrackPath, TransferObjectIdentifierLimits)> + '_ {
+        self.presentations.iter().flat_map(|presentation| {
+            let video_toi = presentation.video_tracks().filter_map(multicast_toi);
+            let audio_toi = presentation.audio_tracks().filter_map(multicast_toi);
+            video_toi.chain(audio_toi)
+        })
+    }
+
+    pub fn transport_session_ids(&self) -> impl Iterator<Item=u32> + '_ {
+        self.presentations.iter().filter_map(multicast_tsi)
+    }
+
     pub fn from_unicast<F>(manifest: UnicastManifest, presentation_transformer: F) -> Result<Self>
         where F: FnMut(Presentation) -> Presentation
     {
@@ -82,6 +87,15 @@ impl MulticastManifest {
     }
 }
 
+impl Validate for MulticastManifest {
+    fn validate(&self) -> Result<()> {
+        let active_id = &self.live_data.active_presentation;
+        self.presentation(active_id)
+            .ok_or_else(|| Error::InvalidActivePresentationId(active_id.to_owned()))?
+            .validate_active()
+    }
+}
+
 impl From<MulticastManifest> for UnicastManifest {
     fn from(input: MulticastManifest) -> Self {
         let MulticastManifest {
@@ -103,5 +117,22 @@ impl From<MulticastManifest> for UnicastManifest {
             stream_type: StreamType::Live(live_data),
             content_base_url,
         }
+    }
+}
+
+fn multicast_tsi(presentation: &Presentation) -> Option<u32> {
+    match presentation.transmission() {
+        PresentationTransmission::Unicast => None,
+        PresentationTransmission::Multicast(data) =>
+            Some(data.transport_session_id())
+    }
+}
+
+fn multicast_toi<T: MediaTrack>(
+    (path, track): (TrackPath, &T)
+) -> Option<(TrackPath, TransferObjectIdentifierLimits)> {
+    match track.transmission() {
+        TrackTransmission::Unicast => None,
+        &TrackTransmission::Multicast { toi_limits } => Some((path, toi_limits))
     }
 }

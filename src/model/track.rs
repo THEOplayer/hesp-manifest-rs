@@ -1,4 +1,4 @@
-use std::ops::Range;
+use serde::{Serialize, Deserialize};
 
 use crate::*;
 
@@ -28,7 +28,11 @@ pub trait MediaTrack: Track {
     fn transmission(&self) -> &TrackTransmission;
 }
 
-pub type TransferObjectIdentifierLimits = Range<u32>;
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Copy, Serialize, Deserialize)]
+pub struct TransferObjectIdentifierLimits {
+    start: u32,
+    end: u32,
+}
 
 pub(crate) fn validate_segments(_id: &str, _duration: Option<ScaledValue>, _segments: &[Segment]) -> Result<()> {
     // TODO uncomment

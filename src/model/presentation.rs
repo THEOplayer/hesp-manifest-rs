@@ -23,11 +23,13 @@ pub struct Presentation {
     transmission: PresentationTransmission,
 }
 
+
 impl Presentation {
     pub fn audio(&self) -> &[AudioSwitchingSet] { &self.audio }
     pub fn metadata(&self) -> &[MetadataSwitchingSet] { &self.metadata }
     pub fn video(&self) -> &[VideoSwitchingSet] { &self.video }
     pub fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
+    pub fn transmission(&self) -> &PresentationTransmission { &self.transmission }
 }
 
 impl Presentation {
@@ -134,6 +136,15 @@ impl Presentation {
         }
         result
     }
+
+    // pub(crate) fn toi_limits(&self) -> impl Iterator<Item=(TrackPath, TransferObjectIdentifierLimits)> {
+    //     let video_toi = self.video_tracks().filter_map(|(path, track)| {
+    //         match &track.transmission {
+    //             TrackTransmission::Unicast => None,
+    //             TrackTransmission::Multicast { toi_limits } => Some((path, toi_limits))
+    //         }
+    //     });
+    // }
 }
 
 impl Entity for Presentation {

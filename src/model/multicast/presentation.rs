@@ -14,6 +14,8 @@ impl PresentationMulticastMetadata {
     pub fn new(fec: FecMetadata, transport_session_id: u32, address:String) -> Self{
         Self{ fec, transport_session_id, address }
     }
+
+    pub fn transport_session_id(&self) -> u32 { self.transport_session_id }
 }
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]

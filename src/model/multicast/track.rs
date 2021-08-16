@@ -2,7 +2,7 @@ use serde::{self, Deserialize, Serialize};
 
 use crate::*;
 
-#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Copy)]
 #[serde(from = "Option<TransferObjectIdentifierLimits>", into = "Option<TransferObjectIdentifierLimits>")]
 #[serde(rename = "toi_limits", rename_all = "camelCase")]
 pub enum TrackTransmission {

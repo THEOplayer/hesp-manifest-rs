@@ -30,8 +30,8 @@ pub trait MediaTrack: Track {
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Copy, Serialize, Deserialize)]
 pub struct TransferObjectIdentifierLimits {
-    start: u32,
-    end: u32,
+    pub start: u32,
+    pub end: u32,
 }
 
 pub(crate) fn validate_segments(_id: &str, _duration: Option<ScaledValue>, _segments: &[Segment]) -> Result<()> {

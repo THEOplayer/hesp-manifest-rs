@@ -45,26 +45,26 @@ impl Presentation {
         }
     }
 
-    pub fn video_tracks(&self) -> impl Iterator<Item=(TrackPathRef, &VideoTrack)> {
+    pub fn video_tracks(&self) -> impl Iterator<Item=(TrackPath, &VideoTrack)> {
         self.tracks(&self.video)
     }
 
-    pub fn audio_tracks(&self) -> impl Iterator<Item=(TrackPathRef, &AudioTrack)> {
+    pub fn audio_tracks(&self) -> impl Iterator<Item=(TrackPath, &AudioTrack)> {
         self.tracks(&self.audio)
     }
 
-    fn tracks<'a, S>(&'a self, selection_set: &'a [S]) -> impl Iterator<Item=(TrackPathRef, &'a S::MediaTrack)>
+    fn tracks<'a, S>(&'a self, selection_set: &'a [S]) -> impl Iterator<Item=(TrackPath, &'a S::MediaTrack)>
         where S: MediaSwitchingSet
     {
         let presentation_id = self.id();
         selection_set.iter().flat_map(move |switching_set| {
             let switching_set_id = switching_set.id();
             switching_set.tracks().iter().map(move |track| {
-                let path = TrackPathRef::new(
-                    presentation_id,
-                    switching_set_id,
+                let path = TrackPath::new(
+                    presentation_id.to_owned(),
+                    switching_set_id.to_owned(),
                     S::MEDIA_TYPE,
-                    track.id(),
+                    track.id().to_owned(),
                 );
                 (path, track)
             })
@@ -103,7 +103,7 @@ impl Presentation {
     }
 
     pub fn into_multicast<F>(self, meta: PresentationMulticastMetadata, toi_provider: F) -> Self
-        where F: Fn(TrackPathRef) -> TransferObjectIdentifierLimits
+        where F: Fn(TrackPath) -> TransferObjectIdentifierLimits
     {
         let mut result = self;
         let id = result.id.clone();
@@ -111,14 +111,24 @@ impl Presentation {
         for set in &mut result.video[..] {
             let set_id = set.id().to_owned();
             for track in set.tracks_mut() {
-                let path = TrackPathRef::new(&id, &set_id, MediaType::Video, track.id());
+                let path = TrackPath::new(
+                    id.clone(),
+                    set_id.clone(),
+                    MediaType::Video,
+                    track.id().to_owned(),
+                );
                 track.transmission = TrackTransmission::Multicast { toi_limits: toi_provider(path) }
             }
         }
         for set in &mut result.audio[..] {
             let set_id = set.id().to_owned();
             for track in set.tracks_mut() {
-                let path = TrackPathRef::new(&id, &set_id, MediaType::Audio, track.id());
+                let path = TrackPath::new(
+                    id.clone(),
+                    set_id.clone(),
+                    MediaType::Video,
+                    track.id().to_owned(),
+                );
                 track.transmission = TrackTransmission::Multicast { toi_limits: toi_provider(path) }
             }
         }

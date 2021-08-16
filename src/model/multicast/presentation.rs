@@ -11,7 +11,7 @@ pub struct PresentationMulticastMetadata {
 }
 
 impl PresentationMulticastMetadata {
-    fn new(fec: FecMetadata, transport_session_id: u32, address:String) -> Self{
+    pub fn new(fec: FecMetadata, transport_session_id: u32, address:String) -> Self{
         Self{ fec, transport_session_id, address }
     }
 }

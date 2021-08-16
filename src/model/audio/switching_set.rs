@@ -29,8 +29,9 @@ impl Entity for AudioSwitchingSet {
 
 impl SwitchingSet for AudioSwitchingSet {
     type Track = AudioTrack;
-    fn tracks(&self) -> &[Self::Track] { &self.tracks }
-    fn tracks_mut(&mut self) -> &mut [Self::Track] { &mut self.tracks }
+    fn tracks(&self) -> &[AudioTrack] { &self.tracks }
+    fn track(&self, id: &str) -> Option<&AudioTrack> {self.tracks.get(id)}
+    fn tracks_mut(&mut self) -> &mut [AudioTrack] { &mut self.tracks }
     fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
     fn mime_type(&self) -> &str { self.mime_type.as_ref() }
 }

@@ -5,6 +5,7 @@ use super::*;
 pub trait SwitchingSet: Entity<Id=str> {
     type Track: Track;
     fn tracks(&self) -> &[Self::Track];
+    fn track(&self, id: &str) -> Option<&Self::Track>;
     fn tracks_mut(&mut self) -> &mut [Self::Track];
     fn base_url(&self) -> &Option<RelativeBaseUrl>;
     fn mime_type(&self) -> &str;

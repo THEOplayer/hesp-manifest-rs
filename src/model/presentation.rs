@@ -30,6 +30,12 @@ impl Presentation {
     pub fn video(&self) -> &[VideoSwitchingSet] { &self.video }
     pub fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
     pub fn transmission(&self) -> &PresentationTransmission { &self.transmission }
+    pub fn video_switching_set(&self, switching_set_id: &str) -> Option<&VideoSwitchingSet> {
+        self.video.get(switching_set_id)
+    }
+    pub fn audio_switching_set(&self, switching_set_id: &str) -> Option<&AudioSwitchingSet> {
+        self.audio.get(switching_set_id)
+    }
 }
 
 impl Presentation {
@@ -64,8 +70,8 @@ impl Presentation {
             switching_set.tracks().iter().map(move |track| {
                 let path = TrackPath::new(
                     presentation_id.to_owned(),
-                    switching_set_id.to_owned(),
                     S::MEDIA_TYPE,
+                    switching_set_id.to_owned(),
                     track.id().to_owned(),
                 );
                 (path, track)
@@ -115,8 +121,8 @@ impl Presentation {
             for track in set.tracks_mut() {
                 let path = TrackPath::new(
                     id.clone(),
-                    set_id.clone(),
                     MediaType::Video,
+                    set_id.clone(),
                     track.id().to_owned(),
                 );
                 track.transmission = TrackTransmission::Multicast { toi_limits: toi_provider(path) }
@@ -127,8 +133,8 @@ impl Presentation {
             for track in set.tracks_mut() {
                 let path = TrackPath::new(
                     id.clone(),
-                    set_id.clone(),
                     MediaType::Video,
+                    set_id.clone(),
                     track.id().to_owned(),
                 );
                 track.transmission = TrackTransmission::Multicast { toi_limits: toi_provider(path) }
@@ -137,14 +143,6 @@ impl Presentation {
         result
     }
 
-    // pub(crate) fn toi_limits(&self) -> impl Iterator<Item=(TrackPath, TransferObjectIdentifierLimits)> {
-    //     let video_toi = self.video_tracks().filter_map(|(path, track)| {
-    //         match &track.transmission {
-    //             TrackTransmission::Unicast => None,
-    //             TrackTransmission::Multicast { toi_limits } => Some((path, toi_limits))
-    //         }
-    //     });
-    // }
 }
 
 impl Entity for Presentation {

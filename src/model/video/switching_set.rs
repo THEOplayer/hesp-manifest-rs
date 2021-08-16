@@ -27,8 +27,9 @@ impl Entity for VideoSwitchingSet {
 
 impl SwitchingSet for VideoSwitchingSet {
     type Track = VideoTrack;
-    fn tracks(&self) -> &[Self::Track] { &self.tracks }
-    fn tracks_mut(&mut self) -> &mut [Self::Track] { &mut self.tracks }
+    fn tracks(&self) -> &[VideoTrack] { &self.tracks }
+    fn track(&self, id: &str) -> Option<&VideoTrack> { self.tracks.get(id) }
+    fn tracks_mut(&mut self) -> &mut [VideoTrack] { &mut self.tracks }
     fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
     fn mime_type(&self) -> &str { self.mime_type.as_ref() }
 }

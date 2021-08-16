@@ -43,11 +43,32 @@ impl MulticastManifest {
         multicast_tsi(self.presentation(presentation_id)?)
     }
 
-    pub fn toi_limits(&self) -> impl Iterator<Item=(TrackPath, TransferObjectIdentifierLimits)> + '_ {
+    pub fn all_toi_limits(&self) -> impl Iterator<Item=(TrackPath, TransferObjectIdentifierLimits)> + '_ {
         self.presentations.iter().flat_map(|presentation| {
             let video_toi = presentation.video_tracks().filter_map(multicast_toi);
             let audio_toi = presentation.audio_tracks().filter_map(multicast_toi);
             video_toi.chain(audio_toi)
+        })
+    }
+
+    pub fn toi_limits(&self, path: &TrackPath) -> Option<TransferObjectIdentifierLimits> {
+        self.track_transmission(path).and_then(|transmission| match transmission {
+            TrackTransmission::Unicast => None,
+            TrackTransmission::Multicast { toi_limits } => Some(toi_limits),
+        })
+    }
+
+    pub fn track_transmission(&self, path: &TrackPath) -> Option<TrackTransmission> {
+        let presentation = self.presentation(path.presentation_id())?;
+        Some(*match path.media_type() {
+            MediaType::Audio => presentation
+                .video_switching_set(path.switching_set_id())?
+                .track(path.track_id())?
+                .transmission(),
+            MediaType::Video => presentation
+                .audio_switching_set(path.switching_set_id())?
+                .track(path.track_id())?
+                .transmission(),
         })
     }
 

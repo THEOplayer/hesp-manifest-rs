@@ -19,6 +19,12 @@ pub trait Entity {
 #[serde(try_from = "Vec<E>")]
 pub struct EntityVec<E: Entity>(pub(crate) Vec<E>);
 
+impl <E: Entity> EntityVec<E> {
+    pub fn get(&self, id: &E::Id) -> Option<&E> {
+        self.iter().find(|entity| entity.id() == id)
+    }
+}
+
 impl<E: Entity> TryFrom<Vec<E>> for EntityVec<E> {
     type Error = Error;
     fn try_from(vec: Vec<E>) -> Result<Self> {

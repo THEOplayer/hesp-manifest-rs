@@ -139,7 +139,7 @@ impl Presentation {
             for track in set.tracks_mut() {
                 let path = TrackPath::new(
                     id.clone(),
-                    MediaType::Video,
+                    MediaType::Audio,
                     set_id.clone(),
                     track.id().to_owned(),
                 );

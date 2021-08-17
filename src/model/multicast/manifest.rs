@@ -21,13 +21,13 @@ pub struct MulticastManifest {
     content_base_url: Option<RelativeBaseUrl>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash, Copy, Clone)]
 enum MulticastManifestVersion {
     #[serde(rename = "1.0.0-multicast")]
     V1_0_0
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
 pub enum MulticastStreamType {
     Live,

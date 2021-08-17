@@ -37,20 +37,20 @@ impl Validate for UnicastManifest {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash, Copy, Clone)]
 pub enum ManifestVersion {
     #[serde(rename = "1.0.0")]
     V1_0_0,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "streamType", rename_all = "lowercase")]
 pub enum StreamType {
     Live(LiveStream),
     Vod,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct LiveStream {
     availability_duration: ScaledValue,

@@ -110,8 +110,8 @@ impl Presentation {
         }
     }
 
-    pub fn into_multicast<F>(self, meta: PresentationMulticastMetadata, toi_provider: F) -> Self
-        where F: Fn(TrackPath) -> TransferObjectIdentifierLimits
+    pub fn into_multicast<F>(self, meta: PresentationMulticastMetadata, mut toi_provider: F) -> Self
+        where F: FnMut(TrackPath) -> TransferObjectIdentifierLimits
     {
         let mut result = self;
         let id = result.id.clone();

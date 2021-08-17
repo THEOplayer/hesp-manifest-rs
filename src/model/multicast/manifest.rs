@@ -8,7 +8,7 @@ use crate::*;
 
 validate_on_deserialize!(MulticastManifest);
 #[skip_serializing_none]
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase", remote = "Self")]
 pub struct MulticastManifest {
     creation_date: DateTime,

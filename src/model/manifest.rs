@@ -4,7 +4,7 @@ use crate::*;
 
 validate_on_deserialize!(UnicastManifest);
 #[skip_serializing_none]
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase", remote = "Self")]
 pub struct UnicastManifest {
     pub(super) creation_date: DateTime,

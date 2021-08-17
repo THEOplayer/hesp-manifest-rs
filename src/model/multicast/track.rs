@@ -51,6 +51,9 @@ pub struct MulticastTrackInfo {
 }
 
 impl MulticastTrackInfo {
+    pub fn path(&self) -> &TrackPath {
+        &self.path
+    }
     pub fn base_url(&self) -> &Url {
         &self.base_url
     }
@@ -66,4 +69,5 @@ impl MulticastTrackInfo {
     pub fn toi_limits(&self) -> TransferObjectIdentifierLimits {
         self.toi_limits
     }
+
 }

@@ -7,6 +7,7 @@ pub trait Track: Entity<Id=str> {
     fn segment_duration(&self) -> Option<ScaledValue>;
     fn segments(&self) -> &[Segment];
     fn base_url(&self) -> &Option<RelativeBaseUrl>;
+    fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl>;
     fn continuation_pattern(&self) -> &ContinuationPattern;
     fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern;
     fn average_bandwidth(&self) -> Option<f64>;

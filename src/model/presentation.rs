@@ -39,6 +39,9 @@ impl Presentation {
     pub fn audio_switching_set(&self, switching_set_id: &str) -> Option<&AudioSwitchingSet> {
         self.audio.get(switching_set_id)
     }
+    pub fn is_multicast(&self) -> bool {
+        return self.transmission().get_type() == TransmissionType::Multicast
+    }
 }
 
 impl Presentation {

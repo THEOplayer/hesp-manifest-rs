@@ -36,6 +36,7 @@ impl Track for VideoTrack {
     fn segment_duration(&self) -> Option<ScaledValue> { self.segment_duration }
     fn segments(&self) -> &[Segment] { &self.segments }
     fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
+    fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> { &mut self.base_url }
     fn continuation_pattern(&self) -> &ContinuationPattern { &self.continuation_pattern }
     fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern {
         &mut self.continuation_pattern

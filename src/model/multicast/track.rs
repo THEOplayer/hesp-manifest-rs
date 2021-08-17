@@ -42,10 +42,28 @@ impl TrackTransmission {
 
 #[derive(Clone, Debug)]
 pub struct MulticastTrackInfo {
-    pub path: TrackPath,
-    pub base_url: Url,
-    pub initialization_pattern: InitializationPattern,
-    pub continuation_pattern: ContinuationPattern,
-    pub tsi: u32,
-    pub toi_limits: TransferObjectIdentifierLimits,
+    pub(crate) path: TrackPath,
+    pub(crate) base_url: Url,
+    pub(crate) initialization_pattern: InitializationPattern,
+    pub(crate) continuation_pattern: ContinuationPattern,
+    pub(crate) tsi: u32,
+    pub(crate) toi_limits: TransferObjectIdentifierLimits,
+}
+
+impl MulticastTrackInfo {
+    pub fn base_url(&self) -> &Url {
+        &self.base_url
+    }
+    pub fn initialization_pattern(&self) -> &InitializationPattern {
+        &self.initialization_pattern
+    }
+    pub fn continuation_pattern(&self) -> &ContinuationPattern {
+        &self.continuation_pattern
+    }
+    pub fn tsi(&self) -> u32 {
+        self.tsi
+    }
+    pub fn toi_limits(&self) -> TransferObjectIdentifierLimits {
+        self.toi_limits
+    }
 }

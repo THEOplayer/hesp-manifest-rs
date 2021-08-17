@@ -1,6 +1,7 @@
 use serde::{self, Deserialize, Serialize};
 
 use crate::*;
+use url::Url;
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Copy)]
 #[serde(from = "Option<TransferObjectIdentifierLimits>", into = "Option<TransferObjectIdentifierLimits>")]
@@ -37,4 +38,14 @@ impl TrackTransmission {
             TrackTransmission::Multicast { .. } => TransmissionType::Multicast,
         }
     }
+}
+
+#[derive(Clone, Debug)]
+pub struct MulticastTrackInfo {
+    pub path: TrackPath,
+    pub base_url: Url,
+    pub initialization_pattern: InitializationPattern,
+    pub continuation_pattern: ContinuationPattern,
+    pub tsi: u32,
+    pub toi_limits: TransferObjectIdentifierLimits,
 }

@@ -2,6 +2,7 @@ use std::convert::TryInto;
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use url::Url;
 
 use crate::*;
 
@@ -80,6 +81,22 @@ impl MulticastManifest {
 
     pub fn transport_session_ids(&self) -> impl Iterator<Item=u32> + '_ {
         self.presentations.iter().filter_map(multicast_tsi)
+    }
+
+    pub fn track_info(&self, base_url: &Url) -> impl Iterator<Item=MulticastTrackInfo> + '_ {
+        let manifest_url = self.content_base_url.resolve(base_url);
+        self.presentations.iter()
+            .filter_map(|presentation| match presentation.transmission() {
+                PresentationTransmission::Unicast => None,
+                PresentationTransmission::Multicast(data) => Some((presentation, data.transport_session_id()))
+            })
+            .flat_map(move |(presentation, tsi)| {
+                let presentation_id = presentation.id();
+                let presentation_url = presentation.base_url().resolve(&manifest_url);
+                let audio_info = track_info_for_selection_set(tsi, presentation.audio(), presentation_id, presentation_url.clone());
+                let video_info = track_info_for_selection_set(tsi, presentation.video(), presentation_id, presentation_url);
+                audio_info.chain(video_info)
+            })
     }
 
     pub fn from_unicast<F>(manifest: UnicastManifest, presentation_transformer: F) -> Result<Self>
@@ -161,5 +178,37 @@ fn multicast_toi<T: MediaTrack>(
     match track.transmission() {
         TrackTransmission::Unicast => None,
         &TrackTransmission::Multicast { toi_limits } => Some((path, toi_limits))
+    }
+}
+
+fn track_info_for_selection_set<'a, S: MediaSwitchingSet>(
+    tsi: u32, selection_set: &'a [S], presentation_id: &'a str, presentation_url: Url,
+) -> impl Iterator<Item=MulticastTrackInfo> + 'a {
+    selection_set.iter().flat_map(move |switching_set| {
+        let switching_set_url = switching_set.base_url().resolve(&presentation_url);
+        let switching_set_id = switching_set.id();
+        switching_set.tracks().iter().map(move |track| {
+            let path = TrackPath::new(
+                presentation_id.to_owned(),
+                S::MEDIA_TYPE,
+                switching_set_id.to_owned(),
+                track.id().to_owned(),
+            );
+            MulticastTrackInfo {
+                path,
+                base_url: track.base_url().resolve(&switching_set_url),
+                initialization_pattern: track.initialization_pattern().clone(),
+                continuation_pattern: track.continuation_pattern().clone(),
+                tsi,
+                toi_limits: unwrap_toi_limits(track),
+            }
+        })
+    })
+}
+
+fn unwrap_toi_limits<T: MediaTrack>(track: &T) -> TransferObjectIdentifierLimits {
+    match track.transmission() {
+        TrackTransmission::Unicast => panic!("multicast presentation cannot contain unicast track"),
+        TrackTransmission::Multicast { toi_limits } => *toi_limits,
     }
 }

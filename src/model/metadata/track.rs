@@ -31,6 +31,9 @@ impl Track for MetadataTrack {
     fn segments(&self) -> &[Segment] { &self.segments }
     fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
     fn continuation_pattern(&self) -> &ContinuationPattern { &self.continuation_pattern }
+    fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern {
+        &mut self.continuation_pattern
+    }
     fn average_bandwidth(&self) -> Option<f64> {
         self.average_bandwidth.as_ref().and_then(Number::as_f64)
     }

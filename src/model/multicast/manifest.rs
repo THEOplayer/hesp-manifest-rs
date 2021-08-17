@@ -34,7 +34,13 @@ pub enum MulticastStreamType {
 
 impl MulticastManifest {
     pub fn presentations(&self) -> &[Presentation] { &self.presentations }
+
+    pub fn presentations_mut(&mut self) -> &mut [Presentation] { &mut self.presentations }
+
     pub fn content_base_url(&self) -> &Option<RelativeBaseUrl> { &self.content_base_url }
+
+    pub fn content_base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> { &mut self.content_base_url }
+
     pub fn presentation(&self, id: &str) -> Option<&Presentation> {
         self.presentations.iter().find(|p| p.id() == id)
     }

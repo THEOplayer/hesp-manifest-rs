@@ -37,6 +37,9 @@ impl Track for VideoTrack {
     fn segments(&self) -> &[Segment] { &self.segments }
     fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
     fn continuation_pattern(&self) -> &ContinuationPattern { &self.continuation_pattern }
+    fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern {
+        &mut self.continuation_pattern
+    }
     fn average_bandwidth(&self) -> Option<f64> {
         self.average_bandwidth.as_ref().and_then(Number::as_f64)
     }
@@ -46,6 +49,9 @@ impl MediaTrack for VideoTrack {
     const MEDIA_TYPE: MediaType = MediaType::Video;
     fn bandwidth(&self) -> f64 { self.bandwidth.as_f64().unwrap() }
     fn initialization_pattern(&self) -> &InitializationPattern { &self.initialization_pattern }
+    fn initialization_pattern_mut(&mut self) -> &mut InitializationPattern {
+        &mut self.initialization_pattern
+    }
     fn active_sequence_number(&self) -> Option<u64> { self.active_sequence_number }
     fn transmission(&self) -> &TrackTransmission { &self.transmission }
 }

@@ -8,6 +8,7 @@ pub trait Track: Entity<Id=str> {
     fn segments(&self) -> &[Segment];
     fn base_url(&self) -> &Option<RelativeBaseUrl>;
     fn continuation_pattern(&self) -> &ContinuationPattern;
+    fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern;
     fn average_bandwidth(&self) -> Option<f64>;
     fn get_segment(&self, segment_id: u64) -> Option<&Segment> {
         self.segments().iter().find(|segment| segment.id() == segment_id)
@@ -24,6 +25,7 @@ pub trait MediaTrack: Track {
     const MEDIA_TYPE: MediaType;
     fn bandwidth(&self) -> f64;
     fn initialization_pattern(&self) -> &InitializationPattern;
+    fn initialization_pattern_mut(&mut self) -> &mut InitializationPattern;
     fn active_sequence_number(&self) -> Option<u64>;
     fn transmission(&self) -> &TrackTransmission;
 }

@@ -8,6 +8,7 @@ pub trait SwitchingSet: Entity<Id=str> {
     fn track(&self, id: &str) -> Option<&Self::Track>;
     fn tracks_mut(&mut self) -> &mut [Self::Track];
     fn base_url(&self) -> &Option<RelativeBaseUrl>;
+    fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl>;
     fn mime_type(&self) -> &str;
 }
 

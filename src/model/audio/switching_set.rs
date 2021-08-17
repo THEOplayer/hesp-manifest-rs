@@ -33,6 +33,9 @@ impl SwitchingSet for AudioSwitchingSet {
     fn track(&self, id: &str) -> Option<&AudioTrack> {self.tracks.get(id)}
     fn tracks_mut(&mut self) -> &mut [AudioTrack] { &mut self.tracks }
     fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
+    fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
+        &mut self.base_url
+    }
     fn mime_type(&self) -> &str { self.mime_type.as_ref() }
 }
 

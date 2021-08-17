@@ -26,9 +26,12 @@ pub struct Presentation {
 
 impl Presentation {
     pub fn audio(&self) -> &[AudioSwitchingSet] { &self.audio }
+    pub fn audio_mut(&mut self) -> &mut [AudioSwitchingSet] { &mut self.audio }
     pub fn metadata(&self) -> &[MetadataSwitchingSet] { &self.metadata }
     pub fn video(&self) -> &[VideoSwitchingSet] { &self.video }
+    pub fn video_mut(&mut self) -> &mut[VideoSwitchingSet] { &mut self.video }
     pub fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
+    pub fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> { &mut self.base_url }
     pub fn transmission(&self) -> &PresentationTransmission { &self.transmission }
     pub fn video_switching_set(&self, switching_set_id: &str) -> Option<&VideoSwitchingSet> {
         self.video.get(switching_set_id)

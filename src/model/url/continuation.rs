@@ -11,7 +11,7 @@ use url::Url;
 pub struct ContinuationPattern(String);
 
 impl ContinuationPattern {
-    pub fn segment(&self, id: u64) -> RelativeBaseUrl {
+    pub fn segment(&self, id: SegmentId) -> RelativeBaseUrl {
         self.as_ref().replace("{segmentId}", &id.to_string()).try_into().unwrap()
     }
 }

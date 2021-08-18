@@ -1,5 +1,5 @@
 use std::borrow::Borrow;
-use std::ops::Deref;
+use std::ops::{Deref, Sub, Add};
 
 use derive_more::{Display, From, Into};
 use itertools::Itertools;
@@ -24,8 +24,8 @@ pub struct Segment {
 pub struct Segments(Vec<Segment>);
 
 impl SegmentId {
-    fn next(&self) -> Self {
-        (self.0 + 1).into()
+    fn next(self) -> Self {
+        self + 1
     }
 }
 
@@ -72,5 +72,19 @@ impl Segment {
     }
     pub fn has_time_bounds(&self) -> bool {
         self.time_bounds.is_some()
+    }
+}
+
+impl Add<u32> for SegmentId {
+    type Output = SegmentId;
+    fn add(self, rhs: u32) -> Self {
+        (u32::from(self) + rhs).into()
+    }
+}
+
+impl Sub<u32> for SegmentId {
+    type Output = SegmentId;
+    fn sub(self, rhs: u32) -> Self {
+        (u32::from(self) - rhs).into()
     }
 }

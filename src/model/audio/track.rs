@@ -39,8 +39,8 @@ impl Track for AudioTrack {
     fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
     fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> { &mut self.base_url }
     fn continuation_pattern(&self) -> &ContinuationPattern { &self.continuation_pattern }
-    fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern {
-        &mut self.continuation_pattern
+    fn set_continuation_pattern(&mut self, pattern: ContinuationPattern) {
+        self.continuation_pattern = pattern
     }
     fn average_bandwidth(&self) -> Option<f64> {
         self.average_bandwidth.as_ref().and_then(Number::as_f64)
@@ -51,8 +51,8 @@ impl MediaTrack for AudioTrack {
     const MEDIA_TYPE: MediaType = MediaType::Audio;
     fn bandwidth(&self) -> f64 { self.bandwidth.as_f64().unwrap() }
     fn initialization_pattern(&self) -> &InitializationPattern { &self.initialization_pattern }
-    fn initialization_pattern_mut(&mut self) -> &mut InitializationPattern {
-        &mut self.initialization_pattern
+    fn set_initialization_pattern(&mut self, pattern: InitializationPattern) {
+       self.initialization_pattern = pattern;
     }
     fn active_sequence_number(&self) -> Option<u64> { self.active_sequence_number }
     fn transmission(&self) -> &TrackTransmission { &self.transmission }

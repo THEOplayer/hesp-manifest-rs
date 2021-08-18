@@ -1,8 +1,8 @@
 use serde::{self, Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::*;
 use crate::model::track::validate_segments;
+use crate::*;
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Clone)]
@@ -28,18 +28,32 @@ pub struct VideoTrack {
 
 impl Entity for VideoTrack {
     type Id = str;
-    fn id(&self) -> &str { &self.id }
+    fn id(&self) -> &str {
+        &self.id
+    }
 }
 
 impl Track for VideoTrack {
-    fn active_segment(&self) -> Option<u64> { self.active_segment }
-    fn segment_duration(&self) -> Option<ScaledValue> { self.segment_duration }
-    fn segments(&self) -> &[Segment] { &self.segments }
-    fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
-    fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> { &mut self.base_url }
-    fn continuation_pattern(&self) -> &ContinuationPattern { &self.continuation_pattern }
-    fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern {
-        &mut self.continuation_pattern
+    fn active_segment(&self) -> Option<u64> {
+        self.active_segment
+    }
+    fn segment_duration(&self) -> Option<ScaledValue> {
+        self.segment_duration
+    }
+    fn segments(&self) -> &[Segment] {
+        &self.segments
+    }
+    fn base_url(&self) -> &Option<RelativeBaseUrl> {
+        &self.base_url
+    }
+    fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
+        &mut self.base_url
+    }
+    fn continuation_pattern(&self) -> &ContinuationPattern {
+        &self.continuation_pattern
+    }
+    fn set_continuation_pattern(&mut self, pattern: ContinuationPattern) {
+        self.continuation_pattern = pattern;
     }
     fn average_bandwidth(&self) -> Option<f64> {
         self.average_bandwidth.as_ref().and_then(Number::as_f64)
@@ -48,13 +62,21 @@ impl Track for VideoTrack {
 
 impl MediaTrack for VideoTrack {
     const MEDIA_TYPE: MediaType = MediaType::Video;
-    fn bandwidth(&self) -> f64 { self.bandwidth.as_f64().unwrap() }
-    fn initialization_pattern(&self) -> &InitializationPattern { &self.initialization_pattern }
-    fn initialization_pattern_mut(&mut self) -> &mut InitializationPattern {
-        &mut self.initialization_pattern
+    fn bandwidth(&self) -> f64 {
+        self.bandwidth.as_f64().unwrap()
     }
-    fn active_sequence_number(&self) -> Option<u64> { self.active_sequence_number }
-    fn transmission(&self) -> &TrackTransmission { &self.transmission }
+    fn initialization_pattern(&self) -> &InitializationPattern {
+        &self.initialization_pattern
+    }
+    fn set_initialization_pattern(&mut self, pattern: InitializationPattern) {
+        self.initialization_pattern = pattern;
+    }
+    fn active_sequence_number(&self) -> Option<u64> {
+        self.active_sequence_number
+    }
+    fn transmission(&self) -> &TrackTransmission {
+        &self.transmission
+    }
 }
 
 impl VideoTrack {
@@ -82,13 +104,23 @@ impl VideoTrack {
             initialization_pattern,
             media_time_offset,
             segment_duration,
-            transmission
+            transmission,
         } = def;
         validate_segments(&id, segment_duration, &segments)?;
         default!(id, codecs, default_codecs, Error::MissingCodecs);
-        default!(id, continuation_pattern, default_continuation_pattern, Error::MissingContinuationPattern);
+        default!(
+            id,
+            continuation_pattern,
+            default_continuation_pattern,
+            Error::MissingContinuationPattern
+        );
         default!(id, frame_rate, default_frame_rate, Error::MissingFrameRate);
-        default!(id, initialization_pattern, default_initialization_pattern, Error::MissingInitializationPattern);
+        default!(
+            id,
+            initialization_pattern,
+            default_initialization_pattern,
+            Error::MissingInitializationPattern
+        );
         Ok(VideoTrack {
             bandwidth,
             id,
@@ -109,7 +141,6 @@ impl VideoTrack {
         })
     }
 }
-
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -134,5 +165,7 @@ pub(super) struct VideoTrackDef {
 
 impl Entity for VideoTrackDef {
     type Id = str;
-    fn id(&self) -> &str { &self.id }
+    fn id(&self) -> &str {
+        &self.id
+    }
 }

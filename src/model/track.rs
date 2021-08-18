@@ -11,10 +11,10 @@ pub trait Track: Entity<Id=str> {
     fn continuation_pattern(&self) -> &ContinuationPattern;
     fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern;
     fn average_bandwidth(&self) -> Option<f64>;
-    fn get_segment(&self, segment_id: u64) -> Option<&Segment> {
+    fn get_segment(&self, segment_id: SegmentId) -> Option<&Segment> {
         self.segments().iter().find(|segment| segment.id() == segment_id)
     }
-    fn get_segment_duration(&self, segment_id: u64) -> ScaledValue {
+    fn get_segment_duration(&self, segment_id: SegmentId) -> ScaledValue {
         self.segment_duration().or_else(|| {
             self.get_segment(segment_id).and_then(|segment| segment.duration())
         }).unwrap_or_else(|| ScaledValue::new(20))

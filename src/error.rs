@@ -1,5 +1,5 @@
 use thiserror::Error;
-use crate::TransmissionType;
+use crate::{TransmissionType, SegmentId};
 
 #[derive(Error, Debug)]
 pub enum Error {
@@ -12,7 +12,7 @@ pub enum Error {
     #[error("Presentation with id {0} is active but has no currentTime")]
     MissingCurrentTime(String),
     #[error("segment id's must be incremented by one: {1} must not follow {0}")]
-    InvalidSegmentIds(u64, u64),
+    InvalidSegmentIds(SegmentId, SegmentId),
     #[error("SwitchingSetProtection must contain at least one system")]
     EmptySwitchingSetProtectionSystems,
     #[error("TimeBounds must have a start- or end-time")]

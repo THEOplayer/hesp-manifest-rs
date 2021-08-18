@@ -39,7 +39,7 @@ impl fmt::Display for TrackPath {
 impl FromStr for TrackPath {
     type Err = Error;
     fn from_str(input: &str) -> Result<Self> {
-        let (presentation_id, media_type,switching_set_id, track_id) = input
+        let (presentation_id, media_type, switching_set_id, track_id) = input
             .split('/')
             .collect_tuple()
             .ok_or_else(|| Error::InvalidTrackPath(input.to_owned()))?;
@@ -49,6 +49,24 @@ impl FromStr for TrackPath {
             switching_set_id.to_owned(),
             track_id.to_owned(),
         ))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_track_path() -> Result<()> {
+        let track_path: TrackPath = "main-pres/video/main/720p".parse()?;
+
+        assert_eq!(track_path, TrackPath::new(
+            "main-pres".to_owned(),
+            MediaType::Video,
+            "main".to_owned(),
+            "720p".to_owned(),
+        ));
+        Ok(())
     }
 }
 

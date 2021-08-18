@@ -43,7 +43,7 @@ pub enum Error {
     InvalidTrackTransmission { presentation:String, track:String, transmission:TransmissionType },
     #[error("Multicast presentation must have streamType 'live'")]
     InvalidMulticastStreamType,
-    #[error("Track path '{0}' must contain exactly 4 forward slashes")]
+    #[error("Track path '{0}' must contain exactly 3 forward slashes")]
     InvalidTrackPath(String),
     #[error("'{0}' is not a valid MediaType")]
     InvalidMediaType(String),

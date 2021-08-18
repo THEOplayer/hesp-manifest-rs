@@ -9,12 +9,14 @@ use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 
 use crate::*;
+use std::slice;
 
 pub trait Entity {
     type Id: Hash + Eq + Display + ?Sized;
     fn id(&self) -> &Self::Id;
 }
 
+//TODO use HashMap instead
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(try_from = "Vec<E>")]
 pub struct EntityVec<E: Entity>(pub(crate) Vec<E>);
@@ -62,6 +64,15 @@ impl<E: Entity> IntoIterator for EntityVec<E> {
     type Item = E;
     type IntoIter = IntoIter<E>;
     fn into_iter(self) -> Self::IntoIter { self.0.into_iter() }
+}
+
+impl<'a, E: Entity> IntoIterator for &'a mut EntityVec<E> {
+    type Item = &'a mut E;
+    type IntoIter = slice::IterMut<'a, E>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter_mut()
+    }
 }
 
 impl<E: Entity> AsMut<[E]> for EntityVec<E> {

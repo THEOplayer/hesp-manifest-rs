@@ -122,7 +122,7 @@ impl Presentation {
         let mut result = self;
         let id = result.id.clone();
         result.transmission = PresentationTransmission::Multicast(meta);
-        for set in &mut result.video[..] {
+        for set in &mut result.video {
             let set_id = set.id().to_owned();
             for track in set.tracks_mut() {
                 let path = TrackPath::new(
@@ -134,7 +134,7 @@ impl Presentation {
                 track.transmission = TrackTransmission::Multicast { toi_limits: toi_provider(path) }
             }
         }
-        for set in &mut result.audio[..] {
+        for set in &mut result.audio {
             let set_id = set.id().to_owned();
             for track in set.tracks_mut() {
                 let path = TrackPath::new(

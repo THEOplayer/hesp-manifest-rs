@@ -7,6 +7,7 @@ use serde::{Deserialize, Deserializer, Serialize};
 use serde_with::skip_serializing_none;
 
 use crate::*;
+use std::str::FromStr;
 
 #[derive(Serialize, Deserialize)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash, From, Into, Display)]

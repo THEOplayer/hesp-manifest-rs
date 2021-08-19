@@ -8,6 +8,15 @@ pub enum MediaType {
     Video,
 }
 
+impl MediaType {
+    pub fn content_type(self) -> &'static str {
+        match self {
+            MediaType::Audio => "audio/mp4",
+            MediaType::Video => "video/mp4",
+        }
+    }
+}
+
 impl fmt::Display for MediaType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {

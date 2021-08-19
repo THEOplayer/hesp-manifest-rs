@@ -13,7 +13,9 @@ pub struct AudioMimeType(String);
 pub struct VideoMimeType(String);
 
 impl Default for AudioMimeType {
-    fn default() -> Self { Self("audio/mp4".to_string()) }
+    fn default() -> Self {
+        Self(MediaType::Audio.content_type().to_owned())
+    }
 }
 
 impl TryFrom<String> for AudioMimeType {
@@ -28,7 +30,9 @@ impl TryFrom<String> for AudioMimeType {
 }
 
 impl AsRef<str> for AudioMimeType {
-    fn as_ref(&self) -> &str { &self.0 }
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
 }
 
 impl From<AudioMimeType> for String {
@@ -38,7 +42,9 @@ impl From<AudioMimeType> for String {
 }
 
 impl Default for VideoMimeType {
-    fn default() -> Self { Self("video/mp4".to_string()) }
+    fn default() -> Self {
+        Self(MediaType::Video.content_type().to_owned())
+    }
 }
 
 impl TryFrom<String> for VideoMimeType {
@@ -53,7 +59,9 @@ impl TryFrom<String> for VideoMimeType {
 }
 
 impl AsRef<str> for VideoMimeType {
-    fn as_ref(&self) -> &str { &self.0 }
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
 }
 
 impl From<VideoMimeType> for String {

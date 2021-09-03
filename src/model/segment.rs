@@ -24,7 +24,7 @@ pub struct Segment {
 pub struct Segments(Vec<Segment>);
 
 impl SegmentId {
-    fn next(self) -> Self {
+    pub fn next(self) -> Self {
         self + 1
     }
 }

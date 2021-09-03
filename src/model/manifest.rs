@@ -53,9 +53,9 @@ pub enum StreamType {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct LiveStream {
-    availability_duration: ScaledValue,
-    pub(crate) active_presentation: String,
-    time_source: Option<TimeSource>,
+    pub availability_duration: ScaledValue,
+    pub active_presentation: String,
+    pub time_source: Option<TimeSource>,
 }
 
 #[cfg(test)]

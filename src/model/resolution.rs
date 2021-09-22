@@ -13,5 +13,7 @@ pub struct Resolution {
 }
 
 impl Resolution {
-    fn default_sar() -> Number { Number::from(1) }
+    fn default_sar() -> Number {
+        Number::from(1)
+    }
 }

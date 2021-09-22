@@ -1,5 +1,5 @@
+use crate::{SegmentId, TransmissionType};
 use thiserror::Error;
-use crate::{TransmissionType, SegmentId};
 
 #[derive(Error, Debug)]
 pub enum Error {
@@ -40,7 +40,11 @@ pub enum Error {
     #[error("Presentation '{0}' must not contain multicast data")]
     InvalidUnicastPresentation(String),
     #[error("Presentation '{presentation}' is {transmission:?} therefore Track '{track}' must be {transmission:?}")]
-    InvalidTrackTransmission { presentation:String, track:String, transmission:TransmissionType },
+    InvalidTrackTransmission {
+        presentation: String,
+        track: String,
+        transmission: TransmissionType,
+    },
     #[error("Multicast presentation must have streamType 'live'")]
     InvalidMulticastStreamType,
     #[error("Track path '{0}' must contain exactly 3 forward slashes")]

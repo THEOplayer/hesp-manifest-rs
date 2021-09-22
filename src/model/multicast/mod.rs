@@ -1,10 +1,9 @@
 pub use manifest::MulticastManifest;
 pub use presentation::*;
-pub use transmission::TransmissionType;
 pub use track::*;
+pub use transmission::TransmissionType;
 
 mod manifest;
 mod presentation;
-mod transmission;
 mod track;
-
+mod transmission;

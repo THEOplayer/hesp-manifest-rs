@@ -2,8 +2,8 @@ use std::convert::{TryFrom, TryInto};
 
 use serde::{Deserialize, Serialize};
 
-use crate::*;
 use super::relative_base::validate_relative;
+use crate::*;
 use url::Url;
 
 #[derive(Debug, Deserialize, Clone, Serialize)]
@@ -12,7 +12,10 @@ pub struct ContinuationPattern(String);
 
 impl ContinuationPattern {
     pub fn segment(&self, id: SegmentId) -> RelativeBaseUrl {
-        self.as_ref().replace("{segmentId}", &id.to_string()).try_into().unwrap()
+        self.as_ref()
+            .replace("{segmentId}", &id.to_string())
+            .try_into()
+            .unwrap()
     }
 }
 
@@ -35,7 +38,9 @@ impl TryFrom<Url> for ContinuationPattern {
 }
 
 impl AsRef<str> for ContinuationPattern {
-    fn as_ref(&self) -> &str { &self.0 }
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
 }
 
 fn validate_segment_id(value: &str) -> Result<()> {

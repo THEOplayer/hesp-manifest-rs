@@ -41,10 +41,10 @@ impl SwitchingSetProtectionSystemVec {
 
 impl<'de> Deserialize<'de> for SwitchingSetProtectionSystemVec {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-        where D: serde::Deserializer<'de>
+    where
+        D: serde::Deserializer<'de>,
     {
         let vec = Vec::deserialize(deserializer)?;
         SwitchingSetProtectionSystemVec::new(vec).map_err(serde::de::Error::custom)
     }
 }
-

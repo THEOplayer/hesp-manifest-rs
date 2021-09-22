@@ -1,5 +1,5 @@
-use std::fmt;
 use crate::*;
+use std::fmt;
 use std::str::FromStr;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Copy)]
@@ -26,7 +26,6 @@ impl fmt::Display for MediaType {
     }
 }
 
-
 impl FromStr for MediaType {
     type Err = Error;
     fn from_str(input: &str) -> Result<Self> {
@@ -37,5 +36,3 @@ impl FromStr for MediaType {
         }
     }
 }
-
-

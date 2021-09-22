@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 type Inner = chrono::DateTime<FixedOffset>;
 
 #[derive(PartialEq, Deserialize, Serialize, Clone, Debug, Eq, Hash)]
-#[serde(try_from = "String", into="String")]
+#[serde(try_from = "String", into = "String")]
 pub struct DateTime(Inner);
 
 impl FromStr for DateTime {
@@ -20,12 +20,16 @@ impl FromStr for DateTime {
 
 impl TryFrom<String> for DateTime {
     type Error = ParseError;
-    fn try_from(value: String) -> ParseResult<Self> { value.parse() }
+    fn try_from(value: String) -> ParseResult<Self> {
+        value.parse()
+    }
 }
 
 impl Deref for DateTime {
     type Target = Inner;
-    fn deref(&self) -> &Inner { &self.0 }
+    fn deref(&self) -> &Inner {
+        &self.0
+    }
 }
 
 impl From<DateTime> for String {
@@ -47,9 +51,11 @@ mod tests {
 
         let date_time: DateTime = serde_json::from_str(input)?;
 
-        assert_eq!(*date_time, FixedOffset::east(0)
-            .ymd(2021, 3, 31)
-            .and_hms_micro(8, 0, 0, 0)
+        assert_eq!(
+            *date_time,
+            FixedOffset::east(0)
+                .ymd(2021, 3, 31)
+                .and_hms_micro(8, 0, 0, 0)
         );
         Ok(())
     }

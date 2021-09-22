@@ -1,4 +1,4 @@
-use std::convert::{TryInto, TryFrom};
+use std::convert::{TryFrom, TryInto};
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
@@ -9,7 +9,7 @@ use super::MetadataTrackDef;
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Clone, Deserialize)]
-#[serde(rename_all = "camelCase", try_from="MetadataSwitchingSetDef")]
+#[serde(rename_all = "camelCase", try_from = "MetadataSwitchingSetDef")]
 pub struct MetadataSwitchingSet {
     id: String,
     language: Option<Language>,
@@ -21,10 +21,11 @@ pub struct MetadataSwitchingSet {
     mime_type: String,
 }
 
-
 impl Entity for MetadataSwitchingSet {
     type Id = str;
-    fn id(&self) -> &str { &self.id }
+    fn id(&self) -> &str {
+        &self.id
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -58,9 +59,13 @@ impl TryFrom<MetadataSwitchingSetDef> for MetadataSwitchingSet {
             media_time_offset,
             mime_type,
         } = def;
-        let tracks = tracks.into_iter().map(|track|
-            MetadataTrack::new(track, continuation_pattern.as_ref(), media_time_offset)
-        ).collect::<Result<Vec<MetadataTrack>>>()?.try_into()?;
+        let tracks = tracks
+            .into_iter()
+            .map(|track| {
+                MetadataTrack::new(track, continuation_pattern.as_ref(), media_time_offset)
+            })
+            .collect::<Result<Vec<MetadataTrack>>>()?
+            .try_into()?;
         Ok(MetadataSwitchingSet {
             id,
             language,

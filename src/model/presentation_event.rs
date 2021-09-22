@@ -16,7 +16,9 @@ pub struct PresentationEvent {
 
 impl Entity for PresentationEvent {
     type Id = str;
-    fn id(&self) -> &str { &self.id }
+    fn id(&self) -> &str {
+        &self.id
+    }
 }
 
 #[derive(Deserialize, Debug, Serialize, Copy, Clone)]
@@ -39,8 +41,7 @@ enum PresentationEventEncoding {
 }
 
 impl Default for PresentationEventEncoding {
-    fn default() -> Self { Self::Identity }
+    fn default() -> Self {
+        Self::Identity
+    }
 }
-
-
-

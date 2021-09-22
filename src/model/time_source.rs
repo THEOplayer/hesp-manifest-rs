@@ -23,7 +23,10 @@ mod tests {
         }"#;
         let TimeSource { scheme, url } = serde_json::from_str(data)?;
 
-        assert_eq!(scheme, Uuid::parse_str("550e8400-e29b-41d4-a716-446655440000")?);
+        assert_eq!(
+            scheme,
+            Uuid::parse_str("550e8400-e29b-41d4-a716-446655440000")?
+        );
         assert_eq!(url, Url::parse("https://xxx")?);
         Ok(())
     }
@@ -41,7 +44,8 @@ mod tests {
         let error = result.unwrap_err().to_string();
         assert!(
             error.contains("UUID parsing failed"),
-            "Error did not indicate UUID parsing failed `{}`", error
+            "Error did not indicate UUID parsing failed `{}`",
+            error
         );
     }
 
@@ -58,7 +62,8 @@ mod tests {
         let error = result.unwrap_err().to_string();
         assert!(
             error.contains("expected a string representing an URL"),
-            "Error did not indicate URL parsing failed `{}`", error
+            "Error did not indicate URL parsing failed `{}`",
+            error
         );
     }
 }

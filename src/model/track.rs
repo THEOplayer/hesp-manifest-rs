@@ -11,7 +11,7 @@ pub trait Track: Entity<Id = str> {
     fn continuation_pattern(&self) -> &ContinuationPattern;
     fn set_continuation_pattern(&mut self, pattern: ContinuationPattern);
     fn average_bandwidth(&self) -> Option<f64>;
-    fn get_segment(&self, segment_id: SegmentId) -> Option<&Segment> {
+    fn segment(&self, segment_id: SegmentId) -> Option<&Segment> {
         self.segments()
             .iter()
             .find(|segment| segment.id() == segment_id)

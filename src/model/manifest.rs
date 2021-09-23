@@ -105,17 +105,11 @@ pub enum UnicastStreamType {
 
 impl StreamType for UnicastStreamType {
     fn is_live(&self) -> bool {
-        match self {
-            UnicastStreamType::Live(_) => true,
-            _ => false,
-        }
+        matches!(self, UnicastStreamType::Live(_))
     }
 
     fn is_vod(&self) -> bool {
-        match self {
-            UnicastStreamType::Vod => true,
-            _ => false,
-        }
+        matches!(self, UnicastStreamType::Vod)
     }
 
     fn active_presentation_id(&self) -> Option<&str> {

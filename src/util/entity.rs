@@ -21,7 +21,7 @@ pub trait Entity {
 #[serde(try_from = "Vec<E>")]
 pub struct EntityVec<E: Entity>(pub(crate) Vec<E>);
 
-impl <E: Entity> EntityVec<E> {
+impl<E: Entity> EntityVec<E> {
     pub fn get(&self, id: &E::Id) -> Option<&E> {
         self.iter().find(|entity| entity.id() == id)
     }
@@ -41,29 +41,41 @@ impl<E: Entity> TryFrom<Vec<E>> for EntityVec<E> {
 
 impl<E: Entity> Deref for EntityVec<E> {
     type Target = [E];
-    fn deref(&self) -> &[E] { &self.0 }
+    fn deref(&self) -> &[E] {
+        &self.0
+    }
 }
 
 impl<E: Entity> DerefMut for EntityVec<E> {
-    fn deref_mut(&mut self) -> &mut [E] { &mut self.0 }
+    fn deref_mut(&mut self) -> &mut [E] {
+        &mut self.0
+    }
 }
 
 impl<E: Entity> Borrow<[E]> for EntityVec<E> {
-    fn borrow(&self) -> &[E] { &self[..] }
+    fn borrow(&self) -> &[E] {
+        &self[..]
+    }
 }
 
 impl<E: Entity> BorrowMut<[E]> for EntityVec<E> {
-    fn borrow_mut(&mut self) -> &mut [E] { &mut self[..] }
+    fn borrow_mut(&mut self) -> &mut [E] {
+        &mut self[..]
+    }
 }
 
 impl<E: Entity> Default for EntityVec<E> {
-    fn default() -> Self { Self(Vec::new()) }
+    fn default() -> Self {
+        Self(Vec::new())
+    }
 }
 
 impl<E: Entity> IntoIterator for EntityVec<E> {
     type Item = E;
     type IntoIter = IntoIter<E>;
-    fn into_iter(self) -> Self::IntoIter { self.0.into_iter() }
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
 }
 
 impl<'a, E: Entity> IntoIterator for &'a mut EntityVec<E> {
@@ -76,9 +88,13 @@ impl<'a, E: Entity> IntoIterator for &'a mut EntityVec<E> {
 }
 
 impl<E: Entity> AsMut<[E]> for EntityVec<E> {
-    fn as_mut(&mut self) -> &mut [E] { self }
+    fn as_mut(&mut self) -> &mut [E] {
+        self
+    }
 }
 
 impl<E: Entity> AsRef<[E]> for EntityVec<E> {
-    fn as_ref(&self) -> &[E] { self }
+    fn as_ref(&self) -> &[E] {
+        self
+    }
 }

@@ -23,16 +23,31 @@ pub struct Presentation {
     transmission: PresentationTransmission,
 }
 
-
 impl Presentation {
-    pub fn audio(&self) -> &[AudioSwitchingSet] { &self.audio }
-    pub fn audio_mut(&mut self) -> &mut [AudioSwitchingSet] { &mut self.audio }
-    pub fn metadata(&self) -> &[MetadataSwitchingSet] { &self.metadata }
-    pub fn video(&self) -> &[VideoSwitchingSet] { &self.video }
-    pub fn video_mut(&mut self) -> &mut[VideoSwitchingSet] { &mut self.video }
-    pub fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
-    pub fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> { &mut self.base_url }
-    pub fn transmission(&self) -> &PresentationTransmission { &self.transmission }
+    pub fn audio(&self) -> &[AudioSwitchingSet] {
+        &self.audio
+    }
+    pub fn audio_mut(&mut self) -> &mut [AudioSwitchingSet] {
+        &mut self.audio
+    }
+    pub fn metadata(&self) -> &[MetadataSwitchingSet] {
+        &self.metadata
+    }
+    pub fn video(&self) -> &[VideoSwitchingSet] {
+        &self.video
+    }
+    pub fn video_mut(&mut self) -> &mut [VideoSwitchingSet] {
+        &mut self.video
+    }
+    pub fn base_url(&self) -> &Option<RelativeBaseUrl> {
+        &self.base_url
+    }
+    pub fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
+        &mut self.base_url
+    }
+    pub fn transmission(&self) -> &PresentationTransmission {
+        &self.transmission
+    }
     pub fn video_switching_set(&self, switching_set_id: &str) -> Option<&VideoSwitchingSet> {
         self.video.get(switching_set_id)
     }
@@ -40,7 +55,7 @@ impl Presentation {
         self.audio.get(switching_set_id)
     }
     pub fn is_multicast(&self) -> bool {
-        return self.transmission().get_type() == TransmissionType::Multicast
+        return self.transmission().get_type() == TransmissionType::Multicast;
     }
 }
 
@@ -59,16 +74,20 @@ impl Presentation {
         }
     }
 
-    pub fn video_tracks(&self) -> impl Iterator<Item=(TrackPath, &VideoTrack)> {
+    pub fn video_tracks(&self) -> impl Iterator<Item = (TrackPath, &VideoTrack)> {
         self.tracks(&self.video)
     }
 
-    pub fn audio_tracks(&self) -> impl Iterator<Item=(TrackPath, &AudioTrack)> {
+    pub fn audio_tracks(&self) -> impl Iterator<Item = (TrackPath, &AudioTrack)> {
         self.tracks(&self.audio)
     }
 
-    fn tracks<'a, S>(&'a self, selection_set: &'a [S]) -> impl Iterator<Item=(TrackPath, &'a S::MediaTrack)>
-        where S: MediaSwitchingSet
+    fn tracks<'a, S>(
+        &'a self,
+        selection_set: &'a [S],
+    ) -> impl Iterator<Item = (TrackPath, &'a S::MediaTrack)>
+    where
+        S: MediaSwitchingSet,
     {
         let presentation_id = self.id();
         selection_set.iter().flat_map(move |switching_set| {
@@ -85,11 +104,11 @@ impl Presentation {
         })
     }
 
-    pub fn video_tracks_mut(&mut self) -> impl Iterator<Item=&mut VideoTrack> {
+    pub fn video_tracks_mut(&mut self) -> impl Iterator<Item = &mut VideoTrack> {
         self.video.iter_mut().flat_map(|set| set.tracks_mut())
     }
 
-    pub fn audio_tracks_mut(&mut self) -> impl Iterator<Item=&mut AudioTrack> {
+    pub fn audio_tracks_mut(&mut self) -> impl Iterator<Item = &mut AudioTrack> {
         self.audio.iter_mut().flat_map(|set| set.tracks_mut())
     }
 
@@ -117,7 +136,8 @@ impl Presentation {
     }
 
     pub fn into_multicast<F>(self, meta: PresentationMulticastMetadata, mut toi_provider: F) -> Self
-        where F: FnMut(TrackPath) -> TransferObjectIdentifierLimits
+    where
+        F: FnMut(TrackPath) -> TransferObjectIdentifierLimits,
     {
         let mut result = self;
         let id = result.id.clone();
@@ -131,7 +151,9 @@ impl Presentation {
                     set_id.clone(),
                     track.id().to_owned(),
                 );
-                track.transmission = TrackTransmission::Multicast { toi_limits: toi_provider(path) }
+                track.transmission = TrackTransmission::Multicast {
+                    toi_limits: toi_provider(path),
+                }
             }
         }
         for set in &mut result.audio {
@@ -143,23 +165,30 @@ impl Presentation {
                     set_id.clone(),
                     track.id().to_owned(),
                 );
-                track.transmission = TrackTransmission::Multicast { toi_limits: toi_provider(path) }
+                track.transmission = TrackTransmission::Multicast {
+                    toi_limits: toi_provider(path),
+                }
             }
         }
         result
     }
-
 }
 
 impl Entity for Presentation {
     type Id = str;
-    fn id(&self) -> &str { &self.id }
+    fn id(&self) -> &str {
+        &self.id
+    }
 }
 
 impl Validate for Presentation {
     fn validate(&self) -> Result<()> {
-        for (_, track) in self.video_tracks() { self.validate_track(track)? }
-        for (_, track) in self.audio_tracks() { self.validate_track(track)? }
+        for (_, track) in self.video_tracks() {
+            self.validate_track(track)?
+        }
+        for (_, track) in self.audio_tracks() {
+            self.validate_track(track)?
+        }
         Ok(())
     }
 }

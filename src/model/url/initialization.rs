@@ -16,7 +16,10 @@ impl InitializationPattern {
         self.as_ref().replace("{initId}", "now").try_into().unwrap()
     }
     pub fn init_id(&self, init_id: u64) -> RelativeBaseUrl {
-        self.as_ref().replace("{initId}", &init_id.to_string()).try_into().unwrap()
+        self.as_ref()
+            .replace("{initId}", &init_id.to_string())
+            .try_into()
+            .unwrap()
     }
 }
 
@@ -39,7 +42,9 @@ impl TryFrom<Url> for InitializationPattern {
 }
 
 impl AsRef<str> for InitializationPattern {
-    fn as_ref(&self) -> &str { &self.0 }
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
 }
 
 fn validate_init_id(value: &str) -> Result<()> {

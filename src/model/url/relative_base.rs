@@ -38,11 +38,15 @@ impl TryFrom<String> for RelativeBaseUrl {
 }
 
 impl AsRef<str> for RelativeBaseUrl {
-    fn as_ref(&self) -> &str { &self.0 }
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
 }
 
 impl From<RelativeBaseUrl> for String {
-    fn from(value: RelativeBaseUrl) -> Self { value.0 }
+    fn from(value: RelativeBaseUrl) -> Self {
+        value.0
+    }
 }
 
 lazy_static! {

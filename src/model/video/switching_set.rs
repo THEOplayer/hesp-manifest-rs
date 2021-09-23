@@ -1,4 +1,4 @@
-use std::convert::{TryInto, TryFrom};
+use std::convert::{TryFrom, TryInto};
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
@@ -22,19 +22,31 @@ pub struct VideoSwitchingSet {
 
 impl Entity for VideoSwitchingSet {
     type Id = str;
-    fn id(&self) -> &str { &self.id }
+    fn id(&self) -> &str {
+        &self.id
+    }
 }
 
 impl SwitchingSet for VideoSwitchingSet {
     type Track = VideoTrack;
-    fn tracks(&self) -> &[VideoTrack] { &self.tracks }
-    fn track(&self, id: &str) -> Option<&VideoTrack> { self.tracks.get(id) }
-    fn tracks_mut(&mut self) -> &mut [VideoTrack] { &mut self.tracks }
-    fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
+    fn tracks(&self) -> &[VideoTrack] {
+        &self.tracks
+    }
+    fn track(&self, id: &str) -> Option<&VideoTrack> {
+        self.tracks.get(id)
+    }
+    fn tracks_mut(&mut self) -> &mut [VideoTrack] {
+        &mut self.tracks
+    }
+    fn base_url(&self) -> &Option<RelativeBaseUrl> {
+        &self.base_url
+    }
     fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
         &mut self.base_url
     }
-    fn mime_type(&self) -> &str { self.mime_type.as_ref() }
+    fn mime_type(&self) -> &str {
+        self.mime_type.as_ref()
+    }
 }
 
 impl MediaSwitchingSet for VideoSwitchingSet {
@@ -76,19 +88,31 @@ impl TryFrom<VideoSwitchingSetDef> for VideoSwitchingSet {
             label,
             media_time_offset,
             mime_type,
-            protection
+            protection,
         } = def;
-        let tracks = tracks.into_iter().map(|track|
-            VideoTrack::new(
-                track,
-                codecs.as_ref(),
-                continuation_pattern.as_ref(),
-                frame_rate,
-                initialization_pattern.as_ref(),
-                media_time_offset,
-            )
-        ).collect::<Result<Vec<VideoTrack>>>()?.try_into()?;
-        Ok(VideoSwitchingSet { id, tracks, align_id, base_url, label, mime_type, protection })
+        let tracks = tracks
+            .into_iter()
+            .map(|track| {
+                VideoTrack::new(
+                    track,
+                    codecs.as_ref(),
+                    continuation_pattern.as_ref(),
+                    frame_rate,
+                    initialization_pattern.as_ref(),
+                    media_time_offset,
+                )
+            })
+            .collect::<Result<Vec<VideoTrack>>>()?
+            .try_into()?;
+        Ok(VideoSwitchingSet {
+            id,
+            tracks,
+            align_id,
+            base_url,
+            label,
+            mime_type,
+            protection,
+        })
     }
 }
 

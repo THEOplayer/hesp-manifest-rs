@@ -1,6 +1,6 @@
+use crate::*;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use crate::*;
 
 validate_on_deserialize!(UnicastManifest);
 #[skip_serializing_none]
@@ -17,9 +17,15 @@ pub struct UnicastManifest {
 }
 
 impl UnicastManifest {
-    pub fn stream_type(&self) -> &StreamType { &self.stream_type }
-    pub fn presentations(&self) -> &[Presentation] { &self.presentations }
-    pub fn content_base_url(&self) -> &Option<RelativeBaseUrl> { &self.content_base_url }
+    pub fn stream_type(&self) -> &StreamType {
+        &self.stream_type
+    }
+    pub fn presentations(&self) -> &[Presentation] {
+        &self.presentations
+    }
+    pub fn content_base_url(&self) -> &Option<RelativeBaseUrl> {
+        &self.content_base_url
+    }
     pub fn presentation(&self, id: &str) -> Option<&Presentation> {
         self.presentations.iter().find(|p| p.id() == id)
     }
@@ -27,12 +33,18 @@ impl UnicastManifest {
 
 impl Validate for UnicastManifest {
     fn validate(&self) -> Result<()> {
-        if let StreamType::Live(LiveStream { active_presentation, .. }) = &self.stream_type {
+        if let StreamType::Live(LiveStream {
+            active_presentation,
+            ..
+        }) = &self.stream_type
+        {
             self.presentation(active_presentation)
                 .ok_or_else(|| Error::InvalidActivePresentationId(active_presentation.to_owned()))?
                 .validate_active()?;
         }
-        for presentation in self.presentations() { presentation.ensure_unicast()?; }
+        for presentation in self.presentations() {
+            presentation.ensure_unicast()?;
+        }
         Ok(())
     }
 }
@@ -89,7 +101,8 @@ mod tests {
         let error = result.unwrap_err().to_string();
         assert!(
             error.contains("Ids must be unique"),
-            "Error did not indicate duplicate presentation id `{}`", error
+            "Error did not indicate duplicate presentation id `{}`",
+            error
         );
         Ok(())
     }
@@ -117,9 +130,9 @@ mod tests {
         let error = result.unwrap_err().to_string();
         assert!(
             error.contains("has no currentTime"),
-            "Error did not indicate invalid active presentation `{}`", error
+            "Error did not indicate invalid active presentation `{}`",
+            error
         );
         Ok(())
     }
 }
-

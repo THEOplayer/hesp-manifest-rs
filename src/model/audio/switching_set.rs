@@ -1,4 +1,4 @@
-use std::convert::{TryInto, TryFrom};
+use std::convert::{TryFrom, TryInto};
 
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
@@ -9,7 +9,7 @@ use super::AudioTrackDef;
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Clone, Deserialize)]
-#[serde(rename_all = "camelCase", try_from="AudioSwitchingSetDef")]
+#[serde(rename_all = "camelCase", try_from = "AudioSwitchingSetDef")]
 pub struct AudioSwitchingSet {
     id: String,
     language: Language,
@@ -24,19 +24,31 @@ pub struct AudioSwitchingSet {
 
 impl Entity for AudioSwitchingSet {
     type Id = str;
-    fn id(&self) -> &str { &self.id }
+    fn id(&self) -> &str {
+        &self.id
+    }
 }
 
 impl SwitchingSet for AudioSwitchingSet {
     type Track = AudioTrack;
-    fn tracks(&self) -> &[AudioTrack] { &self.tracks }
-    fn track(&self, id: &str) -> Option<&AudioTrack> {self.tracks.get(id)}
-    fn tracks_mut(&mut self) -> &mut [AudioTrack] { &mut self.tracks }
-    fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
+    fn tracks(&self) -> &[AudioTrack] {
+        &self.tracks
+    }
+    fn track(&self, id: &str) -> Option<&AudioTrack> {
+        self.tracks.get(id)
+    }
+    fn tracks_mut(&mut self) -> &mut [AudioTrack] {
+        &mut self.tracks
+    }
+    fn base_url(&self) -> &Option<RelativeBaseUrl> {
+        &self.base_url
+    }
     fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
         &mut self.base_url
     }
-    fn mime_type(&self) -> &str { self.mime_type.as_ref() }
+    fn mime_type(&self) -> &str {
+        self.mime_type.as_ref()
+    }
 }
 
 impl MediaSwitchingSet for AudioSwitchingSet {
@@ -68,7 +80,9 @@ pub struct AudioSwitchingSetDef {
 }
 
 impl AudioSwitchingSet {
-    fn default_frame_rate() -> u64 { 1024 }
+    fn default_frame_rate() -> u64 {
+        1024
+    }
 }
 
 impl TryFrom<AudioSwitchingSetDef> for AudioSwitchingSet {
@@ -89,19 +103,23 @@ impl TryFrom<AudioSwitchingSetDef> for AudioSwitchingSet {
             media_time_offset,
             mime_type,
             protection,
-            sample_rate
+            sample_rate,
         } = def;
-        let tracks = tracks.into_iter().map(|track|
-            AudioTrack::new(
-                track,
-                codecs.as_ref(),
-                continuation_pattern.as_ref(),
-                frame_rate,
-                initialization_pattern.as_ref(),
-                media_time_offset,
-                sample_rate,
-            )
-        ).collect::<Result<Vec<AudioTrack>>>()?.try_into()?;
+        let tracks = tracks
+            .into_iter()
+            .map(|track| {
+                AudioTrack::new(
+                    track,
+                    codecs.as_ref(),
+                    continuation_pattern.as_ref(),
+                    frame_rate,
+                    initialization_pattern.as_ref(),
+                    media_time_offset,
+                    sample_rate,
+                )
+            })
+            .collect::<Result<Vec<AudioTrack>>>()?
+            .try_into()?;
         Ok(AudioSwitchingSet {
             id,
             language,
@@ -115,7 +133,6 @@ impl TryFrom<AudioSwitchingSetDef> for AudioSwitchingSet {
         })
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -141,8 +158,8 @@ mod tests {
         let error = result.unwrap_err().to_string();
         assert!(
             error.contains("must have codecs"),
-            "Error did not indicate missing codecs `{}`", error
+            "Error did not indicate missing codecs `{}`",
+            error
         );
     }
 }
-

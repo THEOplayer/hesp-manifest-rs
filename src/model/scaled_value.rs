@@ -25,7 +25,7 @@ impl ScaledValue {
 
 impl From<ScaledValue> for f64 {
     fn from(value: ScaledValue) -> Self {
-        let ScaledValue{value, scale} = value;
+        let ScaledValue { value, scale } = value;
         value as f64 / scale as f64
     }
 }

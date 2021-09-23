@@ -4,7 +4,10 @@ use crate::*;
 use url::Url;
 
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Copy)]
-#[serde(from = "Option<TransferObjectIdentifierLimits>", into = "Option<TransferObjectIdentifierLimits>")]
+#[serde(
+    from = "Option<TransferObjectIdentifierLimits>",
+    into = "Option<TransferObjectIdentifierLimits>"
+)]
 #[serde(rename = "toi_limits", rename_all = "camelCase")]
 pub enum TrackTransmission {
     Unicast,
@@ -17,7 +20,7 @@ impl From<Option<TransferObjectIdentifierLimits>> for TrackTransmission {
     fn from(input: Option<TransferObjectIdentifierLimits>) -> Self {
         match input {
             None => TrackTransmission::Unicast,
-            Some(toi_limits) => TrackTransmission::Multicast { toi_limits }
+            Some(toi_limits) => TrackTransmission::Multicast { toi_limits },
         }
     }
 }
@@ -26,7 +29,7 @@ impl From<TrackTransmission> for Option<TransferObjectIdentifierLimits> {
     fn from(input: TrackTransmission) -> Self {
         match input {
             TrackTransmission::Unicast => None,
-            TrackTransmission::Multicast { toi_limits } => Some(toi_limits)
+            TrackTransmission::Multicast { toi_limits } => Some(toi_limits),
         }
     }
 }
@@ -69,5 +72,4 @@ impl MulticastTrackInfo {
     pub fn toi_limits(&self) -> TransferObjectIdentifierLimits {
         self.toi_limits
     }
-
 }

@@ -24,7 +24,7 @@ pub struct MulticastManifest {
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash, Copy, Clone)]
 enum MulticastManifestVersion {
     #[serde(rename = "1.0.0-multicast")]
-    V1_0_0
+    V1_0_0,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy)]
@@ -34,13 +34,21 @@ pub enum MulticastStreamType {
 }
 
 impl MulticastManifest {
-    pub fn presentations(&self) -> &[Presentation] { &self.presentations }
+    pub fn presentations(&self) -> &[Presentation] {
+        &self.presentations
+    }
 
-    pub fn presentations_mut(&mut self) -> &mut [Presentation] { &mut self.presentations }
+    pub fn presentations_mut(&mut self) -> &mut [Presentation] {
+        &mut self.presentations
+    }
 
-    pub fn content_base_url(&self) -> &Option<RelativeBaseUrl> { &self.content_base_url }
+    pub fn content_base_url(&self) -> &Option<RelativeBaseUrl> {
+        &self.content_base_url
+    }
 
-    pub fn content_base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> { &mut self.content_base_url }
+    pub fn content_base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
+        &mut self.content_base_url
+    }
 
     pub fn presentation(&self, id: &str) -> Option<&Presentation> {
         self.presentations.iter().find(|p| p.id() == id)
@@ -50,7 +58,9 @@ impl MulticastManifest {
         multicast_tsi(self.presentation(presentation_id)?)
     }
 
-    pub fn all_toi_limits(&self) -> impl Iterator<Item=(TrackPath, TransferObjectIdentifierLimits)> + '_ {
+    pub fn all_toi_limits(
+        &self,
+    ) -> impl Iterator<Item = (TrackPath, TransferObjectIdentifierLimits)> + '_ {
         self.presentations.iter().flat_map(|presentation| {
             let video_toi = presentation.video_tracks().filter_map(multicast_toi);
             let audio_toi = presentation.audio_tracks().filter_map(multicast_toi);
@@ -59,10 +69,11 @@ impl MulticastManifest {
     }
 
     pub fn toi_limits(&self, path: &TrackPath) -> Option<TransferObjectIdentifierLimits> {
-        self.track_transmission(path).and_then(|transmission| match transmission {
-            TrackTransmission::Unicast => None,
-            TrackTransmission::Multicast { toi_limits } => Some(toi_limits),
-        })
+        self.track_transmission(path)
+            .and_then(|transmission| match transmission {
+                TrackTransmission::Unicast => None,
+                TrackTransmission::Multicast { toi_limits } => Some(toi_limits),
+            })
     }
 
     pub fn track_transmission(&self, path: &TrackPath) -> Option<TrackTransmission> {
@@ -79,28 +90,42 @@ impl MulticastManifest {
         })
     }
 
-    pub fn transport_session_ids(&self) -> impl Iterator<Item=u32> + '_ {
+    pub fn transport_session_ids(&self) -> impl Iterator<Item = u32> + '_ {
         self.presentations.iter().filter_map(multicast_tsi)
     }
 
-    pub fn track_info(&self, base_url: &Url) -> impl Iterator<Item=MulticastTrackInfo> + '_ {
+    pub fn track_info(&self, base_url: &Url) -> impl Iterator<Item = MulticastTrackInfo> + '_ {
         let manifest_url = self.content_base_url.resolve(base_url);
-        self.presentations.iter()
+        self.presentations
+            .iter()
             .filter_map(|presentation| match presentation.transmission() {
                 PresentationTransmission::Unicast => None,
-                PresentationTransmission::Multicast(data) => Some((presentation, data.transport_session_id()))
+                PresentationTransmission::Multicast(data) => {
+                    Some((presentation, data.transport_session_id()))
+                }
             })
             .flat_map(move |(presentation, tsi)| {
                 let presentation_id = presentation.id();
                 let presentation_url = presentation.base_url().resolve(&manifest_url);
-                let audio_info = track_info_for_selection_set(tsi, presentation.audio(), presentation_id, presentation_url.clone());
-                let video_info = track_info_for_selection_set(tsi, presentation.video(), presentation_id, presentation_url);
+                let audio_info = track_info_for_selection_set(
+                    tsi,
+                    presentation.audio(),
+                    presentation_id,
+                    presentation_url.clone(),
+                );
+                let video_info = track_info_for_selection_set(
+                    tsi,
+                    presentation.video(),
+                    presentation_id,
+                    presentation_url,
+                );
                 audio_info.chain(video_info)
             })
     }
 
     pub fn from_unicast<F>(manifest: UnicastManifest, presentation_transformer: F) -> Result<Self>
-        where F: FnMut(Presentation) -> Presentation
+    where
+        F: FnMut(Presentation) -> Presentation,
     {
         let UnicastManifest {
             creation_date,
@@ -108,14 +133,15 @@ impl MulticastManifest {
             manifest_version: _manifest_version,
             presentations,
             stream_type,
-            content_base_url
+            content_base_url,
         } = manifest;
         let live_data = if let StreamType::Live(live_data) = stream_type {
             live_data
         } else {
             return Err(Error::InvalidMulticastStreamType);
         };
-        let presentations = presentations.into_iter()
+        let presentations = presentations
+            .into_iter()
             .map(presentation_transformer)
             .collect::<Vec<Presentation>>()
             .try_into()?;
@@ -167,23 +193,25 @@ impl From<MulticastManifest> for UnicastManifest {
 fn multicast_tsi(presentation: &Presentation) -> Option<u32> {
     match presentation.transmission() {
         PresentationTransmission::Unicast => None,
-        PresentationTransmission::Multicast(data) =>
-            Some(data.transport_session_id())
+        PresentationTransmission::Multicast(data) => Some(data.transport_session_id()),
     }
 }
 
 fn multicast_toi<T: MediaTrack>(
-    (path, track): (TrackPath, &T)
+    (path, track): (TrackPath, &T),
 ) -> Option<(TrackPath, TransferObjectIdentifierLimits)> {
     match track.transmission() {
         TrackTransmission::Unicast => None,
-        &TrackTransmission::Multicast { toi_limits } => Some((path, toi_limits))
+        &TrackTransmission::Multicast { toi_limits } => Some((path, toi_limits)),
     }
 }
 
 fn track_info_for_selection_set<'a, S: MediaSwitchingSet>(
-    tsi: u32, selection_set: &'a [S], presentation_id: &'a str, presentation_url: Url,
-) -> impl Iterator<Item=MulticastTrackInfo> + 'a {
+    tsi: u32,
+    selection_set: &'a [S],
+    presentation_id: &'a str,
+    presentation_url: Url,
+) -> impl Iterator<Item = MulticastTrackInfo> + 'a {
     selection_set.iter().flat_map(move |switching_set| {
         let switching_set_url = switching_set.base_url().resolve(&presentation_url);
         let switching_set_id = switching_set.id();

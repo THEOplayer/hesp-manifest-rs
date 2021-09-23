@@ -12,7 +12,7 @@ pub struct UnicastManifest {
     pub(super) manifest_version: ManifestVersion,
     pub(super) presentations: EntityVec<Presentation>,
     #[serde(flatten)]
-    pub(super) stream_type: StreamType,
+    pub(super) stream_type: UnicastStreamType,
     pub(super) content_base_url: Option<RelativeBaseUrl>,
 }
 
@@ -33,7 +33,7 @@ impl UnicastManifest {
 
 impl Validate for UnicastManifest {
     fn validate(&self) -> Result<()> {
-        if let StreamType::Live(LiveStream {
+        if let UnicastStreamType::Live(LiveStream {
             active_presentation,
             ..
         }) = &self.stream_type
@@ -55,11 +55,41 @@ pub enum ManifestVersion {
     V1_0_0,
 }
 
+pub trait StreamType {
+    fn is_live(&self) -> bool;
+    fn is_vod(&self) -> bool;
+
+    fn active_presentation_id(&self) -> Option<&str>;
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "streamType", rename_all = "lowercase")]
-pub enum StreamType {
+pub enum UnicastStreamType {
     Live(LiveStream),
     Vod,
+}
+
+impl StreamType for UnicastStreamType {
+    fn is_live(&self) -> bool {
+        match self {
+            UnicastStreamType::Live(_) => true,
+            _ => false,
+        }
+    }
+
+    fn is_vod(&self) -> bool {
+        match self {
+            UnicastStreamType::Vod => true,
+            _ => false,
+        }
+    }
+
+    fn active_presentation_id(&self) -> Option<&str> {
+        match self {
+            UnicastStreamType::Live(live_data) => Some(&live_data.active_presentation),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

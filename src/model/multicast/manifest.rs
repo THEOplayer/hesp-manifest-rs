@@ -40,20 +40,6 @@ impl MulticastStreamType {
     }
 }
 
-impl StreamType for MulticastStreamType {
-    fn is_live(&self) -> bool {
-        true
-    }
-
-    fn is_vod(&self) -> bool {
-        false
-    }
-
-    fn active_presentation_id(&self) -> Option<&str> {
-        Some(&self.live_data().active_presentation)
-    }
-}
-
 impl From<MulticastStreamType> for UnicastStreamType {
     fn from(stream_type: MulticastStreamType) -> Self {
         match stream_type {
@@ -63,6 +49,15 @@ impl From<MulticastStreamType> for UnicastStreamType {
 }
 
 impl MulticastManifest {
+    pub fn active_presentation(&self) -> &Presentation {
+        self.presentation(&self.stream_type.live_data().active_presentation)
+            .unwrap()
+    }
+
+    pub fn stream_type(&self) -> &MulticastStreamType {
+        &self.stream_type
+    }
+
     pub fn transport_session_id(&self, presentation_id: &str) -> Option<u32> {
         multicast_tsi(self.presentation(presentation_id)?)
     }
@@ -166,12 +161,6 @@ impl MulticastManifest {
 }
 
 impl Manifest for MulticastManifest {
-    type StreamType = MulticastStreamType;
-
-    fn stream_type(&self) -> &Self::StreamType {
-        &self.stream_type
-    }
-
     fn presentations(&self) -> &[Presentation] {
         &self.presentations
     }

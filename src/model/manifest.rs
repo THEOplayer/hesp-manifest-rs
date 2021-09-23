@@ -16,18 +16,52 @@ pub struct UnicastManifest {
     pub(super) content_base_url: Option<RelativeBaseUrl>,
 }
 
-impl UnicastManifest {
-    pub fn stream_type(&self) -> &StreamType {
+pub trait Manifest {
+    type StreamType: StreamType;
+
+    fn stream_type(&self) -> &Self::StreamType;
+    fn presentations(&self) -> &[Presentation];
+    fn presentations_mut(&mut self) -> &mut [Presentation];
+    fn content_base_url(&self) -> Option<&RelativeBaseUrl>;
+    fn content_base_url_mut(&mut self) -> Option<&mut RelativeBaseUrl>;
+
+    fn presentation(&self, id: &str) -> Option<&Presentation> {
+        self.presentations().iter().find(|p| p.id() == id)
+    }
+
+    fn presentation_mut(&mut self, id: &str) -> Option<&mut Presentation> {
+        self.presentations_mut().iter_mut().find(|p| p.id() == id)
+    }
+
+    fn active_presentation(&self) -> Option<&Presentation> {
+        match self.stream_type().active_presentation_id() {
+            Some(id) => self.presentation(id),
+            None => None,
+        }
+    }
+}
+
+impl Manifest for UnicastManifest {
+    type StreamType = UnicastStreamType;
+
+    fn stream_type(&self) -> &Self::StreamType {
         &self.stream_type
     }
-    pub fn presentations(&self) -> &[Presentation] {
+
+    fn presentations(&self) -> &[Presentation] {
         &self.presentations
     }
-    pub fn content_base_url(&self) -> &Option<RelativeBaseUrl> {
-        &self.content_base_url
+
+    fn presentations_mut(&mut self) -> &mut [Presentation] {
+        &mut self.presentations
     }
-    pub fn presentation(&self, id: &str) -> Option<&Presentation> {
-        self.presentations.iter().find(|p| p.id() == id)
+
+    fn content_base_url(&self) -> Option<&RelativeBaseUrl> {
+        self.content_base_url.as_ref()
+    }
+
+    fn content_base_url_mut(&mut self) -> Option<&mut RelativeBaseUrl> {
+        self.content_base_url.as_mut()
     }
 }
 

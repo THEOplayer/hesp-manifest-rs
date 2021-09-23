@@ -63,26 +63,6 @@ impl From<MulticastStreamType> for UnicastStreamType {
 }
 
 impl MulticastManifest {
-    pub fn presentations(&self) -> &[Presentation] {
-        &self.presentations
-    }
-
-    pub fn presentations_mut(&mut self) -> &mut [Presentation] {
-        &mut self.presentations
-    }
-
-    pub fn content_base_url(&self) -> &Option<RelativeBaseUrl> {
-        &self.content_base_url
-    }
-
-    pub fn content_base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
-        &mut self.content_base_url
-    }
-
-    pub fn presentation(&self, id: &str) -> Option<&Presentation> {
-        self.presentations.iter().find(|p| p.id() == id)
-    }
-
     pub fn transport_session_id(&self, presentation_id: &str) -> Option<u32> {
         multicast_tsi(self.presentation(presentation_id)?)
     }
@@ -182,6 +162,30 @@ impl MulticastManifest {
             stream_type: MulticastStreamType::Live(live_data),
             content_base_url,
         })
+    }
+}
+
+impl Manifest for MulticastManifest {
+    type StreamType = MulticastStreamType;
+
+    fn stream_type(&self) -> &Self::StreamType {
+        &self.stream_type
+    }
+
+    fn presentations(&self) -> &[Presentation] {
+        &self.presentations
+    }
+
+    fn presentations_mut(&mut self) -> &mut [Presentation] {
+        &mut self.presentations
+    }
+
+    fn content_base_url(&self) -> Option<&RelativeBaseUrl> {
+        self.content_base_url.as_ref()
+    }
+
+    fn content_base_url_mut(&mut self) -> Option<&mut RelativeBaseUrl> {
+        self.content_base_url.as_mut()
     }
 }
 

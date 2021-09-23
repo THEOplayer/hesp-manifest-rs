@@ -12,7 +12,8 @@ pub struct VideoTrack {
     bandwidth: Number,
     resolution: Resolution,
     segments: Segments,
-    active_segment: Option<u64>,
+    #[serde(rename = "activeSegment")]
+    active_segment_id: Option<SegmentId>,
     active_sequence_number: Option<u64>,
     average_bandwidth: Option<Number>,
     base_url: Option<RelativeBaseUrl>,
@@ -34,8 +35,11 @@ impl Entity for VideoTrack {
 }
 
 impl Track for VideoTrack {
-    fn active_segment(&self) -> Option<u64> {
-        self.active_segment
+    fn active_segment(&self) -> Option<&Segment> {
+        match &self.active_segment_id {
+            Some(id) => self.segment(*id),
+            None => None,
+        }
     }
     fn segment_duration(&self) -> Option<ScaledValue> {
         self.segment_duration
@@ -93,7 +97,7 @@ impl VideoTrack {
             id,
             resolution,
             segments,
-            active_segment,
+            active_segment_id,
             active_sequence_number,
             average_bandwidth,
             base_url,
@@ -126,7 +130,7 @@ impl VideoTrack {
             id,
             resolution,
             segments,
-            active_segment,
+            active_segment_id,
             active_sequence_number,
             average_bandwidth,
             base_url,
@@ -149,7 +153,8 @@ pub(super) struct VideoTrackDef {
     id: String,
     resolution: Resolution,
     segments: Segments,
-    active_segment: Option<u64>,
+    #[serde(rename = "activeSegment")]
+    active_segment_id: Option<SegmentId>,
     active_sequence_number: Option<u64>,
     average_bandwidth: Option<Number>,
     base_url: Option<RelativeBaseUrl>,

@@ -1,5 +1,5 @@
 use std::borrow::Borrow;
-use std::ops::{Add, Deref, Sub};
+use std::ops::{Add, AddAssign, Deref, Sub, SubAssign};
 
 use derive_more::{Display, From, Into};
 use itertools::Itertools;
@@ -98,13 +98,25 @@ impl Segment {
 impl Add<u32> for SegmentId {
     type Output = SegmentId;
     fn add(self, rhs: u32) -> Self {
-        (u32::from(self) + rhs).into()
+        SegmentId(self.0 + rhs)
     }
 }
 
 impl Sub<u32> for SegmentId {
     type Output = SegmentId;
     fn sub(self, rhs: u32) -> Self {
-        (u32::from(self) - rhs).into()
+        SegmentId(self.0 - rhs)
+    }
+}
+
+impl AddAssign<u32> for SegmentId {
+    fn add_assign(&mut self, rhs: u32) {
+        self.0 += rhs
+    }
+}
+
+impl SubAssign<u32> for SegmentId {
+    fn sub_assign(&mut self, rhs: u32) {
+        self.0 -= rhs
     }
 }

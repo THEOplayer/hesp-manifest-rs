@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::*;
 
 pub trait Track: Entity<Id = str> {
-    fn active_segment(&self) -> Option<u64>;
+    fn active_segment(&self) -> Option<&Segment>;
     fn segment_duration(&self) -> Option<ScaledValue>;
     fn segments(&self) -> &[Segment];
     fn base_url(&self) -> &Option<RelativeBaseUrl>;
@@ -11,19 +11,16 @@ pub trait Track: Entity<Id = str> {
     fn continuation_pattern(&self) -> &ContinuationPattern;
     fn set_continuation_pattern(&mut self, pattern: ContinuationPattern);
     fn average_bandwidth(&self) -> Option<f64>;
-    fn get_segment(&self, segment_id: SegmentId) -> Option<&Segment> {
+    fn segment(&self, segment_id: SegmentId) -> Option<&Segment> {
         self.segments()
             .iter()
             .find(|segment| segment.id() == segment_id)
     }
-    fn get_segment_duration(&self, segment_id: SegmentId) -> ScaledValue {
-        self.segment_duration()
-            .or_else(|| {
-                self.get_segment(segment_id)
-                    .and_then(|segment| segment.duration())
-            })
-            .unwrap_or_else(|| ScaledValue::new(20))
-        //TODO should panic instead of returning 20 secs
+    fn duration_for_segment(&self, segment_id: SegmentId) -> Option<ScaledValue> {
+        self.segment_duration().or_else(|| {
+            self.segment(segment_id)
+                .map(|segment| segment.duration().unwrap())
+        })
     }
 }
 

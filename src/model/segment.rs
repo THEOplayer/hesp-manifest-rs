@@ -95,17 +95,23 @@ impl Segment {
     }
 }
 
-impl Add<u32> for SegmentId {
+impl<T> Add<T> for SegmentId
+where
+    T: Into<SegmentId>,
+{
     type Output = SegmentId;
-    fn add(self, rhs: u32) -> Self {
-        (u32::from(self) + rhs).into()
+    fn add(self, rhs: T) -> Self {
+        SegmentId(self.0 + rhs.into().0)
     }
 }
 
-impl Sub<u32> for SegmentId {
+impl<T> Sub<T> for SegmentId
+where
+    T: Into<SegmentId>,
+{
     type Output = SegmentId;
-    fn sub(self, rhs: u32) -> Self {
-        (u32::from(self) - rhs).into()
+    fn sub(self, rhs: T) -> Self {
+        SegmentId(self.0 - rhs.into().0)
     }
 }
 

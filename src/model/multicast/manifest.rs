@@ -15,9 +15,8 @@ pub struct MulticastManifest {
     fallback_poll_rate: Number,
     manifest_version: MulticastManifestVersion,
     presentations: EntityVec<Presentation>,
-    stream_type: MulticastStreamType,
     #[serde(flatten)]
-    live_data: LiveStream,
+    stream_type: MulticastStreamType,
     content_base_url: Option<RelativeBaseUrl>,
 }
 
@@ -27,31 +26,36 @@ enum MulticastManifestVersion {
     V1_0_0,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum MulticastStreamType {
-    Live,
+    Live(LiveStream),
+}
+
+impl MulticastStreamType {
+    fn live_data(&self) -> &LiveStream {
+        match &self {
+            MulticastStreamType::Live(live_data) => live_data,
+        }
+    }
+}
+
+impl From<MulticastStreamType> for UnicastStreamType {
+    fn from(stream_type: MulticastStreamType) -> Self {
+        match stream_type {
+            MulticastStreamType::Live(data) => UnicastStreamType::Live(data),
+        }
+    }
 }
 
 impl MulticastManifest {
-    pub fn presentations(&self) -> &[Presentation] {
-        &self.presentations
+    pub fn active_presentation(&self) -> &Presentation {
+        self.presentation(&self.stream_type.live_data().active_presentation)
+            .unwrap()
     }
 
-    pub fn presentations_mut(&mut self) -> &mut [Presentation] {
-        &mut self.presentations
-    }
-
-    pub fn content_base_url(&self) -> &Option<RelativeBaseUrl> {
-        &self.content_base_url
-    }
-
-    pub fn content_base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
-        &mut self.content_base_url
-    }
-
-    pub fn presentation(&self, id: &str) -> Option<&Presentation> {
-        self.presentations.iter().find(|p| p.id() == id)
+    pub fn stream_type(&self) -> &MulticastStreamType {
+        &self.stream_type
     }
 
     pub fn transport_session_id(&self, presentation_id: &str) -> Option<u32> {
@@ -135,7 +139,7 @@ impl MulticastManifest {
             stream_type,
             content_base_url,
         } = manifest;
-        let live_data = if let StreamType::Live(live_data) = stream_type {
+        let live_data = if let UnicastStreamType::Live(live_data) = stream_type {
             live_data
         } else {
             return Err(Error::InvalidMulticastStreamType);
@@ -150,16 +154,33 @@ impl MulticastManifest {
             fallback_poll_rate,
             manifest_version: MulticastManifestVersion::V1_0_0,
             presentations,
-            stream_type: MulticastStreamType::Live,
-            live_data,
+            stream_type: MulticastStreamType::Live(live_data),
             content_base_url,
         })
     }
 }
 
+impl Manifest for MulticastManifest {
+    fn presentations(&self) -> &[Presentation] {
+        &self.presentations
+    }
+
+    fn presentations_mut(&mut self) -> &mut [Presentation] {
+        &mut self.presentations
+    }
+
+    fn content_base_url(&self) -> Option<&RelativeBaseUrl> {
+        self.content_base_url.as_ref()
+    }
+
+    fn content_base_url_mut(&mut self) -> Option<&mut RelativeBaseUrl> {
+        self.content_base_url.as_mut()
+    }
+}
+
 impl Validate for MulticastManifest {
     fn validate(&self) -> Result<()> {
-        let active_id = &self.live_data.active_presentation;
+        let active_id = &self.stream_type.live_data().active_presentation;
         self.presentation(active_id)
             .ok_or_else(|| Error::InvalidActivePresentationId(active_id.to_owned()))?
             .validate_active()
@@ -172,7 +193,7 @@ impl From<MulticastManifest> for UnicastManifest {
             creation_date,
             fallback_poll_rate,
             mut presentations,
-            live_data,
+            stream_type,
             content_base_url,
             ..
         } = input;
@@ -184,7 +205,7 @@ impl From<MulticastManifest> for UnicastManifest {
             fallback_poll_rate,
             manifest_version: ManifestVersion::V1_0_0,
             presentations,
-            stream_type: StreamType::Live(live_data),
+            stream_type: stream_type.into(),
             content_base_url,
         }
     }

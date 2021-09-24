@@ -30,8 +30,8 @@ impl Entity for MetadataTrack {
 
 impl Track for MetadataTrack {
     fn active_segment(&self) -> Option<&Segment> {
-        match &self.active_segment_id {
-            Some(id) => self.segment(*id),
+        match self.active_segment_id {
+            Some(id) => self.segment(id),
             None => None,
         }
     }

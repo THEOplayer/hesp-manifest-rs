@@ -37,8 +37,8 @@ impl Entity for AudioTrack {
 
 impl Track for AudioTrack {
     fn active_segment(&self) -> Option<&Segment> {
-        match &self.active_segment_id {
-            Some(id) => self.segment(*id),
+        match self.active_segment_id {
+            Some(id) => self.segment(id),
             None => None,
         }
     }

@@ -36,8 +36,8 @@ impl Entity for VideoTrack {
 
 impl Track for VideoTrack {
     fn active_segment(&self) -> Option<&Segment> {
-        match &self.active_segment_id {
-            Some(id) => self.segment(*id),
+        match self.active_segment_id {
+            Some(id) => self.segment(id),
             None => None,
         }
     }

@@ -95,40 +95,28 @@ impl Segment {
     }
 }
 
-impl<T> Add<T> for SegmentId
-where
-    T: Into<SegmentId>,
-{
+impl Add<u32> for SegmentId {
     type Output = SegmentId;
-    fn add(self, rhs: T) -> Self {
-        SegmentId(self.0 + rhs.into().0)
+    fn add(self, rhs: u32) -> Self {
+        SegmentId(self.0 + rhs)
     }
 }
 
-impl<T> Sub<T> for SegmentId
-where
-    T: Into<SegmentId>,
-{
+impl Sub<u32> for SegmentId {
     type Output = SegmentId;
-    fn sub(self, rhs: T) -> Self {
-        SegmentId(self.0 - rhs.into().0)
+    fn sub(self, rhs: u32) -> Self {
+        SegmentId(self.0 - rhs)
     }
 }
 
-impl<T> AddAssign<T> for SegmentId
-where
-    T: Into<SegmentId>,
-{
-    fn add_assign(&mut self, rhs: T) {
-        self.0 += rhs.into().0
+impl AddAssign<u32> for SegmentId {
+    fn add_assign(&mut self, rhs: u32) {
+        self.0 += rhs
     }
 }
 
-impl<T> SubAssign<T> for SegmentId
-where
-    T: Into<SegmentId>,
-{
-    fn sub_assign(&mut self, rhs: T) {
-        self.0 -= rhs.into().0
+impl SubAssign<u32> for SegmentId {
+    fn sub_assign(&mut self, rhs: u32) {
+        self.0 -= rhs
     }
 }

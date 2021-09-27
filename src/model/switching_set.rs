@@ -12,7 +12,7 @@ pub trait SwitchingSet: Entity<Id = str> {
     fn mime_type(&self) -> &str;
 }
 
-pub trait MediaSwitchingSet: SwitchingSet<Track = Self::MediaTrack> {
+pub trait MediaSwitchingSet: SwitchingSet<Track = <Self as MediaSwitchingSet>::MediaTrack> {
     type MediaTrack: MediaTrack;
     const MEDIA_TYPE: MediaType;
 }

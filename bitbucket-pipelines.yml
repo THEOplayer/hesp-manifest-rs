@@ -1,15 +1,52 @@
-image: rustlang/rust:nightly
+image:
+  name: registry.theoplayer.com/rust:1.55
+  username: $THEO_DOCKER_USERNAME
+  password: $THEO_DOCKER_PASSWORD
+  email: docker@theoplayer.com
+
+definitions:
+  caches:
+    cargo: $CARGO_HOME
+    target: target
+  steps:
+    - step: &build
+        name: Build
+        caches:
+          - cargo
+          - target
+        script:
+          - cargo build --workspace --release --all-targets
+    - step: &test
+        name: Test
+        caches:
+          - cargo
+          - target
+        script:
+          - cargo test --release --no-fail-fast --all-targets --workspace -- --nocapture --test
+    - step: &checks
+        name: Checks
+        caches:
+          - cargo
+          - target
+        script:
+          - cargo clippy --release --all-targets --workspace -- -D warnings
+          - cargo fmt --all -- --check
 
 pipelines:
   default:
-    - step:
-        caches:
-          - cargo
-          - rust-target
-        script:
-          - echo "Build project"  ; cargo build --release
-          - echo "Run unit tests" ; cargo test --release -v --no-fail-fast -- --nocapture --test
-definitions:
-  caches:
-    cargo: /usr/local/cargo # CARGO_HOME
-    rust-target: $BITBUCKET_CLONE_DIR/target
+    - step: *build
+    - step: *test
+  pull-requests:
+    '**':
+      - step: *checks
+  tags:
+    v*:
+      - step: *build
+      - step: *checks
+      - step:
+          name: Publish
+          caches:
+            - cargo
+            - target
+          script:
+            - cargo publish

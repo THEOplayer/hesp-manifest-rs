@@ -68,6 +68,6 @@ mod tests {
 
         assert!(result.is_err());
         let error = result.unwrap_err().to_string();
-        assert_eq!(error.to_string(), "input contains invalid characters")
+        assert_eq!(error, "input contains invalid characters")
     }
 }

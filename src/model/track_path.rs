@@ -1,7 +1,7 @@
 use crate::*;
+use itertools::Itertools;
 use std::fmt;
 use std::str::FromStr;
-use itertools::Itertools;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct TrackPath {
@@ -18,19 +18,33 @@ impl TrackPath {
         switching_set_id: String,
         track_id: String,
     ) -> Self {
-        Self { presentation_id, media_type, switching_set_id, track_id }
+        Self {
+            presentation_id,
+            media_type,
+            switching_set_id,
+            track_id,
+        }
     }
 
-    pub fn presentation_id(&self) -> &str { &self.presentation_id }
-    pub fn media_type(&self) -> MediaType { self.media_type }
-    pub fn switching_set_id(&self) -> &str { &self.switching_set_id }
-    pub fn track_id(&self) -> &str { &self.track_id }
+    pub fn presentation_id(&self) -> &str {
+        &self.presentation_id
+    }
+    pub fn media_type(&self) -> MediaType {
+        self.media_type
+    }
+    pub fn switching_set_id(&self) -> &str {
+        &self.switching_set_id
+    }
+    pub fn track_id(&self) -> &str {
+        &self.track_id
+    }
 }
 
 impl fmt::Display for TrackPath {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
-            f, "{}/{}/{}/{}",
+            f,
+            "{}/{}/{}/{}",
             self.presentation_id, self.media_type, self.switching_set_id, self.track_id,
         )
     }
@@ -60,15 +74,15 @@ mod tests {
     fn parse_track_path() -> Result<()> {
         let track_path: TrackPath = "main-pres/video/main/720p".parse()?;
 
-        assert_eq!(track_path, TrackPath::new(
-            "main-pres".to_owned(),
-            MediaType::Video,
-            "main".to_owned(),
-            "720p".to_owned(),
-        ));
+        assert_eq!(
+            track_path,
+            TrackPath::new(
+                "main-pres".to_owned(),
+                MediaType::Video,
+                "main".to_owned(),
+                "720p".to_owned(),
+            )
+        );
         Ok(())
     }
 }
-
-
-

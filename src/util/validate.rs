@@ -10,7 +10,8 @@ macro_rules! validate_on_deserialize {
     ( $type:ident ) => {
         impl<'de> Deserialize<'de> for $type {
             fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-                where D: serde::Deserializer<'de>
+            where
+                D: serde::Deserializer<'de>,
             {
                 let object = Self::deserialize(deserializer)?;
                 object.validate().map_err(serde::de::Error::custom)?;
@@ -19,7 +20,10 @@ macro_rules! validate_on_deserialize {
         }
 
         impl Serialize for $type {
-            fn serialize<S: serde::Serializer>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error> {
+            fn serialize<S: serde::Serializer>(
+                &self,
+                serializer: S,
+            ) -> std::result::Result<S::Ok, S::Error> {
                 Self::serialize(self, serializer)
             }
         }

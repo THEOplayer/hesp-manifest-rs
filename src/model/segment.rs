@@ -1,5 +1,5 @@
 use std::borrow::Borrow;
-use std::ops::{Deref, Sub, Add};
+use std::ops::{Add, AddAssign, Deref, Sub, SubAssign};
 
 use derive_more::{Display, From, Into};
 use itertools::Itertools;
@@ -8,8 +8,21 @@ use serde_with::skip_serializing_none;
 
 use crate::*;
 
-#[derive(Serialize, Deserialize)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash, From, Into, Display)]
+#[derive(
+    Serialize,
+    Deserialize,
+    Debug,
+    Clone,
+    Copy,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Hash,
+    From,
+    Into,
+    Display,
+)]
 pub struct SegmentId(u32);
 
 #[skip_serializing_none]
@@ -31,7 +44,8 @@ impl SegmentId {
 
 impl Segments {
     fn new(vec: Vec<Segment>) -> Result<Self> {
-        let jump = vec.iter()
+        let jump = vec
+            .iter()
             .map(Segment::id)
             .tuple_windows()
             .find(|&(a, b)| a.next() != b);
@@ -52,15 +66,21 @@ impl<'de> Deserialize<'de> for Segments {
 
 impl Deref for Segments {
     type Target = [Segment];
-    fn deref(&self) -> &[Segment] { &self.0 }
+    fn deref(&self) -> &[Segment] {
+        &self.0
+    }
 }
 
 impl Borrow<[Segment]> for Segments {
-    fn borrow(&self) -> &[Segment] { &self.0 }
+    fn borrow(&self) -> &[Segment] {
+        &self.0
+    }
 }
 
 impl Default for Segments {
-    fn default() -> Self { Self(Vec::new()) }
+    fn default() -> Self {
+        Self(Vec::new())
+    }
 }
 
 impl Segment {
@@ -78,13 +98,25 @@ impl Segment {
 impl Add<u32> for SegmentId {
     type Output = SegmentId;
     fn add(self, rhs: u32) -> Self {
-        (u32::from(self) + rhs).into()
+        SegmentId(self.0 + rhs)
     }
 }
 
 impl Sub<u32> for SegmentId {
     type Output = SegmentId;
     fn sub(self, rhs: u32) -> Self {
-        (u32::from(self) - rhs).into()
+        SegmentId(self.0 - rhs)
+    }
+}
+
+impl AddAssign<u32> for SegmentId {
+    fn add_assign(&mut self, rhs: u32) {
+        self.0 += rhs
+    }
+}
+
+impl SubAssign<u32> for SegmentId {
+    fn sub_assign(&mut self, rhs: u32) {
+        self.0 -= rhs
     }
 }

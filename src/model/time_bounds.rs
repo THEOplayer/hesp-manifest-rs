@@ -16,7 +16,9 @@ pub struct TimeBounds {
 
 impl TimeBounds {
     const DEFAULT_SCALE: u64 = 1;
-    pub fn default_scale() -> u64 { Self::DEFAULT_SCALE }
+    pub fn default_scale() -> u64 {
+        Self::DEFAULT_SCALE
+    }
 
     pub fn duration(self) -> Option<ScaledValue> {
         Some(ScaledValue {
@@ -31,9 +33,14 @@ impl Validate for TimeBounds {
         if self.start_time.is_none() && self.end_time.is_none() {
             return Err(Error::EmptyTimeBounds);
         }
-        if let TimeBounds { start_time: Some(start), end_time: Some(end), .. } = *self {
+        if let TimeBounds {
+            start_time: Some(start),
+            end_time: Some(end),
+            ..
+        } = *self
+        {
             if start >= end {
-                return Err(Error::ReverseTimeBounds{start, end});
+                return Err(Error::ReverseTimeBounds { start, end });
             }
         }
         Ok(())
@@ -53,7 +60,8 @@ mod tests {
         let error = result.unwrap_err().to_string();
         assert!(
             error.contains("TimeBounds must have a start- or end-time"),
-            "Error did not indicate the need for start and end `{}`", error
+            "Error did not indicate the need for start and end `{}`",
+            error
         );
     }
 

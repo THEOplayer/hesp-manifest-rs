@@ -10,7 +10,8 @@ use crate::*;
 pub struct MetadataTrack {
     id: String,
     segments: Segments,
-    active_segment: Option<u64>,
+    #[serde(rename = "activeSegment")]
+    active_segment_id: Option<SegmentId>,
     average_bandwidth: Option<Number>,
     bandwidth: Option<Number>,
     base_url: Option<RelativeBaseUrl>,
@@ -28,8 +29,11 @@ impl Entity for MetadataTrack {
 }
 
 impl Track for MetadataTrack {
-    fn active_segment(&self) -> Option<u64> {
-        self.active_segment
+    fn active_segment(&self) -> Option<&Segment> {
+        match self.active_segment_id {
+            Some(id) => self.segment(id),
+            None => None,
+        }
     }
     fn segment_duration(&self) -> Option<ScaledValue> {
         self.segment_duration
@@ -64,7 +68,7 @@ impl MetadataTrack {
             bandwidth,
             id,
             segments,
-            active_segment,
+            active_segment_id,
             average_bandwidth,
             base_url,
             continuation_pattern,
@@ -83,7 +87,7 @@ impl MetadataTrack {
             bandwidth,
             id,
             segments,
-            active_segment,
+            active_segment_id,
             average_bandwidth,
             base_url,
             continuation_pattern,
@@ -99,7 +103,8 @@ impl MetadataTrack {
 pub(super) struct MetadataTrackDef {
     id: String,
     segments: Segments,
-    active_segment: Option<u64>,
+    #[serde(rename = "activeSegment")]
+    active_segment_id: Option<SegmentId>,
     average_bandwidth: Option<Number>,
     bandwidth: Option<Number>,
     base_url: Option<RelativeBaseUrl>,

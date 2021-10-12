@@ -1,8 +1,8 @@
 use serde::{self, Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::*;
 use crate::model::track::validate_segments;
+use crate::*;
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Clone)]
@@ -11,7 +11,8 @@ pub struct AudioTrack {
     bandwidth: Number,
     id: String,
     segments: Segments,
-    active_segment: Option<u64>,
+    #[serde(rename = "activeSegment")]
+    active_segment_id: Option<SegmentId>,
     active_sequence_number: Option<u64>,
     average_bandwidth: Option<Number>,
     base_url: Option<RelativeBaseUrl>,
@@ -29,16 +30,33 @@ pub struct AudioTrack {
 
 impl Entity for AudioTrack {
     type Id = str;
-    fn id(&self) -> &str { &self.id }
+    fn id(&self) -> &str {
+        &self.id
+    }
 }
 
 impl Track for AudioTrack {
-    fn active_segment(&self) -> Option<u64> { self.active_segment }
-    fn segment_duration(&self) -> Option<ScaledValue> { self.segment_duration }
-    fn segments(&self) -> &[Segment] { &self.segments }
-    fn base_url(&self) -> &Option<RelativeBaseUrl> { &self.base_url }
-    fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> { &mut self.base_url }
-    fn continuation_pattern(&self) -> &ContinuationPattern { &self.continuation_pattern }
+    fn active_segment(&self) -> Option<&Segment> {
+        match self.active_segment_id {
+            Some(id) => self.segment(id),
+            None => None,
+        }
+    }
+    fn segment_duration(&self) -> Option<ScaledValue> {
+        self.segment_duration
+    }
+    fn segments(&self) -> &[Segment] {
+        &self.segments
+    }
+    fn base_url(&self) -> &Option<RelativeBaseUrl> {
+        &self.base_url
+    }
+    fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
+        &mut self.base_url
+    }
+    fn continuation_pattern(&self) -> &ContinuationPattern {
+        &self.continuation_pattern
+    }
     fn set_continuation_pattern(&mut self, pattern: ContinuationPattern) {
         self.continuation_pattern = pattern
     }
@@ -49,19 +67,24 @@ impl Track for AudioTrack {
 
 impl MediaTrack for AudioTrack {
     const MEDIA_TYPE: MediaType = MediaType::Audio;
-    fn bandwidth(&self) -> f64 { self.bandwidth.as_f64().unwrap() }
-    fn initialization_pattern(&self) -> &InitializationPattern { &self.initialization_pattern }
-    fn set_initialization_pattern(&mut self, pattern: InitializationPattern) {
-       self.initialization_pattern = pattern;
+    fn bandwidth(&self) -> f64 {
+        self.bandwidth.as_f64().unwrap()
     }
-    fn active_sequence_number(&self) -> Option<u64> { self.active_sequence_number }
-    fn transmission(&self) -> &TrackTransmission { &self.transmission }
+    fn initialization_pattern(&self) -> &InitializationPattern {
+        &self.initialization_pattern
+    }
+    fn set_initialization_pattern(&mut self, pattern: InitializationPattern) {
+        self.initialization_pattern = pattern;
+    }
+    fn active_sequence_number(&self) -> Option<u64> {
+        self.active_sequence_number
+    }
+    fn transmission(&self) -> &TrackTransmission {
+        &self.transmission
+    }
 }
 
 impl AudioTrack {
-
-
-
     pub(super) fn new(
         def: AudioTrackDef,
         default_codecs: Option<&String>,
@@ -75,7 +98,7 @@ impl AudioTrack {
             bandwidth,
             id,
             segments,
-            active_segment,
+            active_segment_id,
             active_sequence_number,
             average_bandwidth,
             base_url,
@@ -88,18 +111,33 @@ impl AudioTrack {
             media_time_offset,
             sample_rate,
             segment_duration,
-            transmission
+            transmission,
         } = def;
         default!(id, codecs, default_codecs, Error::MissingCodecs);
-        default!(id, continuation_pattern, default_continuation_pattern, Error::MissingContinuationPattern);
-        default!(id, initialization_pattern, default_initialization_pattern, Error::MissingInitializationPattern);
-        default!(id, sample_rate, default_sample_rate, Error::MissingSampleRate);
+        default!(
+            id,
+            continuation_pattern,
+            default_continuation_pattern,
+            Error::MissingContinuationPattern
+        );
+        default!(
+            id,
+            initialization_pattern,
+            default_initialization_pattern,
+            Error::MissingInitializationPattern
+        );
+        default!(
+            id,
+            sample_rate,
+            default_sample_rate,
+            Error::MissingSampleRate
+        );
         validate_segments(&id, segment_duration, &segments)?;
         Ok(AudioTrack {
             bandwidth,
             id,
             segments,
-            active_segment,
+            active_segment_id,
             active_sequence_number,
             average_bandwidth,
             base_url,
@@ -123,7 +161,8 @@ pub(super) struct AudioTrackDef {
     bandwidth: Number,
     id: String,
     segments: Segments,
-    active_segment: Option<u64>,
+    #[serde(rename = "activeSegment")]
+    active_segment_id: Option<SegmentId>,
     active_sequence_number: Option<u64>,
     average_bandwidth: Option<Number>,
     base_url: Option<RelativeBaseUrl>,
@@ -141,5 +180,7 @@ pub(super) struct AudioTrackDef {
 
 impl Entity for AudioTrackDef {
     type Id = str;
-    fn id(&self) -> &str { &self.id }
+    fn id(&self) -> &str {
+        &self.id
+    }
 }

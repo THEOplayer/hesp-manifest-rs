@@ -5,27 +5,33 @@ use url::Url;
 
 use crate::*;
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
-#[serde(try_from = "String", into = "String")]
-pub struct RelativeBaseUrl(String);
-
 pub trait RelativeUrl {
     fn resolve(&self, url: &Url) -> Url;
 }
 
-impl RelativeUrl for RelativeBaseUrl {
+impl<T: RelativeUrl> RelativeUrl for &T {
     fn resolve(&self, url: &Url) -> Url {
-        url.join(self.as_ref()).unwrap()
+        (**self).resolve(url)
     }
 }
 
-impl RelativeUrl for Option<RelativeBaseUrl> {
+impl<T: RelativeUrl> RelativeUrl for Option<T> {
     fn resolve(&self, url: &Url) -> Url {
         if let Some(relative_url) = self {
             relative_url.resolve(url)
         } else {
             url.clone()
         }
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(try_from = "String", into = "String")]
+pub struct RelativeBaseUrl(String);
+
+impl RelativeUrl for RelativeBaseUrl {
+    fn resolve(&self, url: &Url) -> Url {
+        url.join(self.as_ref()).unwrap()
     }
 }
 
@@ -38,11 +44,15 @@ impl TryFrom<String> for RelativeBaseUrl {
 }
 
 impl AsRef<str> for RelativeBaseUrl {
-    fn as_ref(&self) -> &str { &self.0 }
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
 }
 
 impl From<RelativeBaseUrl> for String {
-    fn from(value: RelativeBaseUrl) -> Self { value.0 }
+    fn from(value: RelativeBaseUrl) -> Self {
+        value.0
+    }
 }
 
 lazy_static! {

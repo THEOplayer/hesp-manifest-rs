@@ -1,8 +1,8 @@
 [package]
 name = "hesp-manifest"
-version = "0.2.2"
+version = "0.3.0"
 edition = "2018"
-authors = ["Christopher <christopher.leyssen@theoplayer.com>"]
+authors = ["THEO Technologies <info@theoplayer.com>"]
 publish = ["theo"]
 
 [dependencies]

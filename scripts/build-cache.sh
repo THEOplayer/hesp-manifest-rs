@@ -12,5 +12,5 @@ fi
 
 mkdir -p $CACHE_DIR
 date +%s > $CACHE_DIR/cache-date
-tar -zcvf $CACHE_DIR/target.tar.gz target/
-tar -zcvf $CACHE_DIR/cargo-home.tar.gz $CARGO_HOME/
+tar -zcvf $CACHE_DIR/target.tar.gz -C . target/
+tar -zcvf $CACHE_DIR/cargo-home.tar.gz -C $CARGO_HOME/.. cargo/

@@ -6,28 +6,24 @@ image:
 
 definitions:
   caches:
-    cargo: $CARGO_HOME
-    target: target
+    rust: rust-cache
   steps:
     - step: &build
         name: Build
         caches:
-          - cargo
-          - target
+          - rust
         script:
           - cargo build --workspace --release --all-targets
     - step: &test
         name: Test
         caches:
-          - cargo
-          - target
+          - rust
         script:
           - cargo test --release --no-fail-fast --all-targets --workspace -- --nocapture --test
     - step: &checks
         name: Checks
         caches:
-          - cargo
-          - target
+          - rust
         script:
           - cargo clippy --release --all-targets --workspace -- -D warnings
           - cargo fmt --all -- --check
@@ -37,7 +33,7 @@ pipelines:
     - step: *build
     - step: *test
   pull-requests:
-    '**':
+    "**":
       - step: *checks
   tags:
     v*:
@@ -46,7 +42,6 @@ pipelines:
       - step:
           name: Publish
           caches:
-            - cargo
-            - target
+            - rust
           script:
             - cargo publish

@@ -9,3 +9,5 @@
 
 # Libs dont need lock files
 Cargo.lock
+
+/rust-cache

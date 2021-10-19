@@ -1,5 +1,7 @@
 use core::fmt;
 use std::convert::{TryFrom, TryInto};
+use std::num::ParseIntError;
+use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
 
@@ -13,6 +15,17 @@ use url::Url;
 pub enum InitId {
     Now,
     Numbered(u64),
+}
+
+impl FromStr for InitId {
+    type Err = ParseIntError;
+
+    fn from_str(input: &str) -> std::result::Result<Self, Self::Err> {
+        match input {
+            "now" => Ok(InitId::Now),
+            number => number.parse().map(InitId::Numbered)
+        }
+    }
 }
 
 impl fmt::Display for InitId {
@@ -70,4 +83,22 @@ fn validate_init_id(value: &str) -> Result<()> {
     } else {
         Ok(())
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_init_id() {
+        assert_eq!("10".parse(), Ok(InitId::Numbered(10)));
+        assert_eq!("now".parse(), Ok(InitId::Now));
+    }
+
+    #[test]
+    fn init_id_to_string() {
+        assert_eq!(InitId::Numbered(10).to_string(), "10");
+        assert_eq!(InitId::Now.to_string(), "now");
+    }
+
 }

@@ -1,6 +1,6 @@
-pub use continuation::ContinuationPattern;
-pub use initialization::InitializationPattern;
-pub use relative_base::{RelativeBaseUrl, RelativeUrl};
+pub use continuation::*;
+pub use initialization::*;
+pub use relative_base::*;
 
 mod continuation;
 mod initialization;

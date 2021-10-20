@@ -11,7 +11,7 @@ use super::relative_base::validate_relative;
 use crate::model::url::initialization::InitId::Numbered;
 use url::Url;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum InitId {
     Now,
     Numbered(u64),

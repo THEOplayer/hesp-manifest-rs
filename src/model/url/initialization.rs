@@ -23,7 +23,7 @@ impl FromStr for InitId {
     fn from_str(input: &str) -> std::result::Result<Self, Self::Err> {
         match input {
             "now" => Ok(InitId::Now),
-            number => number.parse().map(InitId::Numbered)
+            number => number.parse().map(InitId::Numbered),
         }
     }
 }
@@ -100,5 +100,4 @@ mod tests {
         assert_eq!(InitId::Numbered(10).to_string(), "10");
         assert_eq!(InitId::Now.to_string(), "now");
     }
-
 }

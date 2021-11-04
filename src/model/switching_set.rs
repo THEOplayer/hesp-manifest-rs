@@ -3,7 +3,7 @@ use crate::Result;
 
 use super::*;
 
-pub trait SwitchingSet: Entity<Id=str> {
+pub trait SwitchingSet: Entity<Id = str> {
     type Track: Track;
     fn tracks(&self) -> &[Self::Track];
     fn track(&self, id: &str) -> Option<&Self::Track>;
@@ -13,7 +13,7 @@ pub trait SwitchingSet: Entity<Id=str> {
     fn mime_type(&self) -> &str;
 }
 
-pub trait MediaSwitchingSet: SwitchingSet<Track=<Self as MediaSwitchingSet>::MediaTrack> {
+pub trait MediaSwitchingSet: SwitchingSet<Track = <Self as MediaSwitchingSet>::MediaTrack> {
     type MediaTrack: MediaTrack;
     const MEDIA_TYPE: MediaType;
 

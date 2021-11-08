@@ -146,27 +146,7 @@ impl VideoTrack {
     }
 }
 
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub(super) struct VideoTrackDef {
-    bandwidth: Number,
-    id: String,
-    resolution: Resolution,
-    segments: Segments,
-    #[serde(rename = "activeSegment")]
-    active_segment_id: Option<SegmentId>,
-    active_sequence_number: Option<u64>,
-    average_bandwidth: Option<Number>,
-    base_url: Option<RelativeBaseUrl>,
-    codecs: Option<String>,
-    continuation_pattern: Option<ContinuationPattern>,
-    frame_rate: Option<ScaledValue>,
-    label: Option<String>,
-    initialization_pattern: Option<InitializationPattern>,
-    media_time_offset: Option<ScaledValue>,
-    segment_duration: Option<ScaledValue>,
-    transmission: TrackTransmission,
-}
+
 
 impl Entity for VideoTrackDef {
     type Id = str;

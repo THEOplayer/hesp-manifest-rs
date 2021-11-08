@@ -1,63 +1,76 @@
-use crate::*;
-use itertools::Itertools;
 use std::fmt;
 use std::str::FromStr;
+use std::sync::Arc;
+
+use itertools::Itertools;
+
+use crate::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub struct TrackPath {
+pub struct TrackUid(Arc<TrackUIDData>);
+
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+struct TrackUIDData {
     presentation_id: String,
     media_type: MediaType,
     switching_set_id: String,
     track_id: String,
 }
 
-impl TrackPath {
+impl TrackUid {
     pub fn new(
         presentation_id: String,
         media_type: MediaType,
         switching_set_id: String,
         track_id: String,
     ) -> Self {
-        Self {
+        let data = TrackUIDData {
             presentation_id,
             media_type,
             switching_set_id,
             track_id,
-        }
+        };
+        TrackUid(Arc::new(data))
     }
-
+    #[inline]
     pub fn presentation_id(&self) -> &str {
-        &self.presentation_id
+        &self.0.presentation_id
     }
+    #[inline]
     pub fn media_type(&self) -> MediaType {
-        self.media_type
+        self.0.media_type
     }
+    #[inline]
     pub fn switching_set_id(&self) -> &str {
-        &self.switching_set_id
+        &self.0.switching_set_id
     }
+    #[inline]
     pub fn track_id(&self) -> &str {
-        &self.track_id
+        &self.0.track_id
     }
 }
 
-impl fmt::Display for TrackPath {
+impl fmt::Display for TrackUid {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
             "{}/{}/{}/{}",
-            self.presentation_id, self.media_type, self.switching_set_id, self.track_id,
+            self.presentation_id(),
+            self.media_type(),
+            self.switching_set_id(),
+            self.track_id(),
         )
     }
 }
 
-impl FromStr for TrackPath {
+impl FromStr for TrackUid {
     type Err = Error;
     fn from_str(input: &str) -> Result<Self> {
         let (presentation_id, media_type, switching_set_id, track_id) = input
             .split('/')
             .collect_tuple()
             .ok_or_else(|| Error::InvalidTrackPath(input.to_owned()))?;
-        Ok(TrackPath::new(
+        Ok(Self::new(
             presentation_id.to_owned(),
             media_type.parse()?,
             switching_set_id.to_owned(),
@@ -72,11 +85,11 @@ mod tests {
 
     #[test]
     fn parse_track_path() -> Result<()> {
-        let track_path: TrackPath = "main-pres/video/main/720p".parse()?;
+        let uid: TrackUid = "main-pres/video/main/720p".parse()?;
 
         assert_eq!(
-            track_path,
-            TrackPath::new(
+            uid,
+            TrackUid::new(
                 "main-pres".to_owned(),
                 MediaType::Video,
                 "main".to_owned(),

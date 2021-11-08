@@ -1,6 +1,6 @@
 pub use switching_set::MetadataSwitchingSet;
 pub use track::MetadataTrack;
-use track::MetadataTrackDef;
 
+mod data;
 mod switching_set;
 mod track;

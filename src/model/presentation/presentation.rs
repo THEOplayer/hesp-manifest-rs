@@ -3,7 +3,6 @@ use serde_with::skip_serializing_none;
 
 use crate::*;
 
-validate_on_deserialize!(Presentation);
 #[skip_serializing_none]
 #[derive(Clone, Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase", remote = "Self")]

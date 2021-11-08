@@ -98,21 +98,6 @@ impl MetadataTrack {
     }
 }
 
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub(super) struct MetadataTrackDef {
-    id: String,
-    segments: Segments,
-    #[serde(rename = "activeSegment")]
-    active_segment_id: Option<SegmentId>,
-    average_bandwidth: Option<Number>,
-    bandwidth: Option<Number>,
-    base_url: Option<RelativeBaseUrl>,
-    continuation_pattern: Option<ContinuationPattern>,
-    label: Option<String>,
-    media_time_offset: Option<ScaledValue>,
-    segment_duration: Option<ScaledValue>,
-}
 
 impl Entity for MetadataTrackDef {
     type Id = str;

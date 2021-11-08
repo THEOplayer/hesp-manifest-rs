@@ -1,100 +1,49 @@
-use std::borrow::{Borrow, BorrowMut};
-use std::convert::TryFrom;
+use std::collections::HashMap;
 use std::fmt::Display;
 use std::hash::Hash;
-use std::ops::{Deref, DerefMut};
-use std::vec::IntoIter;
-
-use itertools::Itertools;
-use serde::{Deserialize, Serialize};
+use serde;
 
 use crate::*;
-use std::slice;
 
 pub trait Entity {
     type Id: Hash + Eq + Display + ?Sized;
     fn id(&self) -> &Self::Id;
 }
 
-//TODO use HashMap instead
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 #[serde(try_from = "Vec<E>")]
-pub struct EntityVec<E: Entity>(pub(crate) Vec<E>);
+pub struct EntityMap<E: Entity>(HashMap<E::Id, E>);
 
-impl<E: Entity> EntityVec<E> {
+impl<E: Entity> EntityMap<E> {
     pub fn get(&self, id: &E::Id) -> Option<&E> {
-        self.iter().find(|entity| entity.id() == id)
+        self.0.get(id)
     }
+
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
 }
 
-impl<E: Entity> TryFrom<Vec<E>> for EntityVec<E> {
-    type Error = Error;
-    fn try_from(vec: Vec<E>) -> Result<Self> {
-        let duplicates = vec.iter().map(E::id).duplicates().join(", ");
-        if !duplicates.is_empty() {
-            Err(Error::DuplicateIds(duplicates))
-        } else {
-            Ok(Self(vec))
+trait IntoEntities<E: Entity> {
+    fn try_collect(self) -> Result<EntityMap<E>>;
+}
+
+impl <E:Entity, I:IntoIterator<Item=E>> IntoEntities<E> for I {
+    fn try_collect(self) -> Result<EntityMap<E>> {
+        let iter = self.into_iter();
+        let mut map = HashMap::with_capacity(iter.size_hint().0);
+        for entity in self {
+            if let Some(duplicate) = map.insert(entity.id(), entity) {
+                return Err(Error::DuplicateId(duplicate.id().to_string()))
+            }
         }
+        Ok(EntityMap(map))
     }
 }
 
-impl<E: Entity> Deref for EntityVec<E> {
-    type Target = [E];
-    fn deref(&self) -> &[E] {
-        &self.0
-    }
-}
-
-impl<E: Entity> DerefMut for EntityVec<E> {
-    fn deref_mut(&mut self) -> &mut [E] {
-        &mut self.0
-    }
-}
-
-impl<E: Entity> Borrow<[E]> for EntityVec<E> {
-    fn borrow(&self) -> &[E] {
-        &self[..]
-    }
-}
-
-impl<E: Entity> BorrowMut<[E]> for EntityVec<E> {
-    fn borrow_mut(&mut self) -> &mut [E] {
-        &mut self[..]
-    }
-}
-
-impl<E: Entity> Default for EntityVec<E> {
+impl<E: Entity> Default for EntityMap<E> {
     fn default() -> Self {
-        Self(Vec::new())
-    }
-}
-
-impl<E: Entity> IntoIterator for EntityVec<E> {
-    type Item = E;
-    type IntoIter = IntoIter<E>;
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.into_iter()
-    }
-}
-
-impl<'a, E: Entity> IntoIterator for &'a mut EntityVec<E> {
-    type Item = &'a mut E;
-    type IntoIter = slice::IterMut<'a, E>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.iter_mut()
-    }
-}
-
-impl<E: Entity> AsMut<[E]> for EntityVec<E> {
-    fn as_mut(&mut self) -> &mut [E] {
-        self
-    }
-}
-
-impl<E: Entity> AsRef<[E]> for EntityVec<E> {
-    fn as_ref(&self) -> &[E] {
-        self
+        Self(HashMap::new())
     }
 }

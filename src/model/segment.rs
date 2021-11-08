@@ -43,6 +43,7 @@ impl SegmentId {
 }
 
 impl Segments {
+    //TODO use serde try_from
     fn new(vec: Vec<Segment>) -> Result<Self> {
         let jump = vec
             .iter()

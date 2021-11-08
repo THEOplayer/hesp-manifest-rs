@@ -1,6 +1,4 @@
-pub use entity::{Entity, EntityVec};
-pub(crate) use validate::Validate;
+pub use entity::*;
 
 mod entity;
-#[macro_use]
-mod validate;
+

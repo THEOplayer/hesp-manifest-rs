@@ -1,15 +1,7 @@
 use std::convert::{TryFrom, TryInto};
 
-use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
-
 use crate::*;
 
-use super::AudioTrackDef;
-
-#[skip_serializing_none]
-#[derive(Debug, Serialize, Clone, Deserialize)]
-#[serde(rename_all = "camelCase", try_from = "AudioSwitchingSetDef")]
 pub struct AudioSwitchingSet {
     id: String,
     language: Language,
@@ -56,34 +48,14 @@ impl MediaSwitchingSet for AudioSwitchingSet {
     const MEDIA_TYPE: MediaType = MediaType::Audio;
 }
 
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct AudioSwitchingSetDef {
-    id: String,
-    language: Language,
-    tracks: EntityVec<AudioTrackDef>,
-    align_id: Option<String>,
-    base_url: Option<RelativeBaseUrl>,
-    channels: Option<u64>,
-    codecs: Option<String>,
-    continuation_pattern: Option<ContinuationPattern>,
-    #[serde(default = "AudioSwitchingSet::default_frame_rate")]
-    frame_rate: u64,
-    initialization_pattern: Option<InitializationPattern>,
-    label: Option<String>,
-    #[serde(default)]
-    media_time_offset: ScaledValue,
-    #[serde(default)]
-    mime_type: AudioMimeType,
-    protection: Option<SwitchingSetProtection>,
-    sample_rate: Option<u64>,
-}
+pub struct FrameRate(u64);
 
-impl AudioSwitchingSet {
-    fn default_frame_rate() -> u64 {
-        1024
+impl Default for FrameRate {
+    fn default() -> Self {
+        FrameRate(1024)
     }
 }
+
 
 impl TryFrom<AudioSwitchingSetDef> for AudioSwitchingSet {
     type Error = Error;

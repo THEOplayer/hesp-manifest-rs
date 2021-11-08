@@ -1,15 +1,10 @@
 use std::convert::{TryFrom, TryInto};
 
-use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
-
 use crate::*;
 
-use super::VideoTrackDef;
+use super::data::VideoSwitchingSetData;
 
-#[skip_serializing_none]
-#[derive(Debug, Serialize, Clone, Deserialize)]
-#[serde(rename_all = "camelCase", try_from = "VideoSwitchingSetDef")]
+#[derive(Debug, Clone)]
 pub struct VideoSwitchingSet {
     id: String,
     tracks: EntityVec<VideoTrack>,
@@ -54,29 +49,10 @@ impl MediaSwitchingSet for VideoSwitchingSet {
     const MEDIA_TYPE: MediaType = MediaType::Video;
 }
 
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct VideoSwitchingSetDef {
-    id: String,
-    tracks: EntityVec<VideoTrackDef>,
-    align_id: Option<String>,
-    base_url: Option<RelativeBaseUrl>,
-    codecs: Option<String>,
-    continuation_pattern: Option<ContinuationPattern>,
-    frame_rate: Option<ScaledValue>,
-    initialization_pattern: Option<InitializationPattern>,
-    label: Option<String>,
-    #[serde(default)]
-    media_time_offset: ScaledValue,
-    #[serde(default)]
-    mime_type: VideoMimeType,
-    protection: Option<SwitchingSetProtection>,
-}
-
-impl TryFrom<VideoSwitchingSetDef> for VideoSwitchingSet {
+impl TryFrom<VideoSwitchingSetData> for VideoSwitchingSet {
     type Error = Error;
-    fn try_from(def: VideoSwitchingSetDef) -> Result<Self> {
-        let VideoSwitchingSetDef {
+    fn try_from(def: VideoSwitchingSetData) -> Result<Self> {
+        let VideoSwitchingSetData {
             id,
             tracks,
             align_id,

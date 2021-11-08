@@ -1,5 +1,6 @@
-use crate::{SegmentId, TransmissionType};
 use thiserror::Error;
+
+use crate::*;
 
 #[derive(Error, Debug)]
 pub enum Error {
@@ -31,8 +32,8 @@ pub enum Error {
     MissingSampleRate(String),
     #[error("Track {0} must have an initialization pattern")]
     MissingInitializationPattern(String),
-    #[error("Ids must be unique (duplicates: {0})")]
-    DuplicateIds(String),
+    #[error("Ids must be unique (found duplicate: {0})")]
+    DuplicateId(String),
     #[error("ContinuationPattern '{0}' must contain {{segmentId}}")]
     InvalidContinuationPattern(String),
     #[error("InitializationPattern '{0}' must contain {{initId}}")]

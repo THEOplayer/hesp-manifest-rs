@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::Entity;
-
-use super::*;
+use crate::*;
 
 #[derive(Deserialize, Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]

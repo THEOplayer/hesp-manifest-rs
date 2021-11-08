@@ -1,37 +1,61 @@
-use crate::*;
 use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
+use url::Url;
 
-pub trait Manifest {
-    fn presentations(&self) -> &[Presentation];
-    fn presentations_mut(&mut self) -> &mut [Presentation];
-    fn content_base_url(&self) -> Option<&RelativeBaseUrl>;
-    fn content_base_url_mut(&mut self) -> Option<&mut RelativeBaseUrl>;
+use crate::*;
+use super::data::ManifestData;
 
-    fn presentation(&self, id: &str) -> Option<&Presentation> {
-        self.presentations().iter().find(|p| p.id() == id)
-    }
+// TODO
+// impl Validate for UnicastManifest {
+//     fn validate(&self) -> Result<()> {
+//         if let UnicastStreamType::Live(LiveStream {
+//                                            active_presentation,
+//                                            ..
+//                                        }) = &self.stream_type
+//         {
+//             self.presentation(active_presentation)
+//                 .ok_or_else(|| Error::InvalidActivePresentationId(active_presentation.to_owned()))?
+//                 .validate_active()?;
+//         }
+//         for presentation in self.presentations() {
+//             presentation.ensure_unicast()?;
+//         }
+//         Ok(())
+//     }
+// }
 
-    fn presentation_mut(&mut self, id: &str) -> Option<&mut Presentation> {
-        self.presentations_mut().iter_mut().find(|p| p.id() == id)
-    }
+#[derive(Debug, Clone)]
+pub struct UnicastManifest {
+    creation_date: DateTime,
+    fallback_poll_rate: Number,
+    presentations: EntityMap<Presentation>,
+    stream_type: UnicastStreamType,
 }
 
-validate_on_deserialize!(UnicastManifest);
-#[skip_serializing_none]
-#[derive(Deserialize, Serialize, Debug, Clone)]
-#[serde(rename_all = "camelCase", remote = "Self")]
-pub struct UnicastManifest {
-    pub(super) creation_date: DateTime,
-    pub(super) fallback_poll_rate: Number,
-    pub(super) manifest_version: ManifestVersion,
-    pub(super) presentations: EntityVec<Presentation>,
-    #[serde(flatten)]
-    pub(super) stream_type: UnicastStreamType,
-    pub(super) content_base_url: Option<RelativeBaseUrl>,
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(tag = "streamType", rename_all = "lowercase")]
+pub enum UnicastStreamType {
+    Live(LiveStream),
+    Vod,
 }
 
 impl UnicastManifest {
+    pub fn new(base_url: &Url, data: ManifestData) -> Result<Self> {
+        let url = data.content_base_url.resolve(base_url);
+        //TODO check manifest version unicast
+        let mut manifest = UnicastManifest {
+            creation_date: data.creation_date,
+            fallback_poll_rate: data.fallback_poll_rate,
+            presentations: data
+                .presentations
+                .into_iter()
+                .map(|p| Presentation::new(url, p))
+                .collect(),
+            stream_type: data.stream_type,
+        };
+
+        Ok(manifest)
+    }
+
     pub fn stream_type(&self) -> &UnicastStreamType {
         &self.stream_type
     }
@@ -60,45 +84,6 @@ impl Manifest for UnicastManifest {
     fn content_base_url_mut(&mut self) -> Option<&mut RelativeBaseUrl> {
         self.content_base_url.as_mut()
     }
-}
-
-impl Validate for UnicastManifest {
-    fn validate(&self) -> Result<()> {
-        if let UnicastStreamType::Live(LiveStream {
-            active_presentation,
-            ..
-        }) = &self.stream_type
-        {
-            self.presentation(active_presentation)
-                .ok_or_else(|| Error::InvalidActivePresentationId(active_presentation.to_owned()))?
-                .validate_active()?;
-        }
-        for presentation in self.presentations() {
-            presentation.ensure_unicast()?;
-        }
-        Ok(())
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash, Copy, Clone)]
-pub enum ManifestVersion {
-    #[serde(rename = "1.0.0")]
-    V1_0_0,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(tag = "streamType", rename_all = "lowercase")]
-pub enum UnicastStreamType {
-    Live(LiveStream),
-    Vod,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct LiveStream {
-    pub availability_duration: ScaledValue,
-    pub active_presentation: String,
-    pub time_source: Option<TimeSource>,
 }
 
 #[cfg(test)]

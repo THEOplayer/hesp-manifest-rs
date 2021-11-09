@@ -4,12 +4,12 @@ use std::num::ParseIntError;
 use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
+use url::Url;
 
+use crate::model::url::initialization::InitId::Numbered;
 use crate::*;
 
 use super::relative_base::validate_relative;
-use crate::model::url::initialization::InitId::Numbered;
-use url::Url;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum InitId {
@@ -39,49 +39,30 @@ impl fmt::Display for InitId {
 
 #[derive(Debug, Deserialize, Clone, Serialize)]
 #[serde(try_from = "String")]
-pub struct InitializationPattern(String);
+pub struct InitializationPattern {
+    base: Url,
+    pattern: String,
+}
 
 impl InitializationPattern {
-    pub fn now(&self) -> RelativeBaseUrl {
+    const INIT_ID_PATTERN: &'static str = "{initId}";
+
+    pub fn new(base: Url, pattern: String) -> Result<Self> {
+        base.join(&pattern)?;
+        if pattern.contains(Self::INIT_ID_PATTERN) {
+            Ok(Self { base, pattern })
+        } else {
+            Err(Error::InvalidInitializationPattern(pattern))
+        }
+    }
+
+    pub fn now(&self) -> Url {
         self.init_id(InitId::Now)
     }
-    pub fn init_id<I: Into<InitId>>(&self, init_id: I) -> RelativeBaseUrl {
-        self.as_ref()
-            .replace("{initId}", &init_id.into().to_string())
-            .try_into()
-            .unwrap()
-    }
-}
-
-impl TryFrom<String> for InitializationPattern {
-    type Error = Error;
-    fn try_from(value: String) -> Result<Self> {
-        validate_relative(&value)?;
-        validate_init_id(&value)?;
-        Ok(InitializationPattern(value))
-    }
-}
-
-impl TryFrom<Url> for InitializationPattern {
-    type Error = Error;
-    fn try_from(value: Url) -> Result<Self> {
-        let string = value.to_string();
-        validate_init_id(&string)?;
-        Ok(InitializationPattern(string))
-    }
-}
-
-impl AsRef<str> for InitializationPattern {
-    fn as_ref(&self) -> &str {
-        &self.0
-    }
-}
-
-fn validate_init_id(value: &str) -> Result<()> {
-    if !value.contains("{initId}") {
-        Err(Error::InvalidInitializationPattern(value.to_owned()))
-    } else {
-        Ok(())
+    pub fn init_id<I: Into<InitId>>(&self, init_id: I) -> Url {
+        let init_id = init_id.into().to_string();
+        let rel = self.pattern.replace(Self::INIT_ID_PATTERN, &init_id);
+        self.base.join(&rel).unwrap()
     }
 }
 

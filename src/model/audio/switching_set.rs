@@ -1,7 +1,10 @@
 use std::convert::{TryFrom, TryInto};
+use url::Url;
 
 use crate::*;
+use crate::model::audio::data::AudioSwitchingSetData;
 
+#[derive(Debug, Clone)]
 pub struct AudioSwitchingSet {
     id: String,
     language: Language,
@@ -15,8 +18,8 @@ pub struct AudioSwitchingSet {
 }
 
 impl Entity for AudioSwitchingSet {
-    type Id = str;
-    fn id(&self) -> &str {
+    type Id = AudioSwitchingSetId;
+    fn id(&self) -> &AudioSwitchingSetId {
         &self.id
     }
 }
@@ -57,10 +60,9 @@ impl Default for FrameRate {
 }
 
 
-impl TryFrom<AudioSwitchingSetDef> for AudioSwitchingSet {
-    type Error = Error;
-    fn try_from(def: AudioSwitchingSetDef) -> Result<Self> {
-        let AudioSwitchingSetDef {
+impl AudioSwitchingSet {
+    pub fn new(presentation_id: &str, presentation_url: &Url, data: AudioSwitchingSetDef) -> Result<Self> {
+        let AudioSwitchingSetData {
             id,
             language,
             tracks,
@@ -76,11 +78,15 @@ impl TryFrom<AudioSwitchingSetDef> for AudioSwitchingSet {
             mime_type,
             protection,
             sample_rate,
-        } = def;
+        } = data;
+        let base_url = base_url.resolve(presentation_url)?;
         let tracks = tracks
             .into_iter()
             .map(|track| {
                 AudioTrack::new(
+                    presentation_id.clone(),
+                    id.clone(),
+                    &base_url,
                     track,
                     codecs.as_ref(),
                     continuation_pattern.as_ref(),

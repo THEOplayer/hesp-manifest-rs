@@ -1,6 +1,8 @@
 use serde::{self, Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use url::Url;
 
+use crate::model::audio::data::AudioTrackData;
 use crate::model::track::validate_segments;
 use crate::*;
 
@@ -86,15 +88,18 @@ impl MediaTrack for AudioTrack {
 
 impl AudioTrack {
     pub(super) fn new(
-        def: AudioTrackDef,
-        default_codecs: Option<&String>,
-        default_continuation_pattern: Option<&ContinuationPattern>,
+        presentation_id: String,
+        switching_set_id: String,
+        switching_set_url: &Url,
+        data: AudioTrackData,
+        default_codecs: Option<&str>,
+        default_continuation_pattern: Option<&str>,
         default_frame_rate: u64,
-        default_initialization_pattern: Option<&InitializationPattern>,
+        default_initialization_pattern: Option<&str>,
         default_media_time_offset: ScaledValue,
         default_sample_rate: Option<u64>,
     ) -> Result<Self> {
-        let AudioTrackDef {
+        let AudioTrackData {
             bandwidth,
             id,
             segments,
@@ -112,7 +117,8 @@ impl AudioTrack {
             sample_rate,
             segment_duration,
             transmission,
-        } = def;
+        } = data;
+        let base_url = base_url.resolve(switching_set_url);
         default!(id, codecs, default_codecs, Error::MissingCodecs);
         default!(
             id,
@@ -140,7 +146,6 @@ impl AudioTrack {
             active_segment_id,
             active_sequence_number,
             average_bandwidth,
-            base_url,
             channels,
             codecs,
             continuation_pattern,
@@ -152,35 +157,5 @@ impl AudioTrack {
             segment_duration,
             transmission,
         })
-    }
-}
-
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub(super) struct AudioTrackDef {
-    bandwidth: Number,
-    id: String,
-    segments: Segments,
-    #[serde(rename = "activeSegment")]
-    active_segment_id: Option<SegmentId>,
-    active_sequence_number: Option<u64>,
-    average_bandwidth: Option<Number>,
-    base_url: Option<RelativeBaseUrl>,
-    channels: Option<u64>,
-    codecs: Option<String>,
-    continuation_pattern: Option<ContinuationPattern>,
-    frame_rate: Option<u64>,
-    label: Option<String>,
-    initialization_pattern: Option<InitializationPattern>,
-    media_time_offset: Option<ScaledValue>,
-    sample_rate: Option<u64>,
-    segment_duration: Option<ScaledValue>,
-    transmission: TrackTransmission,
-}
-
-impl Entity for AudioTrackDef {
-    type Id = str;
-    fn id(&self) -> &str {
-        &self.id
     }
 }

@@ -6,47 +6,26 @@ use super::relative_base::validate_relative;
 use crate::*;
 use url::Url;
 
-#[derive(Debug, Deserialize, Clone, Serialize)]
-#[serde(try_from = "String")]
-pub struct ContinuationPattern(String);
+#[derive(Debug, Clone)]
+pub struct ContinuationPattern {
+    base: Url,
+    pattern: String,
+}
 
 impl ContinuationPattern {
-    pub fn segment(&self, id: SegmentId) -> RelativeBaseUrl {
-        self.as_ref()
-            .replace("{segmentId}", &id.to_string())
-            .try_into()
-            .unwrap()
-    }
-}
+    const SEGMENT_ID_PATTERN: &'static str = "continuation";
 
-impl TryFrom<String> for ContinuationPattern {
-    type Error = Error;
-    fn try_from(value: String) -> Result<Self> {
-        validate_relative(&value)?;
-        validate_segment_id(&value)?;
-        Ok(ContinuationPattern(value))
+    pub fn new(base: Url, pattern: String) -> Result<Self> {
+        base.join(&pattern)?;
+        if pattern.contains(Self::SEGMENT_ID_PATTERN) {
+            Ok(Self { base, pattern })
+        } else {
+            Err(Error::InvalidContinuationPattern(pattern))
+        }
     }
-}
 
-impl TryFrom<Url> for ContinuationPattern {
-    type Error = Error;
-    fn try_from(value: Url) -> Result<Self> {
-        let string = value.to_string();
-        validate_segment_id(&string)?;
-        Ok(ContinuationPattern(string))
-    }
-}
-
-impl AsRef<str> for ContinuationPattern {
-    fn as_ref(&self) -> &str {
-        &self.0
-    }
-}
-
-fn validate_segment_id(value: &str) -> Result<()> {
-    if !value.contains("{segmentId}") {
-        Err(Error::InvalidContinuationPattern(value.to_owned()))
-    } else {
-        Ok(())
+    pub fn segment(&self, id: SegmentId) -> Url {
+        let rel = self.pattern.replace(Self::SEGMENT_ID_PATTERN, &id.to_string());
+        self.base.join(&rel).unwrap()
     }
 }

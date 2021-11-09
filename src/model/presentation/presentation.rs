@@ -1,48 +1,79 @@
+use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use url::Url;
 
+use crate::model::presentation::data::PresentationData;
 use crate::*;
 
-#[skip_serializing_none]
-#[derive(Clone, Deserialize, Serialize, Debug)]
-#[serde(rename_all = "camelCase", remote = "Self")]
+#[derive(Clone, Debug)]
 pub struct Presentation {
     id: String,
     time_bounds: TimeBounds,
     #[serde(default)]
-    audio: EntityVec<AudioSwitchingSet>,
-    base_url: Option<RelativeBaseUrl>,
+    audio: EntityMap<AudioSwitchingSet>,
     current_time: Option<ScaledValue>,
     #[serde(default)]
-    events: EntityVec<PresentationEvent>,
+    events: EntityMap<PresentationEvent>,
     #[serde(default)]
-    metadata: EntityVec<MetadataSwitchingSet>,
+    metadata: EntityMap<MetadataSwitchingSet>,
     #[serde(default)]
-    video: EntityVec<VideoSwitchingSet>,
+    video: EntityMap<VideoSwitchingSet>,
     transmission: PresentationTransmission,
 }
 
 impl Presentation {
-    pub fn audio(&self) -> &[AudioSwitchingSet] {
-        &self.audio
+    pub fn new(manifest_url: &Url, data: PresentationData) -> Result<Self> {
+        let PresentationData {
+            id,
+            time_bounds,
+            audio,
+            base_url,
+            current_time,
+            events,
+            metadata,
+            video,
+            transmission,
+        } = data;
+        let base_url = base_url.resolve(manifest_url);
+        let audio = audio
+            .into_iter()
+            .map(|a| AudioSwitchingSet::new(&id,&base_url, a))
+            .try_collect()?;
+        let metadata = metadata
+            .into_iter()
+            .map(|m| MetadataSwitchingSet::new(&id, &base_url, m))
+            .try_collect()?;
+        let video = video
+            .into_iter()
+            .map(|v| VideoSwitchingSet::new(&id, &base_url, v))
+            .try_collect()?;
+        Ok(Self {
+            id,
+            time_bounds,
+            audio,
+            current_time,
+            events: events.into_iter().try_collect()?,
+            metadata,
+            video,
+            transmission,
+        })
     }
-    pub fn audio_mut(&mut self) -> &mut [AudioSwitchingSet] {
-        &mut self.audio
+
+    pub fn audio(&self) -> EntityIter<'_, AudioSwitchingSet> {
+        self.audio.iter()
     }
-    pub fn metadata(&self) -> &[MetadataSwitchingSet] {
-        &self.metadata
+    pub fn audio_mut(&mut self) -> EntityIterMut<'_, AudioSwitchingSet> {
+        self.audio.iter_mut()
     }
-    pub fn video(&self) -> &[VideoSwitchingSet] {
-        &self.video
+    pub fn metadata(&self) -> EntityIter<'_, MetadataSwitchingSet> {
+        self.metadata.iter()
     }
-    pub fn video_mut(&mut self) -> &mut [VideoSwitchingSet] {
-        &mut self.video
+    pub fn video(&self) -> EntityIter<'_, VideoSwitchingSet> {
+        self.video.iter()
     }
-    pub fn base_url(&self) -> &Option<RelativeBaseUrl> {
-        &self.base_url
-    }
-    pub fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
-        &mut self.base_url
+    pub fn video_mut(&mut self) -> EntityIterMut<'_, VideoSwitchingSet> {
+        self.video.iter_mut()
     }
     pub fn transmission(&self) -> &PresentationTransmission {
         &self.transmission

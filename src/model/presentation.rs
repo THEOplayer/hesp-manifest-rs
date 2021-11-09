@@ -62,10 +62,15 @@ impl Presentation {
 impl Presentation {
     pub(super) fn validate_active(&self) -> Result<()> {
         if self.current_time.is_none() {
-            Err(Error::MissingCurrentTime(self.id.to_owned()))
-        } else {
-            Ok(())
+            return Err(Error::MissingCurrentTime(self.id.to_owned()));
         }
+        for set in &self.video {
+            set.validate_active()?;
+        }
+        for set in &self.audio {
+            set.validate_active()?;
+        }
+        Ok(())
     }
     pub(super) fn ensure_unicast(&self) -> Result<()> {
         match self.transmission {

@@ -1,4 +1,5 @@
 use crate::Entity;
+use crate::Result;
 
 use super::*;
 
@@ -15,4 +16,11 @@ pub trait SwitchingSet: Entity<Id = str> {
 pub trait MediaSwitchingSet: SwitchingSet<Track = <Self as MediaSwitchingSet>::MediaTrack> {
     type MediaTrack: MediaTrack;
     const MEDIA_TYPE: MediaType;
+
+    fn validate_active(&self) -> Result<()> {
+        for track in self.tracks() {
+            track.validate_active()?
+        }
+        Ok(())
+    }
 }

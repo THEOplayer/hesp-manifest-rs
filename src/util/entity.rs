@@ -78,6 +78,14 @@ impl<E: Entity> IntoIterator for EntityVec<E> {
     }
 }
 
+impl<'a, E: Entity> IntoIterator for &'a EntityVec<E> {
+    type Item = &'a E;
+    type IntoIter = slice::Iter<'a, E>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
+    }
+}
+
 impl<'a, E: Entity> IntoIterator for &'a mut EntityVec<E> {
     type Item = &'a mut E;
     type IntoIter = slice::IterMut<'a, E>;

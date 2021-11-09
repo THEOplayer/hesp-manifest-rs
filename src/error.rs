@@ -21,6 +21,8 @@ pub enum Error {
     ReverseTimeBounds { start: u64, end: u64 },
     #[error("Track {0} has no segmentDuration therefore each segment must have timeBounds")]
     MissingSegmentDuration(String),
+    #[error("Track {0} is active so it must have an active sequence number")]
+    MissingActiveSequenceNumber(String),
     #[error("Track {0} must have codecs")]
     MissingCodecs(String),
     #[error("Track {0} must have a continuation pattern")]

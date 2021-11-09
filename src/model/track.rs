@@ -31,6 +31,13 @@ pub trait MediaTrack: Track {
     fn set_initialization_pattern(&mut self, pattern: InitializationPattern);
     fn active_sequence_number(&self) -> Option<u64>;
     fn transmission(&self) -> &TrackTransmission;
+    fn validate_active(&self) -> Result<()> {
+        if self.active_sequence_number().is_none() {
+            Err(Error::MissingActiveSequenceNumber(self.id().to_owned()))
+        } else {
+            Ok(())
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Copy, Serialize, Deserialize)]
@@ -40,16 +47,15 @@ pub struct TransferObjectIdentifierLimits {
 }
 
 pub(crate) fn validate_segments(
-    _id: &str,
-    _duration: Option<ScaledValue>,
-    _segments: &[Segment],
+    id: &str,
+    duration: Option<ScaledValue>,
+    segments: &[Segment],
 ) -> Result<()> {
-    // TODO uncomment
-    // if  duration.is_some() || segments.iter().all(|segment| segment.has_time_bounds()) {
-    //     Err(Error::MissingSegmentDuration(id.to_owned()))
-    // } else {
-    Ok(())
-    // }
+    if duration.is_some() || segments.iter().all(|segment| segment.has_time_bounds()) {
+        Ok(())
+    } else {
+        Err(Error::MissingSegmentDuration(id.to_owned()))
+    }
 }
 
 #[macro_export]

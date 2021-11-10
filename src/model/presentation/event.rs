@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+use crate::util::Entity;
 use crate::*;
 
 #[derive(Deserialize, Debug, Serialize, Clone)]

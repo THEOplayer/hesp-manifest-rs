@@ -1,10 +1,6 @@
-use std::convert::{TryFrom, TryInto};
-
-use serde::{Deserialize, Serialize};
-
-use super::relative_base::validate_relative;
-use crate::*;
 use url::Url;
+
+use crate::*;
 
 #[derive(Debug, Clone)]
 pub struct ContinuationPattern {

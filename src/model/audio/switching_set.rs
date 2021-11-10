@@ -1,16 +1,14 @@
-use std::convert::{TryFrom, TryInto};
 use url::Url;
 
+use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap};
 use crate::*;
-use crate::model::audio::data::AudioSwitchingSetData;
 
 #[derive(Debug, Clone)]
 pub struct AudioSwitchingSet {
     id: String,
     language: Language,
-    tracks: EntityVec<AudioTrack>,
+    tracks: EntityMap<AudioTrack>,
     align_id: Option<String>,
-    base_url: Option<RelativeBaseUrl>,
     channels: Option<u64>,
     label: Option<String>,
     mime_type: AudioMimeType,
@@ -18,28 +16,22 @@ pub struct AudioSwitchingSet {
 }
 
 impl Entity for AudioSwitchingSet {
-    type Id = AudioSwitchingSetId;
-    fn id(&self) -> &AudioSwitchingSetId {
+    type Id = str;
+    fn id(&self) -> &str {
         &self.id
     }
 }
 
 impl SwitchingSet for AudioSwitchingSet {
     type Track = AudioTrack;
-    fn tracks(&self) -> &[AudioTrack] {
-        &self.tracks
+    fn tracks(&self) -> EntityIter<AudioTrack> {
+        self.tracks.iter()
     }
     fn track(&self, id: &str) -> Option<&AudioTrack> {
         self.tracks.get(id)
     }
-    fn tracks_mut(&mut self) -> &mut [AudioTrack] {
-        &mut self.tracks
-    }
-    fn base_url(&self) -> &Option<RelativeBaseUrl> {
-        &self.base_url
-    }
-    fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
-        &mut self.base_url
+    fn tracks_mut(&mut self) -> EntityIterMut<AudioTrack> {
+        self.tracks.iter_mut()
     }
     fn mime_type(&self) -> &str {
         self.mime_type.as_ref()
@@ -59,9 +51,12 @@ impl Default for FrameRate {
     }
 }
 
-
 impl AudioSwitchingSet {
-    pub fn new(presentation_id: &str, presentation_url: &Url, data: AudioSwitchingSetDef) -> Result<Self> {
+    pub fn new(
+        presentation_id: &str,
+        presentation_url: &Url,
+        data: AudioSwitchingSetData,
+    ) -> Result<Self> {
         let AudioSwitchingSetData {
             id,
             language,
@@ -84,8 +79,8 @@ impl AudioSwitchingSet {
             .into_iter()
             .map(|track| {
                 AudioTrack::new(
-                    presentation_id.clone(),
-                    id.clone(),
+                    presentation_id.to_owned(),
+                    id.to_owned(),
                     &base_url,
                     track,
                     codecs.as_ref(),
@@ -103,7 +98,6 @@ impl AudioSwitchingSet {
             language,
             tracks,
             align_id,
-            base_url,
             channels,
             label,
             mime_type,

@@ -15,7 +15,7 @@ pub struct MetadataSwitchingSetData {
     base_url: Option<String>,
     continuation_pattern: Option<String>,
     label: Option<String>,
-    language: Option<String>,
+    language: Option<Language>,
     #[serde(default)]
     media_time_offset: ScaledValue,
 }

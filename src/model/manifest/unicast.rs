@@ -1,7 +1,9 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
 
+use crate::util::{EntityIter, EntityIterMut, EntityMap};
 use crate::*;
+
 use super::data::ManifestData;
 
 // TODO
@@ -69,20 +71,17 @@ impl UnicastManifest {
 }
 
 impl Manifest for UnicastManifest {
-    fn presentations(&self) -> &[Presentation] {
-        &self.presentations
+    fn presentations(&self) -> EntityIter<Presentation> {
+        self.presentations.iter()
     }
-
-    fn presentations_mut(&mut self) -> &mut [Presentation] {
-        &mut self.presentations
+    fn presentations_mut(&mut self) -> EntityIterMut<Presentation> {
+        self.presentations.iter_mut()
     }
-
-    fn content_base_url(&self) -> Option<&RelativeBaseUrl> {
-        self.content_base_url.as_ref()
+    fn presentation(&self, id: &str) -> Option<&Presentation> {
+        self.presentations.get(id)
     }
-
-    fn content_base_url_mut(&mut self) -> Option<&mut RelativeBaseUrl> {
-        self.content_base_url.as_mut()
+    fn presentation_mut(&mut self, id: &str) -> Option<&mut Presentation> {
+        self.presentations.get_mut(id)
     }
 }
 

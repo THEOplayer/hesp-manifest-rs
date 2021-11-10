@@ -1,3 +1,4 @@
+pub(crate) use data::*;
 pub use mime::AudioMimeType;
 pub use switching_set::*;
 pub use track::AudioTrack;

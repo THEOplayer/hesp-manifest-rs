@@ -8,21 +8,9 @@ use serde_with::skip_serializing_none;
 
 use crate::*;
 
-#[derive(
-    Serialize,
-    Deserialize,
-    Debug,
-    Clone,
-    Copy,
-    Eq,
-    PartialEq,
-    Ord,
-    PartialOrd,
-    Hash,
-    From,
-    Into,
-    Display,
-)]
+#[derive(Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(From, Into, Display)]
 pub struct SegmentId(u32);
 
 #[skip_serializing_none]

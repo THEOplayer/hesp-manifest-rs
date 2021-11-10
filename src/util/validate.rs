@@ -1,6 +1,6 @@
 use crate::Result;
 
-pub(crate) trait Validate {
+pub trait Validate {
     fn validate(&self) -> Result<()>;
 }
 

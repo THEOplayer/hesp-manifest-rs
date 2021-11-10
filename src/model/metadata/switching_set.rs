@@ -1,14 +1,14 @@
-use std::convert::{TryFrom, TryInto};
+use url::Url;
 
+use crate::util::{Entity, EntityMap};
 use crate::*;
 
 pub struct MetadataSwitchingSet {
     id: String,
     language: Option<Language>,
-    tracks: EntityVec<MetadataTrack>,
+    tracks: EntityMap<MetadataTrack>,
     scheme_id: String,
     align_id: Option<String>,
-    base_url: Option<RelativeBaseUrl>,
     label: Option<String>,
     mime_type: String,
 }
@@ -21,13 +21,7 @@ impl Entity for MetadataSwitchingSet {
 }
 
 impl MetadataSwitchingSet {
-
-}
-
-
-impl TryFrom<MetadataSwitchingSetData> for MetadataSwitchingSet {
-    type Error = Error;
-    fn try_from(def: MetadataSwitchingSetData) -> Result<Self> {
+    fn new(presentation_url: &Url, data: MetadataSwitchingSetData) -> Result<Self> {
         let MetadataSwitchingSetData {
             id,
             scheme_id,
@@ -39,21 +33,25 @@ impl TryFrom<MetadataSwitchingSetData> for MetadataSwitchingSet {
             label,
             media_time_offset,
             mime_type,
-        } = def;
+        } = data;
+        let base_url = base_url.resolve(presentation_url)?;
         let tracks = tracks
             .into_iter()
             .map(|track| {
-                MetadataTrack::new(track, continuation_pattern.as_ref(), media_time_offset)
+                MetadataTrack::new(
+                    &base_url,
+                    track,
+                    continuation_pattern.as_deref(),
+                    media_time_offset,
+                )
             })
-            .collect::<Result<Vec<MetadataTrack>>>()?
-            .try_into()?;
+            .try_collect()?;
         Ok(MetadataSwitchingSet {
             id,
             language,
             tracks,
             scheme_id,
             align_id,
-            base_url,
             label,
             mime_type,
         })

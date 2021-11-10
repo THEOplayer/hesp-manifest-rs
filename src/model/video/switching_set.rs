@@ -1,15 +1,15 @@
 use std::convert::{TryFrom, TryInto};
 
 use crate::*;
+use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap};
 
 use super::data::VideoSwitchingSetData;
 
 #[derive(Debug, Clone)]
 pub struct VideoSwitchingSet {
     id: String,
-    tracks: EntityVec<VideoTrack>,
+    tracks: EntityMap<VideoTrack>,
     align_id: Option<String>,
-    base_url: Option<RelativeBaseUrl>,
     label: Option<String>,
     mime_type: VideoMimeType,
     protection: Option<SwitchingSetProtection>,
@@ -24,20 +24,14 @@ impl Entity for VideoSwitchingSet {
 
 impl SwitchingSet for VideoSwitchingSet {
     type Track = VideoTrack;
-    fn tracks(&self) -> &[VideoTrack] {
-        &self.tracks
+    fn tracks(&self) -> EntityIter<VideoTrack> {
+        self.tracks.iter()
     }
     fn track(&self, id: &str) -> Option<&VideoTrack> {
         self.tracks.get(id)
     }
-    fn tracks_mut(&mut self) -> &mut [VideoTrack] {
-        &mut self.tracks
-    }
-    fn base_url(&self) -> &Option<RelativeBaseUrl> {
-        &self.base_url
-    }
-    fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
-        &mut self.base_url
+    fn tracks_mut(&mut self) -> EntityIterMut<VideoTrack> {
+        self.tracks.iter_mut()
     }
     fn mime_type(&self) -> &str {
         self.mime_type.as_ref()

@@ -1,20 +1,13 @@
 use serde::{Deserialize, Serialize};
 
+use crate::util::{EntityIter, EntityIterMut};
 use crate::*;
 
 pub trait Manifest {
-    fn presentations(&self) -> &[Presentation];
-    fn presentations_mut(&mut self) -> &mut [Presentation];
-    fn content_base_url(&self) -> Option<&RelativeBaseUrl>;
-    fn content_base_url_mut(&mut self) -> Option<&mut RelativeBaseUrl>;
-
-    fn presentation(&self, id: &str) -> Option<&Presentation> {
-        self.presentations().iter().find(|p| p.id() == id)
-    }
-
-    fn presentation_mut(&mut self, id: &str) -> Option<&mut Presentation> {
-        self.presentations_mut().iter_mut().find(|p| p.id() == id)
-    }
+    fn presentations(&self) -> EntityIter<Presentation>;
+    fn presentations_mut(&mut self) -> EntityIterMut<Presentation>;
+    fn presentation(&self, id: &str) -> Option<&Presentation>;
+    fn presentation_mut(&mut self, id: &str) -> Option<&mut Presentation>;
 }
 
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Hash, Copy, Clone)]

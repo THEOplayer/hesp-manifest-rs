@@ -1,23 +1,18 @@
-use serde::{self, Deserialize, Serialize};
-use serde_with::skip_serializing_none;
 use url::Url;
 
 use crate::model::audio::data::AudioTrackData;
 use crate::model::track::validate_segments;
+use crate::util::Entity;
 use crate::*;
 
-#[skip_serializing_none]
-#[derive(Debug, Serialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone)]
 pub struct AudioTrack {
     bandwidth: Number,
-    id: String,
+    uid: TrackUid,
     segments: Segments,
-    #[serde(rename = "activeSegment")]
     active_segment_id: Option<SegmentId>,
     active_sequence_number: Option<u64>,
     average_bandwidth: Option<Number>,
-    base_url: Option<RelativeBaseUrl>,
     channels: Option<u64>,
     codecs: String,
     continuation_pattern: ContinuationPattern,
@@ -50,12 +45,6 @@ impl Track for AudioTrack {
     fn segments(&self) -> &[Segment] {
         &self.segments
     }
-    fn base_url(&self) -> &Option<RelativeBaseUrl> {
-        &self.base_url
-    }
-    fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
-        &mut self.base_url
-    }
     fn continuation_pattern(&self) -> &ContinuationPattern {
         &self.continuation_pattern
     }
@@ -87,7 +76,7 @@ impl MediaTrack for AudioTrack {
 }
 
 impl AudioTrack {
-    pub(super) fn new(
+    pub fn new(
         presentation_id: String,
         switching_set_id: String,
         switching_set_url: &Url,
@@ -118,7 +107,7 @@ impl AudioTrack {
             segment_duration,
             transmission,
         } = data;
-        let base_url = base_url.resolve(switching_set_url);
+        let base_url = base_url.resolve(switching_set_url)?;
         default!(id, codecs, default_codecs, Error::MissingCodecs);
         default!(
             id,
@@ -141,17 +130,17 @@ impl AudioTrack {
         validate_segments(&id, segment_duration, &segments)?;
         Ok(AudioTrack {
             bandwidth,
-            id,
+            uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),
             segments,
             active_segment_id,
             active_sequence_number,
             average_bandwidth,
             channels,
             codecs,
-            continuation_pattern,
+            continuation_pattern: ContinuationPattern::new(base_url.clone(), continuation_pattern)?,
             frame_rate: frame_rate.unwrap_or(default_frame_rate),
             label,
-            initialization_pattern,
+            initialization_pattern: InitializationPattern::new(base_url, initialization_pattern)?,
             media_time_offset: media_time_offset.unwrap_or(default_media_time_offset),
             sample_rate,
             segment_duration,

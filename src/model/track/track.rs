@@ -1,13 +1,12 @@
 use serde::{Deserialize, Serialize};
 
 use crate::*;
+use crate::util::Entity;
 
 pub trait Track: Entity<Id = str> {
     fn active_segment(&self) -> Option<&Segment>;
     fn segment_duration(&self) -> Option<ScaledValue>;
     fn segments(&self) -> &[Segment];
-    fn base_url(&self) -> &Option<RelativeBaseUrl>;
-    fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl>;
     fn continuation_pattern(&self) -> &ContinuationPattern;
     fn set_continuation_pattern(&mut self, pattern: ContinuationPattern);
     fn average_bandwidth(&self) -> Option<f64>;
@@ -26,6 +25,7 @@ pub trait Track: Entity<Id = str> {
 
 pub trait MediaTrack: Track {
     const MEDIA_TYPE: MediaType;
+    fn uid(&self) -> &TrackUid;
     fn bandwidth(&self) -> f64;
     fn initialization_pattern(&self) -> &InitializationPattern;
     fn set_initialization_pattern(&mut self, pattern: InitializationPattern);

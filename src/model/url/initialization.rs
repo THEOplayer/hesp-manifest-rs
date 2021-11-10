@@ -1,15 +1,12 @@
 use core::fmt;
-use std::convert::{TryFrom, TryInto};
 use std::num::ParseIntError;
 use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::model::url::initialization::InitId::Numbered;
 use crate::*;
-
-use super::relative_base::validate_relative;
+use crate::model::url::initialization::InitId::Numbered;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum InitId {

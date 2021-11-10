@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 use crate::*;
-use crate::validate::Validate;
+use crate::util::Validate;
 
 validate_on_deserialize!(TimeBounds);
 #[skip_serializing_none]

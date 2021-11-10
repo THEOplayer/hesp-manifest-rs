@@ -1,9 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::model::audio::data::AudioSwitchingSetData;
-use crate::model::metadata::data::MetadataSwitchingSetData;
-use crate::model::video::data::VideoSwitchingSetData;
 use crate::*;
 
 #[skip_serializing_none]

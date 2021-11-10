@@ -1,3 +1,4 @@
+pub(crate) use data::*;
 pub use mime::VideoMimeType;
 pub use switching_set::VideoSwitchingSet;
 pub use track::VideoTrack;

@@ -1,22 +1,18 @@
-use serde::{self, Deserialize, Serialize};
-use serde_with::skip_serializing_none;
+use url::Url;
 
 use crate::model::track::validate_segments;
 use crate::*;
+use crate::util::Entity;
 
-#[skip_serializing_none]
-#[derive(Debug, Serialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone)]
 pub struct VideoTrack {
-    id: String,
+    uid: TrackUid,
     bandwidth: Number,
     resolution: Resolution,
     segments: Segments,
-    #[serde(rename = "activeSegment")]
     active_segment_id: Option<SegmentId>,
     active_sequence_number: Option<u64>,
     average_bandwidth: Option<Number>,
-    base_url: Option<RelativeBaseUrl>,
     codecs: String,
     continuation_pattern: ContinuationPattern,
     frame_rate: ScaledValue,
@@ -47,12 +43,6 @@ impl Track for VideoTrack {
     fn segments(&self) -> &[Segment] {
         &self.segments
     }
-    fn base_url(&self) -> &Option<RelativeBaseUrl> {
-        &self.base_url
-    }
-    fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
-        &mut self.base_url
-    }
     fn continuation_pattern(&self) -> &ContinuationPattern {
         &self.continuation_pattern
     }
@@ -66,6 +56,11 @@ impl Track for VideoTrack {
 
 impl MediaTrack for VideoTrack {
     const MEDIA_TYPE: MediaType = MediaType::Video;
+
+    fn uid(&self) -> &TrackUid {
+        &self.uid
+    }
+
     fn bandwidth(&self) -> f64 {
         self.bandwidth.as_f64().unwrap()
     }
@@ -85,14 +80,17 @@ impl MediaTrack for VideoTrack {
 
 impl VideoTrack {
     pub(super) fn new(
-        def: VideoTrackDef,
+        presentation_id: String,
+        switching_set_id: String,
+        switching_set_url: &Url,
+        data: VideoTrackData,
         default_codecs: Option<&String>,
         default_continuation_pattern: Option<&ContinuationPattern>,
         default_frame_rate: Option<ScaledValue>,
         default_initialization_pattern: Option<&InitializationPattern>,
         default_media_time_offset: ScaledValue,
     ) -> Result<Self> {
-        let VideoTrackDef {
+        let VideoTrackData {
             bandwidth,
             id,
             resolution,
@@ -109,7 +107,8 @@ impl VideoTrack {
             media_time_offset,
             segment_duration,
             transmission,
-        } = def;
+        } = data;
+        let base_url = base_url.resolve(switching_set_url)?;
         validate_segments(&id, segment_duration, &segments)?;
         default!(id, codecs, default_codecs, Error::MissingCodecs);
         default!(
@@ -127,30 +126,20 @@ impl VideoTrack {
         );
         Ok(VideoTrack {
             bandwidth,
-            id,
+            uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),
             resolution,
             segments,
             active_segment_id,
             active_sequence_number,
             average_bandwidth,
-            base_url,
             codecs,
-            continuation_pattern,
+            continuation_pattern: ContinuationPattern::new(base_url.clone(), continuation_pattern)?,
             frame_rate,
             label,
-            initialization_pattern,
+            initialization_pattern: InitializationPattern::new(base_url, initialization_pattern)?,
             media_time_offset: media_time_offset.unwrap_or(default_media_time_offset),
             segment_duration,
             transmission,
         })
-    }
-}
-
-
-
-impl Entity for VideoTrackDef {
-    type Id = str;
-    fn id(&self) -> &str {
-        &self.id
     }
 }

@@ -3,11 +3,12 @@ use serde_with::skip_serializing_none;
 
 use crate::*;
 
-#[derive(Deserialize, Debug)]
+#[skip_serializing_none]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct VideoSwitchingSetData {
     id: String,
-    tracks: Vec<VideoTrackDef>,
+    tracks: Vec<VideoTrackData>,
     align_id: Option<String>,
     base_url: Option<String>,
     codecs: Option<String>,
@@ -22,9 +23,10 @@ pub struct VideoSwitchingSetData {
     protection: Option<SwitchingSetProtection>,
 }
 
+#[skip_serializing_none]
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-pub(super) struct VideoTrackData {
+pub struct VideoTrackData {
     bandwidth: Number,
     id: String,
     resolution: Resolution,

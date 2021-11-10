@@ -1,3 +1,4 @@
+use crate::util::{EntityIter, EntityIterMut, EntityMap};
 use crate::*;
 
 #[derive(Debug, Clone)]
@@ -44,32 +45,36 @@ impl MulticastManifest {
 
     pub fn all_toi_limits(
         &self,
-    ) -> impl Iterator<Item = (TrackPath, TransferObjectIdentifierLimits)> + '_ {
+    ) -> impl Iterator<Item = (&TrackUid, TransferObjectIdentifierLimits)> + '_ {
+        let toi = |(path, track)| match track.transmission() {
+            TrackTransmission::Unicast => None,
+            &TrackTransmission::Multicast { toi_limits } => Some((path, toi_limits)),
+        };
         self.presentations.iter().flat_map(|presentation| {
-            let video_toi = presentation.video_tracks().filter_map(multicast_toi);
-            let audio_toi = presentation.audio_tracks().filter_map(multicast_toi);
+            let video_toi = presentation.video_tracks().filter_map(toi);
+            let audio_toi = presentation.audio_tracks().filter_map(toi);
             video_toi.chain(audio_toi)
         })
     }
 
-    pub fn toi_limits(&self, path: &TrackPath) -> Option<TransferObjectIdentifierLimits> {
-        self.track_transmission(path)
+    pub fn toi_limits(&self, track: &TrackUid) -> Option<TransferObjectIdentifierLimits> {
+        self.track_transmission(track)
             .and_then(|transmission| match transmission {
                 TrackTransmission::Unicast => None,
                 TrackTransmission::Multicast { toi_limits } => Some(toi_limits),
             })
     }
 
-    pub fn track_transmission(&self, path: &TrackPath) -> Option<TrackTransmission> {
-        let presentation = self.presentation(path.presentation_id())?;
-        Some(*match path.media_type() {
+    pub fn track_transmission(&self, track: &TrackUid) -> Option<TrackTransmission> {
+        let presentation = self.presentation(track.presentation_id())?;
+        Some(*match track.media_type() {
             MediaType::Video => presentation
-                .video_switching_set(path.switching_set_id())?
-                .track(path.track_id())?
+                .video_switching_set(track.switching_set_id())?
+                .track(track.track_id())?
                 .transmission(),
             MediaType::Audio => presentation
-                .audio_switching_set(path.switching_set_id())?
-                .track(path.track_id())?
+                .audio_switching_set(track.switching_set_id())?
+                .track(track.track_id())?
                 .transmission(),
         })
     }
@@ -108,31 +113,29 @@ impl MulticastManifest {
 }
 
 impl Manifest for MulticastManifest {
-    fn presentations(&self) -> &[Presentation] {
-        &self.presentations
+    fn presentations(&self) -> EntityIter<Presentation> {
+        self.presentations.iter()
     }
-
-    fn presentations_mut(&mut self) -> &mut [Presentation] {
-        &mut self.presentations
+    fn presentations_mut(&mut self) -> EntityIterMut<Presentation> {
+        self.presentations.iter_mut()
     }
-
-    fn content_base_url(&self) -> Option<&RelativeBaseUrl> {
-        self.content_base_url.as_ref()
+    fn presentation(&self, id: &str) -> Option<&Presentation> {
+        self.presentations.get(id)
     }
-
-    fn content_base_url_mut(&mut self) -> Option<&mut RelativeBaseUrl> {
-        self.content_base_url.as_mut()
+    fn presentation_mut(&mut self, id: &str) -> Option<&mut Presentation> {
+        self.presentations.get_mut(id)
     }
 }
 
-impl Validate for MulticastManifest {
-    fn validate(&self) -> Result<()> {
-        let active_id = &self.stream_type.live_data().active_presentation;
-        self.presentation(active_id)
-            .ok_or_else(|| Error::InvalidActivePresentationId(active_id.to_owned()))?
-            .validate_active()
-    }
-}
+//TODO
+// impl Validate for MulticastManifest {
+//     fn validate(&self) -> Result<()> {
+//         let active_id = &self.stream_type.live_data().active_presentation;
+//         self.presentation(active_id)
+//             .ok_or_else(|| Error::InvalidActivePresentationId(active_id.to_owned()))?
+//             .validate_active()
+//     }
+// }
 
 impl From<MulticastManifest> for UnicastManifest {
     fn from(input: MulticastManifest) -> Self {
@@ -161,4 +164,3 @@ fn multicast_tsi(presentation: &Presentation) -> Option<u32> {
         PresentationTransmission::Multicast(data) => Some(data.transport_session_id()),
     }
 }
-

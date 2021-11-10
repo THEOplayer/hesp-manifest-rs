@@ -1,9 +1,6 @@
 # Log files
 *.log
 
-# JetBrains IDE
-.idea/
-
 # Added by cargo
 /target
 

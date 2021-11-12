@@ -163,7 +163,6 @@ impl Presentation {
 }
 
 impl Entity for Presentation {
-    type Id = str;
     fn id(&self) -> &str {
         &self.id
     }

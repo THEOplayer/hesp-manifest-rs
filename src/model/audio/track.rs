@@ -1,9 +1,9 @@
 use url::Url;
 
+use crate::*;
 use crate::model::audio::data::AudioTrackData;
 use crate::model::track::validate_segments;
 use crate::util::Entity;
-use crate::*;
 
 #[derive(Debug, Clone)]
 pub struct AudioTrack {
@@ -26,9 +26,8 @@ pub struct AudioTrack {
 }
 
 impl Entity for AudioTrack {
-    type Id = str;
     fn id(&self) -> &str {
-        &self.id
+        self.uid.track_id()
     }
 }
 
@@ -58,6 +57,9 @@ impl Track for AudioTrack {
 
 impl MediaTrack for AudioTrack {
     const MEDIA_TYPE: MediaType = MediaType::Audio;
+    fn uid(&self) -> &TrackUid {
+        &self.uid
+    }
     fn bandwidth(&self) -> f64 {
         self.bandwidth.as_f64().unwrap()
     }

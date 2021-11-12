@@ -9,7 +9,7 @@ pub struct ContinuationPattern {
 }
 
 impl ContinuationPattern {
-    const SEGMENT_ID_PATTERN: &'static str = "continuation";
+    const SEGMENT_ID_PATTERN: &'static str = "{segmentId}";
 
     pub fn new(base: Url, pattern: String) -> Result<Self> {
         base.join(&pattern)?;

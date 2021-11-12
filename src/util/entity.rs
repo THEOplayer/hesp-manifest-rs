@@ -1,24 +1,22 @@
 use std::collections::{hash_map, HashMap};
-use std::fmt::Display;
 use std::hash::Hash;
 
 use crate::*;
 
 pub trait Entity {
-    type Id: Hash + Eq + Display + ?Sized;
-    fn id(&self) -> &Self::Id;
+    fn id(&self) -> &str;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct EntityMap<E: Entity> {
-    inner: HashMap<E::Id, E>,
+    inner: HashMap<String, E>,
 }
 
 impl<E: Entity> EntityMap<E> {
-    pub fn get(&self, id: &E::Id) -> Option<&E> {
+    pub fn get(&self, id: &str) -> Option<&E> {
         self.inner.get(id)
     }
-    pub fn get_mut(&mut self, id: &E::Id) -> Option<&mut E> {
+    pub fn get_mut(&mut self, id: &str) -> Option<&mut E> {
         self.inner.get_mut(id)
     }
     pub fn len(&self) -> usize {
@@ -33,7 +31,7 @@ impl<E: Entity> EntityMap<E> {
 }
 
 pub struct EntityIter<'a, E: Entity> {
-    inner: hash_map::Values<'a, &'static E::Id, E>,
+    inner: hash_map::Values<'a, String, E>,
 }
 
 impl<'a, E: Entity> Iterator for EntityIter<'a, E> {
@@ -58,7 +56,7 @@ impl<'a, E: Entity> ExactSizeIterator for EntityIter<'a, E> {
 }
 
 pub struct EntityIterMut<'a, E: Entity> {
-    inner: hash_map::ValuesMut<'a, E::Id, E>,
+    inner: hash_map::ValuesMut<'a, String, E>,
 }
 
 impl<'a, E: Entity> Iterator for EntityIterMut<'a, E> {

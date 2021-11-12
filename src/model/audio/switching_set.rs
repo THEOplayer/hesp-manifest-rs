@@ -16,7 +16,6 @@ pub struct AudioSwitchingSet {
 }
 
 impl Entity for AudioSwitchingSet {
-    type Id = str;
     fn id(&self) -> &str {
         &self.id
     }

@@ -24,7 +24,6 @@ pub struct VideoTrack {
 }
 
 impl Entity for VideoTrack {
-    type Id = str;
     fn id(&self) -> &str {
         &self.id
     }

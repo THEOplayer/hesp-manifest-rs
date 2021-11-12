@@ -14,7 +14,6 @@ pub struct PresentationEvent {
 }
 
 impl Entity for PresentationEvent {
-    type Id = str;
     fn id(&self) -> &str {
         &self.id
     }

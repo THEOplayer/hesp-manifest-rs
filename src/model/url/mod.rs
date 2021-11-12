@@ -1,4 +1,4 @@
-pub use continuation::*;
+pub use continuation::ContinuationPattern;
 pub use initialization::*;
 
 mod continuation;

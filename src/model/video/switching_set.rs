@@ -16,7 +16,6 @@ pub struct VideoSwitchingSet {
 }
 
 impl Entity for VideoSwitchingSet {
-    type Id = str;
     fn id(&self) -> &str {
         &self.id
     }

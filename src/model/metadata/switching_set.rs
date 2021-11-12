@@ -14,7 +14,6 @@ pub struct MetadataSwitchingSet {
 }
 
 impl Entity for MetadataSwitchingSet {
-    type Id = str;
     fn id(&self) -> &str {
         &self.id
     }

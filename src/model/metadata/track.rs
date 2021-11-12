@@ -18,7 +18,6 @@ pub struct MetadataTrack {
 }
 
 impl Entity for MetadataTrack {
-    type Id = str;
     fn id(&self) -> &str {
         self.uid.track_id()
     }

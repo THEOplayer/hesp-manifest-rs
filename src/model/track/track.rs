@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::*;
 use crate::util::Entity;
 
-pub trait Track: Entity<Id = str> {
+pub trait Track: Entity {
     fn active_segment(&self) -> Option<&Segment>;
     fn segment_duration(&self) -> Option<ScaledValue>;
     fn segments(&self) -> &[Segment];

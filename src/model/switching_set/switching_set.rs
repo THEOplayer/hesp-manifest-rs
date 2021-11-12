@@ -1,7 +1,7 @@
 use crate::util::{Entity, EntityIter, EntityIterMut};
 use crate::*;
 
-pub trait SwitchingSet: Entity<Id = str> {
+pub trait SwitchingSet: Entity {
     type Track: Track;
     fn tracks(&self) -> EntityIter<Self::Track>;
     fn track(&self, id: &str) -> Option<&Self::Track>;

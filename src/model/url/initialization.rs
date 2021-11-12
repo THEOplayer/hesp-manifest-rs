@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::*;
-use crate::model::url::initialization::InitId::Numbered;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum InitId {
@@ -29,7 +28,7 @@ impl fmt::Display for InitId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             InitId::Now => write!(f, "now"),
-            Numbered(id) => id.fmt(f),
+            InitId::Numbered(id) => id.fmt(f),
         }
     }
 }

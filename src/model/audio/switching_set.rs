@@ -1,6 +1,6 @@
 use url::Url;
 
-use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap};
+use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
 use crate::*;
 
 #[derive(Debug, Clone)]
@@ -42,6 +42,7 @@ impl MediaSwitchingSet for AudioSwitchingSet {
     const MEDIA_TYPE: MediaType = MediaType::Audio;
 }
 
+#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct FrameRate(u64);
 
 impl Default for FrameRate {
@@ -82,16 +83,15 @@ impl AudioSwitchingSet {
                     id.to_owned(),
                     &base_url,
                     track,
-                    codecs.as_ref(),
-                    continuation_pattern.as_ref(),
+                    codecs.as_deref(),
+                    continuation_pattern.as_deref(),
                     frame_rate,
-                    initialization_pattern.as_ref(),
+                    initialization_pattern.as_deref(),
                     media_time_offset,
                     sample_rate,
                 )
             })
-            .collect::<Result<Vec<AudioTrack>>>()?
-            .try_into()?;
+            .into_entities()?;
         Ok(AudioSwitchingSet {
             id,
             language,

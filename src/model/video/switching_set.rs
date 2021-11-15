@@ -1,9 +1,7 @@
-use std::convert::{TryFrom, TryInto};
+use url::Url;
 
 use crate::*;
-use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap};
-
-use super::data::VideoSwitchingSetData;
+use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
 
 #[derive(Debug, Clone)]
 pub struct VideoSwitchingSet {
@@ -42,9 +40,11 @@ impl MediaSwitchingSet for VideoSwitchingSet {
     const MEDIA_TYPE: MediaType = MediaType::Video;
 }
 
-impl TryFrom<VideoSwitchingSetData> for VideoSwitchingSet {
-    type Error = Error;
-    fn try_from(def: VideoSwitchingSetData) -> Result<Self> {
+impl VideoSwitchingSet {
+    pub fn new(
+        presentation_id: &str,
+        presentation_url: &Url,
+        data: VideoSwitchingSetData) -> Result<Self> {
         let VideoSwitchingSetData {
             id,
             tracks,
@@ -58,26 +58,28 @@ impl TryFrom<VideoSwitchingSetData> for VideoSwitchingSet {
             media_time_offset,
             mime_type,
             protection,
-        } = def;
+        } = data;
+        let base_url = base_url.resolve(presentation_url)?;
         let tracks = tracks
             .into_iter()
             .map(|track| {
                 VideoTrack::new(
+presentation_id.to_owned(),
+                    id.clone(),
+                    &base_url,
                     track,
-                    codecs.as_ref(),
-                    continuation_pattern.as_ref(),
+                    codecs.as_deref(),
+                    continuation_pattern.as_deref(),
                     frame_rate,
-                    initialization_pattern.as_ref(),
+                    initialization_pattern.as_deref(),
                     media_time_offset,
                 )
             })
-            .collect::<Result<Vec<VideoTrack>>>()?
-            .try_into()?;
+            .into_entities()?;
         Ok(VideoSwitchingSet {
             id,
             tracks,
             align_id,
-            base_url,
             label,
             mime_type,
             protection,

@@ -4,6 +4,8 @@ use crate::*;
 use crate::util::Entity;
 
 pub trait Track: Entity {
+    const TRACK_TYPE: TrackType;
+
     fn active_segment(&self) -> Option<&Segment>;
     fn segment_duration(&self) -> Option<ScaledValue>;
     fn segments(&self) -> &[Segment];
@@ -24,6 +26,7 @@ pub trait Track: Entity {
 }
 
 pub trait MediaTrack: Track {
+    //TODO check if this is still needed now we have TrackType
     const MEDIA_TYPE: MediaType;
     fn uid(&self) -> &TrackUid;
     fn bandwidth(&self) -> f64;
@@ -59,7 +62,7 @@ macro_rules! default {
         let $var = if let Some(value) = $var {
             value
         } else if let Some(value) = $default {
-            value.clone()
+            value.to_owned()
         } else {
             return Err($error($id));
         };

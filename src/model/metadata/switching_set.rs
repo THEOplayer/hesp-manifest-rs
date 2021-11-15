@@ -1,8 +1,9 @@
 use url::Url;
 
-use crate::util::{Entity, EntityMap};
+use crate::util::{Entity, EntityMap, FromEntities, RelativeUrl};
 use crate::*;
 
+#[derive(Clone, Debug)]
 pub struct MetadataSwitchingSet {
     id: String,
     language: Option<Language>,
@@ -20,7 +21,11 @@ impl Entity for MetadataSwitchingSet {
 }
 
 impl MetadataSwitchingSet {
-    fn new(presentation_url: &Url, data: MetadataSwitchingSetData) -> Result<Self> {
+    pub fn new(
+        presentation_id: &str,
+        presentation_url: &Url,
+        data: MetadataSwitchingSetData,
+    ) -> Result<Self> {
         let MetadataSwitchingSetData {
             id,
             scheme_id,
@@ -38,13 +43,15 @@ impl MetadataSwitchingSet {
             .into_iter()
             .map(|track| {
                 MetadataTrack::new(
+                    presentation_id.to_owned(),
+                    id.clone(),
                     &base_url,
                     track,
                     continuation_pattern.as_deref(),
                     media_time_offset,
                 )
             })
-            .try_collect()?;
+            .into_entities()?;
         Ok(MetadataSwitchingSet {
             id,
             language,

@@ -12,7 +12,7 @@ pub struct TrackUid(Arc<TrackUIDData>);
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 struct TrackUIDData {
     presentation_id: String,
-    media_type: MediaType,
+    track_type: TrackType,
     switching_set_id: String,
     track_id: String,
 }
@@ -20,13 +20,13 @@ struct TrackUIDData {
 impl TrackUid {
     pub fn new(
         presentation_id: String,
-        media_type: MediaType,
+        track_type: TrackType,
         switching_set_id: String,
         track_id: String,
     ) -> Self {
         let data = TrackUIDData {
             presentation_id,
-            media_type,
+            track_type,
             switching_set_id,
             track_id,
         };
@@ -37,8 +37,8 @@ impl TrackUid {
         &self.0.presentation_id
     }
     #[inline]
-    pub fn media_type(&self) -> MediaType {
-        self.0.media_type
+    pub fn track_type(&self) -> TrackType {
+        self.0.track_type
     }
     #[inline]
     pub fn switching_set_id(&self) -> &str {
@@ -56,7 +56,7 @@ impl fmt::Display for TrackUid {
             f,
             "{}/{}/{}/{}",
             self.presentation_id(),
-            self.media_type(),
+            self.track_type(),
             self.switching_set_id(),
             self.track_id(),
         )
@@ -91,7 +91,7 @@ mod tests {
             uid,
             TrackUid::new(
                 "main-pres".to_owned(),
-                MediaType::Video,
+                TrackType::Video,
                 "main".to_owned(),
                 "720p".to_owned(),
             )

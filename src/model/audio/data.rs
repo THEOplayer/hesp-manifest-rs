@@ -1,7 +1,10 @@
-use crate::*;
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
-#[derive(Deserialize, Serialize, Debug)]
+use crate::*;
+
+#[skip_serializing_none]
+#[derive(Clone, Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AudioSwitchingSetData {
     pub id: String,
@@ -24,7 +27,8 @@ pub struct AudioSwitchingSetData {
     pub sample_rate: Option<u64>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[skip_serializing_none]
+#[derive(Clone, Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AudioTrackData {
     pub bandwidth: Number,
@@ -38,7 +42,7 @@ pub struct AudioTrackData {
     pub channels: Option<u64>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
-    pub frame_rate: Option<u64>,
+    pub frame_rate: Option<FrameRate>,
     pub label: Option<String>,
     pub initialization_pattern: Option<String>,
     pub media_time_offset: Option<ScaledValue>,

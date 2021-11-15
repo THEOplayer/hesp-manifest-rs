@@ -1,5 +1,4 @@
 use std::collections::{hash_map, HashMap};
-use std::hash::Hash;
 
 use crate::*;
 
@@ -7,7 +6,7 @@ pub trait Entity {
     fn id(&self) -> &str;
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct EntityMap<E: Entity> {
     inner: HashMap<String, E>,
 }
@@ -23,10 +22,17 @@ impl<E: Entity> EntityMap<E> {
         self.inner.len()
     }
     pub fn iter(&self) -> EntityIter<E> {
-        EntityIter::new(self.inner.values())
+        EntityIter {
+            inner: self.inner.values(),
+        }
     }
     pub fn iter_mut(&mut self) -> EntityIterMut<E> {
-        EntityIterMut::new(self.inner.values_mut())
+        EntityIterMut {
+            inner: self.inner.values_mut(),
+        }
+    }
+    pub fn into_iter(self) -> hash_map::IntoValues<String, E> {
+        self.inner.into_values()
     }
 }
 
@@ -80,17 +86,17 @@ impl<'a, E: Entity> ExactSizeIterator for EntityIterMut<'a, E> {
     }
 }
 
-pub trait IntoEntities<E: Entity> {
-    fn try_collect(self) -> Result<EntityMap<E>>;
+pub trait FromEntities<E: Entity> {
+    fn into_entities(self) -> Result<EntityMap<E>>;
 }
 
-impl<E: Entity, I: IntoIterator<Item = Result<E>>> IntoEntities<E> for I {
-    fn try_collect(self) -> Result<EntityMap<E>> {
+impl<E: Entity, I: IntoIterator<Item = Result<E>>> FromEntities<E> for I {
+    fn into_entities(self) -> Result<EntityMap<E>> {
         let iter = self.into_iter();
         let mut map = HashMap::with_capacity(iter.size_hint().0);
         for entity in self {
             let entity = entity?;
-            if let Some(duplicate) = map.insert(entity.id(), entity) {
+            if let Some(duplicate) = map.insert(entity.id().to_owned(), entity) {
                 return Err(Error::DuplicateId(duplicate.id().to_string()));
             }
         }

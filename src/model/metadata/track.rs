@@ -1,7 +1,7 @@
 use url::Url;
 
 use crate::model::track::validate_segments;
-use crate::util::Entity;
+use crate::util::{Entity, RelativeUrl};
 use crate::*;
 
 #[derive(Debug, Clone)]
@@ -24,6 +24,8 @@ impl Entity for MetadataTrack {
 }
 
 impl Track for MetadataTrack {
+    const TRACK_TYPE: TrackType = TrackType::Metadata;
+
     fn active_segment(&self) -> Option<&Segment> {
         match self.active_segment_id {
             Some(id) => self.segment(id),
@@ -49,6 +51,8 @@ impl Track for MetadataTrack {
 
 impl MetadataTrack {
     pub fn new(
+        presentation_id: String,
+        switching_set_id: String,
         switching_set_url: &Url,
         data: MetadataTrackData,
         default_continuation_pattern: Option<&str>,
@@ -76,7 +80,7 @@ impl MetadataTrack {
         );
         Ok(MetadataTrack {
             bandwidth,
-            id,
+            uid: TrackUid::new(presentation_id, Self::TRACK_TYPE, switching_set_id, id),
             segments,
             active_segment_id,
             average_bandwidth,

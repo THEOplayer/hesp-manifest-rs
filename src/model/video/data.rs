@@ -4,7 +4,7 @@ use serde_with::skip_serializing_none;
 use crate::*;
 
 #[skip_serializing_none]
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct VideoSwitchingSetData {
     id: String,
@@ -24,7 +24,7 @@ pub struct VideoSwitchingSetData {
 }
 
 #[skip_serializing_none]
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct VideoTrackData {
     bandwidth: Number,

@@ -17,6 +17,6 @@ impl RelativeUrl for Option<String> {
 
 impl RelativeUrl for String {
     fn resolve(&self, url: &Url) -> Result<Url> {
-        url.join(self).into()
+        Ok(url.join(self)?)
     }
 }

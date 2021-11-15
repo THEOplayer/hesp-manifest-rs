@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::util::{EntityIter, EntityIterMut, EntityMap};
+use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
 use crate::*;
 
 use super::data::ManifestData;
@@ -42,7 +42,7 @@ pub enum UnicastStreamType {
 
 impl UnicastManifest {
     pub fn new(base_url: &Url, data: ManifestData) -> Result<Self> {
-        let url = data.content_base_url.resolve(base_url);
+        let url = data.content_base_url.resolve(base_url)?;
         //TODO check manifest version unicast
         let mut manifest = UnicastManifest {
             creation_date: data.creation_date,
@@ -50,8 +50,8 @@ impl UnicastManifest {
             presentations: data
                 .presentations
                 .into_iter()
-                .map(|p| Presentation::new(url, p))
-                .collect(),
+                .map(|p| Presentation::new(&url, p))
+                .into_entities()?,
             stream_type: data.stream_type,
         };
 

@@ -2,7 +2,7 @@ use url::Url;
 
 use crate::model::track::validate_segments;
 use crate::*;
-use crate::util::Entity;
+use crate::util::{Entity, RelativeUrl};
 
 #[derive(Debug, Clone)]
 pub struct VideoTrack {
@@ -25,11 +25,13 @@ pub struct VideoTrack {
 
 impl Entity for VideoTrack {
     fn id(&self) -> &str {
-        &self.id
+        &self.uid.track_id()
     }
 }
 
 impl Track for VideoTrack {
+    const TRACK_TYPE: TrackType = TrackType::Video;
+
     fn active_segment(&self) -> Option<&Segment> {
         match self.active_segment_id {
             Some(id) => self.segment(id),
@@ -83,10 +85,10 @@ impl VideoTrack {
         switching_set_id: String,
         switching_set_url: &Url,
         data: VideoTrackData,
-        default_codecs: Option<&String>,
-        default_continuation_pattern: Option<&ContinuationPattern>,
+        default_codecs: Option<&str>,
+        default_continuation_pattern: Option<&str>,
         default_frame_rate: Option<ScaledValue>,
-        default_initialization_pattern: Option<&InitializationPattern>,
+        default_initialization_pattern: Option<&str>,
         default_media_time_offset: ScaledValue,
     ) -> Result<Self> {
         let VideoTrackData {
@@ -125,7 +127,7 @@ impl VideoTrack {
         );
         Ok(VideoTrack {
             bandwidth,
-            uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),
+            uid: TrackUid::new(presentation_id, Self::TRACK_TYPE, switching_set_id, id),
             resolution,
             segments,
             active_segment_id,

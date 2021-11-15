@@ -1,9 +1,7 @@
 use url::Url;
 
+use crate::util::{Entity, RelativeUrl};
 use crate::*;
-use crate::model::audio::data::AudioTrackData;
-use crate::model::track::validate_segments;
-use crate::util::Entity;
 
 #[derive(Debug, Clone)]
 pub struct AudioTrack {
@@ -16,7 +14,7 @@ pub struct AudioTrack {
     channels: Option<u64>,
     codecs: String,
     continuation_pattern: ContinuationPattern,
-    frame_rate: u64,
+    frame_rate: FrameRate,
     label: Option<String>,
     initialization_pattern: InitializationPattern,
     media_time_offset: ScaledValue,
@@ -32,6 +30,8 @@ impl Entity for AudioTrack {
 }
 
 impl Track for AudioTrack {
+    const TRACK_TYPE: TrackType = TrackType::Audio;
+
     fn active_segment(&self) -> Option<&Segment> {
         match self.active_segment_id {
             Some(id) => self.segment(id),
@@ -85,7 +85,7 @@ impl AudioTrack {
         data: AudioTrackData,
         default_codecs: Option<&str>,
         default_continuation_pattern: Option<&str>,
-        default_frame_rate: u64,
+        default_frame_rate: FrameRate,
         default_initialization_pattern: Option<&str>,
         default_media_time_offset: ScaledValue,
         default_sample_rate: Option<u64>,
@@ -132,7 +132,7 @@ impl AudioTrack {
         validate_segments(&id, segment_duration, &segments)?;
         Ok(AudioTrack {
             bandwidth,
-            uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),
+            uid: TrackUid::new(presentation_id, Self::TRACK_TYPE, switching_set_id, id),
             segments,
             active_segment_id,
             active_sequence_number,

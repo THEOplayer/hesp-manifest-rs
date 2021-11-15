@@ -1,4 +1,4 @@
-use crate::util::{EntityIter, EntityIterMut, EntityMap};
+use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::*;
 
 #[derive(Debug, Clone)]
@@ -9,6 +9,7 @@ pub struct MulticastManifest {
     stream_type: MulticastStreamType,
 }
 
+#[derive(Debug, Clone)]
 pub enum MulticastStreamType {
     Live(LiveStream),
 }
@@ -69,15 +70,16 @@ impl MulticastManifest {
 
     pub fn track_transmission(&self, track: &TrackUid) -> Option<TrackTransmission> {
         let presentation = self.presentation(track.presentation_id())?;
-        Some(*match track.media_type() {
-            MediaType::Video => presentation
+        Some(*match track.track_type() {
+            TrackType::Video => presentation
                 .video_switching_set(track.switching_set_id())?
                 .track(track.track_id())?
                 .transmission(),
-            MediaType::Audio => presentation
+            TrackType::Audio => presentation
                 .audio_switching_set(track.switching_set_id())?
                 .track(track.track_id())?
                 .transmission(),
+            TrackType::Metadata => unimplemented!("no multicast support for metadata yet")
         })
     }
 
@@ -103,8 +105,8 @@ impl MulticastManifest {
         let presentations = presentations
             .into_iter()
             .map(presentation_transformer)
-            .collect::<Vec<Presentation>>()
-            .try_into()?;
+            .map(Ok)
+            .into_entities()?;
         Ok(MulticastManifest {
             creation_date,
             fallback_poll_rate,
@@ -148,7 +150,7 @@ impl From<MulticastManifest> for UnicastManifest {
             stream_type,
             ..
         } = input;
-        for presentation in &mut presentations[..] {
+        for presentation in presentations.iter_mut() {
             presentation.set_unicast();
         }
         UnicastManifest {

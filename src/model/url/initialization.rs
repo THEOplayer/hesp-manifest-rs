@@ -2,7 +2,6 @@ use core::fmt;
 use std::num::ParseIntError;
 use std::str::FromStr;
 
-use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::*;
@@ -33,8 +32,7 @@ impl fmt::Display for InitId {
     }
 }
 
-#[derive(Debug, Deserialize, Clone, Serialize)]
-#[serde(try_from = "String")]
+#[derive(Debug, Clone)]
 pub struct InitializationPattern {
     base: Url,
     pattern: String,

@@ -1,9 +1,8 @@
-use itertools::Itertools;
 use url::Url;
 
 use crate::model::presentation::data::PresentationData;
+use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
 use crate::*;
-use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap};
 
 #[derive(Clone, Debug)]
 pub struct Presentation {
@@ -34,21 +33,21 @@ impl Presentation {
         let audio = audio
             .into_iter()
             .map(|a| AudioSwitchingSet::new(&id, &base_url, a))
-            .try_collect()?;
+            .into_entities()?;
         let metadata = metadata
             .into_iter()
             .map(|m| MetadataSwitchingSet::new(&id, &base_url, m))
-            .try_collect()?;
+            .into_entities()?;
         let video = video
             .into_iter()
             .map(|v| VideoSwitchingSet::new(&id, &base_url, v))
-            .try_collect()?;
+            .into_entities()?;
         Ok(Self {
             id,
             time_bounds,
             audio,
             current_time,
-            events: events.into_iter().try_collect()?,
+            events: events.into_iter().map(Ok).into_entities()?,
             metadata,
             video,
             transmission,
@@ -99,19 +98,19 @@ impl Presentation {
         }
     }
 
-    pub fn video_tracks(&self) -> impl Iterator<Item=&VideoTrack> {
+    pub fn video_tracks(&self) -> impl Iterator<Item = &VideoTrack> {
         self.video().flat_map(|set| set.tracks())
     }
 
-    pub fn audio_tracks(&self) -> impl Iterator<Item=&AudioTrack> {
+    pub fn audio_tracks(&self) -> impl Iterator<Item = &AudioTrack> {
         self.audio().flat_map(|set| set.tracks())
     }
 
-    pub fn video_tracks_mut(&mut self) -> impl Iterator<Item=&mut VideoTrack> {
+    pub fn video_tracks_mut(&mut self) -> impl Iterator<Item = &mut VideoTrack> {
         self.video.iter_mut().flat_map(|set| set.tracks_mut())
     }
 
-    pub fn audio_tracks_mut(&mut self) -> impl Iterator<Item=&mut AudioTrack> {
+    pub fn audio_tracks_mut(&mut self) -> impl Iterator<Item = &mut AudioTrack> {
         self.audio.iter_mut().flat_map(|set| set.tracks_mut())
     }
 
@@ -139,8 +138,8 @@ impl Presentation {
     }
 
     pub fn into_multicast<F>(self, meta: PresentationMulticastMetadata, mut toi_provider: F) -> Self
-        where
-            F: FnMut(&TrackUid) -> TransferObjectIdentifierLimits,
+    where
+        F: FnMut(&TrackUid) -> TransferObjectIdentifierLimits,
     {
         let mut result = self;
         result.transmission = PresentationTransmission::Multicast(meta);

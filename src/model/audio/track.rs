@@ -2,6 +2,7 @@ use url::Url;
 
 use crate::util::{Entity, RelativeUrl};
 use crate::*;
+use super::data::AudioTrackData;
 
 #[derive(Debug, Clone)]
 pub struct AudioTrack {

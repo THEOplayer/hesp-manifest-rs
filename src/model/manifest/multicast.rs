@@ -1,5 +1,7 @@
-use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities};
+use url::Url;
+use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
 use crate::*;
+use super::ManifestData;
 
 #[derive(Debug, Clone)]
 pub struct MulticastManifest {
@@ -26,6 +28,17 @@ impl From<MulticastStreamType> for UnicastStreamType {
     fn from(stream_type: MulticastStreamType) -> Self {
         match stream_type {
             MulticastStreamType::Live(data) => UnicastStreamType::Live(data),
+        }
+    }
+}
+
+impl TryFrom<UnicastStreamType> for MulticastStreamType {
+    type Error = Error;
+
+    fn try_from(value: UnicastStreamType) -> Result<Self> {
+        match value {
+            UnicastStreamType::Live(stream) => Ok(MulticastStreamType::Live(stream)),
+            UnicastStreamType::Vod => Err(Error::InvalidMulticastStreamType)
         }
     }
 }
@@ -117,6 +130,22 @@ impl MulticastManifest {
 }
 
 impl Manifest for MulticastManifest {
+    fn new(base_url: &Url, data: ManifestData) -> Result<Self> {
+        let url = data.content_base_url.resolve(base_url)?;
+        //TODO check manifest version multicast
+        let manifest = Self {
+            creation_date: data.creation_date,
+            fallback_poll_rate: data.fallback_poll_rate,
+            presentations: data
+                .presentations
+                .into_iter()
+                .map(|p| Presentation::new(&url, p))
+                .into_entities()?,
+            stream_type: data.stream_type.try_into()?,
+        };
+
+        Ok(manifest)
+    }
     fn presentations(&self) -> EntityIter<Presentation> {
         self.presentations.iter()
     }

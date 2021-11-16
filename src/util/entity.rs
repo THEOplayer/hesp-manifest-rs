@@ -21,6 +21,9 @@ impl<E: Entity> EntityMap<E> {
     pub fn len(&self) -> usize {
         self.inner.len()
     }
+    pub fn is_empty(&self) -> bool {
+        self.inner.is_empty()
+    }
     pub fn iter(&self) -> EntityIter<E> {
         EntityIter {
             inner: self.inner.values(),
@@ -31,7 +34,15 @@ impl<E: Entity> EntityMap<E> {
             inner: self.inner.values_mut(),
         }
     }
-    pub fn into_iter(self) -> hash_map::IntoValues<String, E> {
+
+}
+
+impl<E:Entity> IntoIterator for EntityMap<E> {
+    type Item = E;
+    type IntoIter = hash_map::IntoValues<String, E>;
+
+    #[inline]
+    fn into_iter(self) -> Self::IntoIter {
         self.inner.into_values()
     }
 }
@@ -94,7 +105,7 @@ impl<E: Entity, I: IntoIterator<Item = Result<E>>> FromEntities<E> for I {
     fn into_entities(self) -> Result<EntityMap<E>> {
         let iter = self.into_iter();
         let mut map = HashMap::with_capacity(iter.size_hint().0);
-        for entity in self {
+        for entity in iter {
             let entity = entity?;
             if let Some(duplicate) = map.insert(entity.id().to_owned(), entity) {
                 return Err(Error::DuplicateId(duplicate.id().to_string()));

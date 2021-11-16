@@ -1,7 +1,10 @@
+use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
 use crate::*;
+
+use super::data::AudioSwitchingSetData;
 
 #[derive(Debug, Clone)]
 pub struct AudioSwitchingSet {
@@ -42,7 +45,7 @@ impl MediaSwitchingSet for AudioSwitchingSet {
     const MEDIA_TYPE: MediaType = MediaType::Audio;
 }
 
-#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
+#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Deserialize, Serialize, Copy)]
 pub struct FrameRate(u64);
 
 impl Default for FrameRate {
@@ -123,7 +126,9 @@ mod tests {
                     }
                 ]
             }"#;
-        let result = serde_json::from_str::<AudioSwitchingSet>(data);
+        let url = Url::parse("https://www.theoplayer.com").unwrap();
+        let data = serde_json::from_str::<AudioSwitchingSetData>(data).unwrap();
+        let result = AudioSwitchingSet::new("p1", &url, data);
 
         assert!(result.is_err());
         let error = result.unwrap_err().to_string();

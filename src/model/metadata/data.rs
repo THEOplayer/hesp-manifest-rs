@@ -4,35 +4,35 @@ use serde_with::skip_serializing_none;
 use crate::*;
 
 #[skip_serializing_none]
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct MetadataSwitchingSetData {
-    id: String,
-    mime_type: String,
-    tracks: Vec<MetadataTrackData>,
-    scheme_id: String,
-    align_id: Option<String>,
-    base_url: Option<String>,
-    continuation_pattern: Option<String>,
-    label: Option<String>,
-    language: Option<Language>,
+    pub id: String,
+    pub mime_type: String,
+    pub tracks: Vec<MetadataTrackData>,
+    pub scheme_id: String,
+    pub align_id: Option<String>,
+    pub base_url: Option<String>,
+    pub continuation_pattern: Option<String>,
+    pub label: Option<String>,
+    pub language: Option<Language>,
     #[serde(default)]
-    media_time_offset: ScaledValue,
+    pub media_time_offset: ScaledValue,
 }
 
 #[skip_serializing_none]
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct MetadataTrackData {
-    id: String,
-    segments: Segments,
+    pub id: String,
+    pub segments: Segments,
     #[serde(rename = "activeSegment")]
-    active_segment_id: Option<SegmentId>,
-    average_bandwidth: Option<Number>,
-    bandwidth: Option<Number>,
-    base_url: Option<String>,
-    continuation_pattern: Option<String>,
-    label: Option<String>,
-    media_time_offset: Option<ScaledValue>,
-    segment_duration: Option<ScaledValue>,
+    pub active_segment_id: Option<SegmentId>,
+    pub average_bandwidth: Option<Number>,
+    pub bandwidth: Option<Number>,
+    pub base_url: Option<String>,
+    pub continuation_pattern: Option<String>,
+    pub label: Option<String>,
+    pub media_time_offset: Option<ScaledValue>,
+    pub segment_duration: Option<ScaledValue>,
 }

@@ -56,6 +56,8 @@ pub enum Error {
     InvalidTrackType(String),
     #[error(transparent)]
     UrlParseError(#[from] url::ParseError),
+    #[error(transparent)]
+    InvalidJson(#[from] serde_path_to_error::Error<serde_json::Error>)
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

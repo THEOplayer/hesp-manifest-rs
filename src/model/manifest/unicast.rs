@@ -27,10 +27,10 @@ use super::data::ManifestData;
 
 #[derive(Debug, Clone)]
 pub struct UnicastManifest {
-    creation_date: DateTime,
-    fallback_poll_rate: Number,
-    presentations: EntityMap<Presentation>,
-    stream_type: UnicastStreamType,
+    pub(crate) creation_date: DateTime,
+    pub(crate) fallback_poll_rate: Number,
+    pub(crate) presentations: EntityMap<Presentation>,
+    pub(crate) stream_type: UnicastStreamType,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -41,22 +41,6 @@ pub enum UnicastStreamType {
 }
 
 impl UnicastManifest {
-    pub fn new(base_url: &Url, data: ManifestData) -> Result<Self> {
-        let url = data.content_base_url.resolve(base_url)?;
-        //TODO check manifest version unicast
-        let mut manifest = UnicastManifest {
-            creation_date: data.creation_date,
-            fallback_poll_rate: data.fallback_poll_rate,
-            presentations: data
-                .presentations
-                .into_iter()
-                .map(|p| Presentation::new(&url, p))
-                .into_entities()?,
-            stream_type: data.stream_type,
-        };
-
-        Ok(manifest)
-    }
 
     pub fn stream_type(&self) -> &UnicastStreamType {
         &self.stream_type
@@ -71,6 +55,22 @@ impl UnicastManifest {
 }
 
 impl Manifest for UnicastManifest {
+    fn new(base_url: &Url, data: ManifestData) -> Result<Self> {
+        let url = data.content_base_url.resolve(base_url)?;
+        //TODO check manifest version unicast
+        let manifest = Self {
+            creation_date: data.creation_date,
+            fallback_poll_rate: data.fallback_poll_rate,
+            presentations: data
+                .presentations
+                .into_iter()
+                .map(|p| Presentation::new(&url, p))
+                .into_entities()?,
+            stream_type: data.stream_type,
+        };
+
+        Ok(manifest)
+    }
     fn presentations(&self) -> EntityIter<Presentation> {
         self.presentations.iter()
     }
@@ -110,7 +110,8 @@ mod tests {
                 "streamType": "live",
                 "activePresentation": "0",
             }"#;
-        let result = serde_json::from_str::<UnicastManifest>(data);
+        let url = Url::parse("https://www.theoplayer.com")?;
+        let result = UnicastManifest::from_json(&url, data);
 
         assert!(result.is_err());
         let error = result.unwrap_err().to_string();
@@ -139,7 +140,8 @@ mod tests {
                 "streamType": "live",
                 "activePresentation": "0"
             }"#;
-        let result = serde_json::from_str::<UnicastManifest>(data);
+        let url = Url::parse("https://www.theoplayer.com")?;
+        let result = UnicastManifest::from_json(&url, data);
 
         assert!(result.is_err());
         let error = result.unwrap_err().to_string();

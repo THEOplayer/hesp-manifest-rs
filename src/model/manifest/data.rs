@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 use crate::*;
+use crate::model::presentation::data::PresentationData;
 
 #[skip_serializing_none]
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -15,4 +16,3 @@ pub struct ManifestData {
     pub stream_type: UnicastStreamType,
     pub content_base_url: Option<String>,
 }
-

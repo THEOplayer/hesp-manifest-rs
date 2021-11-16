@@ -25,7 +25,7 @@ pub struct VideoTrack {
 
 impl Entity for VideoTrack {
     fn id(&self) -> &str {
-        &self.uid.track_id()
+        self.uid.track_id()
     }
 }
 

@@ -1,8 +1,7 @@
 use url::Url;
 
-use crate::model::track::validate_segments;
-use crate::*;
 use crate::util::{Entity, RelativeUrl};
+use crate::*;
 
 #[derive(Debug, Clone)]
 pub struct VideoTrack {
@@ -85,62 +84,46 @@ impl VideoTrack {
         switching_set_id: String,
         switching_set_url: &Url,
         data: VideoTrackData,
-        default_codecs: Option<&str>,
-        default_continuation_pattern: Option<&str>,
-        default_frame_rate: Option<ScaledValue>,
-        default_initialization_pattern: Option<&str>,
-        default_media_time_offset: ScaledValue,
     ) -> Result<Self> {
-        let VideoTrackData {
-            bandwidth,
-            id,
-            resolution,
-            segments,
-            active_segment_id,
-            active_sequence_number,
-            average_bandwidth,
-            base_url,
-            codecs,
-            continuation_pattern,
-            frame_rate,
-            label,
-            initialization_pattern,
-            media_time_offset,
-            segment_duration,
-            transmission,
-        } = data;
-        let base_url = base_url.resolve(switching_set_url)?;
-        validate_segments(&id, segment_duration, &segments)?;
-        default!(id, codecs, default_codecs, Error::MissingCodecs);
-        default!(
-            id,
-            continuation_pattern,
-            default_continuation_pattern,
-            Error::MissingContinuationPattern
-        );
-        default!(id, frame_rate, default_frame_rate, Error::MissingFrameRate);
-        default!(
-            id,
-            initialization_pattern,
-            default_initialization_pattern,
-            Error::MissingInitializationPattern
-        );
+        let id = data.id;
+        let base_url = data.base_url.resolve(switching_set_url)?;
+        let codecs = if let Some(codecs) = data.codecs {
+            codecs
+        } else {
+            return Err(Error::MissingCodecs(id));
+        };
+        let continuation_pattern = if let Some(continuation_pattern) = data.continuation_pattern {
+            continuation_pattern
+        } else {
+            return Err(Error::MissingContinuationPattern(id));
+        };
+        let initialization_pattern =
+            if let Some(initialization_pattern) = data.initialization_pattern {
+                initialization_pattern
+            } else {
+                return Err(Error::MissingInitializationPattern(id));
+            };
+        let frame_rate = if let Some(frame_rate) = data.frame_rate {
+            frame_rate
+        } else {
+            return Err(Error::MissingFrameRate(id));
+        };
         Ok(VideoTrack {
-            bandwidth,
+            bandwidth: data.bandwidth,
             uid: TrackUid::new(presentation_id, Self::TRACK_TYPE, switching_set_id, id),
-            resolution,
-            segments,
-            active_segment_id,
-            active_sequence_number,
-            average_bandwidth,
+            resolution: data.resolution,
+            segments: data.segments,
+            active_segment_id: data.active_segment_id,
+            active_sequence_number: data.active_sequence_number,
+            average_bandwidth: data.average_bandwidth,
             codecs,
             continuation_pattern: ContinuationPattern::new(base_url.clone(), continuation_pattern)?,
             frame_rate,
-            label,
+            label: data.label,
             initialization_pattern: InitializationPattern::new(base_url, initialization_pattern)?,
-            media_time_offset: media_time_offset.unwrap_or(default_media_time_offset),
-            segment_duration,
-            transmission,
+            media_time_offset: data.media_time_offset.unwrap_or_default(),
+            segment_duration: data.segment_duration,
+            transmission: data.transmission,
         })
     }
 }

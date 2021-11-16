@@ -1,6 +1,6 @@
+use hesp_manifest::{Manifest, UnicastManifest};
 use std::fs;
 use url::Url;
-use hesp_manifest::{Manifest, UnicastManifest};
 
 /// will return an Err because the alpha manifest does not follow the spec
 fn main() -> anyhow::Result<()> {

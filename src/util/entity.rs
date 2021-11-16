@@ -36,7 +36,7 @@ impl<E: Entity> EntityMap<E> {
     }
 }
 
-impl<E:Entity> IntoIterator for EntityMap<E> {
+impl<E: Entity> IntoIterator for EntityMap<E> {
     type Item = E;
     type IntoIter = hash_map::IntoValues<String, E>;
 
@@ -46,7 +46,7 @@ impl<E:Entity> IntoIterator for EntityMap<E> {
     }
 }
 
-impl<'a, E:Entity> IntoIterator for &'a EntityMap<E> {
+impl<'a, E: Entity> IntoIterator for &'a EntityMap<E> {
     type Item = &'a E;
     type IntoIter = EntityIter<'a, E>;
 
@@ -56,8 +56,8 @@ impl<'a, E:Entity> IntoIterator for &'a EntityMap<E> {
     }
 }
 
-impl<'a, E:Entity> IntoIterator for &'a mut EntityMap<E> {
-    type Item =  &'a mut E;
+impl<'a, E: Entity> IntoIterator for &'a mut EntityMap<E> {
+    type Item = &'a mut E;
     type IntoIter = EntityIterMut<'a, E>;
 
     #[inline]
@@ -65,7 +65,6 @@ impl<'a, E:Entity> IntoIterator for &'a mut EntityMap<E> {
         self.iter_mut()
     }
 }
-
 
 pub struct EntityIter<'a, E: Entity> {
     inner: hash_map::Values<'a, String, E>,

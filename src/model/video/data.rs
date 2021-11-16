@@ -45,3 +45,46 @@ pub struct VideoTrackData {
     pub segment_duration: Option<ScaledValue>,
     pub transmission: TrackTransmission,
 }
+
+impl VideoTrackData {
+    pub fn with_default_codecs(mut self, codecs: &Option<String>) -> Self {
+        if self.codecs.is_none() {
+            self.codecs = codecs.clone()
+        }
+        self
+    }
+
+    pub fn with_default_continuation_pattern(
+        mut self,
+        continuation_pattern: &Option<String>,
+    ) -> Self {
+        if self.continuation_pattern.is_none() {
+            self.continuation_pattern = continuation_pattern.clone()
+        }
+        self
+    }
+
+    pub fn with_default_initialization_pattern(
+        mut self,
+        initialization_pattern: &Option<String>,
+    ) -> Self {
+        if self.initialization_pattern.is_none() {
+            self.initialization_pattern = initialization_pattern.clone()
+        }
+        self
+    }
+
+    pub fn with_default_frame_rate(mut self, frame_rate: Option<ScaledValue>) -> Self {
+        if self.frame_rate.is_none() {
+            self.frame_rate = frame_rate
+        }
+        self
+    }
+
+    pub fn with_default_media_time_offset(mut self, media_time_offset: ScaledValue) -> Self {
+        if self.media_time_offset.is_none() {
+            self.media_time_offset = Some(media_time_offset)
+        }
+        self
+    }
+}

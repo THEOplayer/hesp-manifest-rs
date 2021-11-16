@@ -47,30 +47,3 @@ pub struct TransferObjectIdentifierLimits {
     pub start: u32,
     pub end: u32,
 }
-
-pub(crate) fn validate_segments(
-    _id: &str,
-    _duration: Option<ScaledValue>,
-    _segments: &[Segment],
-) -> Result<()> {
-    // TODO uncomment
-    // if  duration.is_some() || segments.iter().all(|segment| segment.has_time_bounds()) {
-    //     Err(Error::MissingSegmentDuration(id.to_owned()))
-    // } else {
-    Ok(())
-    // }
-}
-
-#[macro_export]
-/// defaults 2 optionals or return an error when not possible
-macro_rules! default {
-    ($id:expr, $var: ident, $default:expr, $error: expr) => {
-        let $var = if let Some(value) = $var {
-            value
-        } else if let Some(value) = $default {
-            value.to_owned()
-        } else {
-            return Err($error($id));
-        };
-    };
-}

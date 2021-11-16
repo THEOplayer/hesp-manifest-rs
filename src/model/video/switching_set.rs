@@ -1,7 +1,7 @@
 use url::Url;
 
-use crate::*;
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
+use crate::*;
 
 #[derive(Debug, Clone)]
 pub struct VideoSwitchingSet {
@@ -44,45 +44,33 @@ impl VideoSwitchingSet {
     pub fn new(
         presentation_id: &str,
         presentation_url: &Url,
-        data: VideoSwitchingSetData) -> Result<Self> {
-        let VideoSwitchingSetData {
-            id,
-            tracks,
-            align_id,
-            base_url,
-            codecs,
-            continuation_pattern,
-            frame_rate,
-            initialization_pattern,
-            label,
-            media_time_offset,
-            mime_type,
-            protection,
-        } = data;
-        let base_url = base_url.resolve(presentation_url)?;
-        let tracks = tracks
+        data: VideoSwitchingSetData,
+    ) -> Result<Self> {
+        let base_url = data.base_url.resolve(presentation_url)?;
+        let tracks = data
+            .tracks
             .into_iter()
             .map(|track| {
                 VideoTrack::new(
-presentation_id.to_owned(),
-                    id.clone(),
+                    presentation_id.to_owned(),
+                    data.id.clone(),
                     &base_url,
-                    track,
-                    codecs.as_deref(),
-                    continuation_pattern.as_deref(),
-                    frame_rate,
-                    initialization_pattern.as_deref(),
-                    media_time_offset,
+                    track
+                        .with_default_codecs(&data.codecs)
+                        .with_default_frame_rate(data.frame_rate)
+                        .with_default_media_time_offset(data.media_time_offset)
+                        .with_default_continuation_pattern(&data.continuation_pattern)
+                        .with_default_initialization_pattern(&data.initialization_pattern),
                 )
             })
             .into_entities()?;
         Ok(VideoSwitchingSet {
-            id,
+            id: data.id,
             tracks,
-            align_id,
-            label,
-            mime_type,
-            protection,
+            align_id: data.align_id,
+            label: data.label,
+            mime_type: data.mime_type,
+            protection: data.protection,
         })
     }
 }

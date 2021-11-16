@@ -21,7 +21,9 @@ impl ContinuationPattern {
     }
 
     pub fn segment(&self, id: SegmentId) -> Url {
-        let rel = self.pattern.replace(Self::SEGMENT_ID_PATTERN, &id.to_string());
+        let rel = self
+            .pattern
+            .replace(Self::SEGMENT_ID_PATTERN, &id.to_string());
         self.base.join(&rel).unwrap()
     }
 }

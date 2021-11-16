@@ -22,7 +22,6 @@ pub enum UnicastStreamType {
 }
 
 impl UnicastManifest {
-
     pub fn stream_type(&self) -> &UnicastStreamType {
         &self.stream_type
     }
@@ -38,7 +37,7 @@ impl UnicastManifest {
 impl Manifest for UnicastManifest {
     fn new(base_url: &Url, data: ManifestData) -> Result<Self> {
         if data.manifest_version != ManifestVersion::V1_0_0 {
-            return Err(Error::InvalidUnicastVersion(data.manifest_version))
+            return Err(Error::InvalidUnicastVersion(data.manifest_version));
         }
         let url = data.content_base_url.resolve(base_url)?;
         let presentations = data
@@ -73,8 +72,15 @@ impl Manifest for UnicastManifest {
     }
 }
 
-pub(crate) fn validate_active(stream_type: &UnicastStreamType, presentations: &EntityMap<Presentation>) -> Result<()> {
-    if let UnicastStreamType::Live(LiveStream{active_presentation,..}) = stream_type {
+pub(crate) fn validate_active(
+    stream_type: &UnicastStreamType,
+    presentations: &EntityMap<Presentation>,
+) -> Result<()> {
+    if let UnicastStreamType::Live(LiveStream {
+        active_presentation,
+        ..
+    }) = stream_type
+    {
         presentations
             .get(active_presentation)
             .ok_or_else(|| Error::InvalidActivePresentationId(active_presentation.to_owned()))?

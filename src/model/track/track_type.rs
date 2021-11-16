@@ -1,14 +1,13 @@
+use crate::*;
 use std::fmt;
 use std::str::FromStr;
-use crate::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Copy)]
 pub enum TrackType {
     Audio,
     Video,
-    Metadata
+    Metadata,
 }
-
 
 impl fmt::Display for TrackType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

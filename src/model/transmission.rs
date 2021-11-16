@@ -1,5 +1,5 @@
-use serde::{self, Deserialize, Serialize};
 use crate::*;
+use serde::{self, Deserialize, Serialize};
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Copy)]
 pub enum TransmissionType {
@@ -7,11 +7,10 @@ pub enum TransmissionType {
     Multicast,
 }
 
-
 #[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Copy)]
 #[serde(
-from = "Option<TransferObjectIdentifierLimits>",
-into = "Option<TransferObjectIdentifierLimits>"
+    from = "Option<TransferObjectIdentifierLimits>",
+    into = "Option<TransferObjectIdentifierLimits>"
 )]
 #[serde(rename = "toi_limits", rename_all = "camelCase")]
 pub enum TrackTransmission {

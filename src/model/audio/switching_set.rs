@@ -46,11 +46,11 @@ impl MediaSwitchingSet for AudioSwitchingSet {
 }
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Deserialize, Serialize, Copy)]
-pub struct FrameRate(u64);
+pub struct SamplesPerFrame(u64);
 
-impl Default for FrameRate {
+impl Default for SamplesPerFrame {
     fn default() -> Self {
-        FrameRate(1024)
+        SamplesPerFrame(1024)
     }
 }
 
@@ -60,50 +60,34 @@ impl AudioSwitchingSet {
         presentation_url: &Url,
         data: AudioSwitchingSetData,
     ) -> Result<Self> {
-        let AudioSwitchingSetData {
-            id,
-            language,
-            tracks,
-            align_id,
-            base_url,
-            channels,
-            codecs,
-            continuation_pattern,
-            frame_rate,
-            initialization_pattern,
-            label,
-            media_time_offset,
-            mime_type,
-            protection,
-            sample_rate,
-        } = data;
-        let base_url = base_url.resolve(presentation_url)?;
-        let tracks = tracks
+        let base_url = data.base_url.resolve(presentation_url)?;
+        let tracks = data
+            .tracks
             .into_iter()
             .map(|track| {
                 AudioTrack::new(
                     presentation_id.to_owned(),
-                    id.to_owned(),
+                    data.id.clone(),
                     &base_url,
-                    track,
-                    codecs.as_deref(),
-                    continuation_pattern.as_deref(),
-                    frame_rate,
-                    initialization_pattern.as_deref(),
-                    media_time_offset,
-                    sample_rate,
+                    track
+                        .with_default_sample_rate(data.sample_rate)
+                        .with_default_codecs(&data.codecs)
+                        .with_default_frame_rate(data.frame_rate)
+                        .with_default_media_time_offset(data.media_time_offset)
+                        .with_default_continuation_pattern(&data.continuation_pattern)
+                        .with_default_initialization_pattern(&data.initialization_pattern),
                 )
             })
             .into_entities()?;
         Ok(AudioSwitchingSet {
-            id,
-            language,
+            id: data.id,
+            language: data.language,
             tracks,
-            align_id,
-            channels,
-            label,
-            mime_type,
-            protection,
+            align_id: data.align_id,
+            channels: data.channels,
+            label: data.label,
+            mime_type: data.mime_type,
+            protection: data.protection,
         })
     }
 }

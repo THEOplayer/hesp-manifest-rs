@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::*;
 use crate::model::audio::data::AudioSwitchingSetData;
+use crate::*;
 
 #[skip_serializing_none]
 #[derive(Clone, Deserialize, Serialize, Debug)]

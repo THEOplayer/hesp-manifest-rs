@@ -36,3 +36,22 @@ pub struct MetadataTrackData {
     pub media_time_offset: Option<ScaledValue>,
     pub segment_duration: Option<ScaledValue>,
 }
+
+impl MetadataTrackData {
+    pub fn with_default_continuation_pattern(
+        mut self,
+        continuation_pattern: &Option<String>,
+    ) -> Self {
+        if self.continuation_pattern.is_none() {
+            self.continuation_pattern = continuation_pattern.clone()
+        }
+        self
+    }
+
+    pub fn with_default_media_time_offset(mut self, media_time_offset: ScaledValue) -> Self {
+        if self.media_time_offset.is_none() {
+            self.media_time_offset = Some(media_time_offset)
+        }
+        self
+    }
+}

@@ -1,8 +1,8 @@
 use url::Url;
 
+use super::data::AudioTrackData;
 use crate::util::{Entity, RelativeUrl};
 use crate::*;
-use super::data::AudioTrackData;
 
 #[derive(Debug, Clone)]
 pub struct AudioTrack {
@@ -15,7 +15,7 @@ pub struct AudioTrack {
     channels: Option<u64>,
     codecs: String,
     continuation_pattern: ContinuationPattern,
-    frame_rate: FrameRate,
+    frame_rate: SamplesPerFrame,
     label: Option<String>,
     initialization_pattern: InitializationPattern,
     media_time_offset: ScaledValue,
@@ -84,70 +84,47 @@ impl AudioTrack {
         switching_set_id: String,
         switching_set_url: &Url,
         data: AudioTrackData,
-        default_codecs: Option<&str>,
-        default_continuation_pattern: Option<&str>,
-        default_frame_rate: FrameRate,
-        default_initialization_pattern: Option<&str>,
-        default_media_time_offset: ScaledValue,
-        default_sample_rate: Option<u64>,
     ) -> Result<Self> {
-        let AudioTrackData {
-            bandwidth,
-            id,
-            segments,
-            active_segment_id,
-            active_sequence_number,
-            average_bandwidth,
-            base_url,
-            channels,
-            codecs,
-            continuation_pattern,
-            frame_rate,
-            label,
-            initialization_pattern,
-            media_time_offset,
-            sample_rate,
-            segment_duration,
-            transmission,
-        } = data;
-        let base_url = base_url.resolve(switching_set_url)?;
-        default!(id, codecs, default_codecs, Error::MissingCodecs);
-        default!(
-            id,
-            continuation_pattern,
-            default_continuation_pattern,
-            Error::MissingContinuationPattern
-        );
-        default!(
-            id,
-            initialization_pattern,
-            default_initialization_pattern,
-            Error::MissingInitializationPattern
-        );
-        default!(
-            id,
-            sample_rate,
-            default_sample_rate,
-            Error::MissingSampleRate
-        );
-        validate_segments(&id, segment_duration, &segments)?;
+        let id = data.id;
+        let base_url = data.base_url.resolve(switching_set_url)?;
+        let codecs = if let Some(codecs) = data.codecs {
+            codecs
+        } else {
+            return Err(Error::MissingCodecs(id));
+        };
+        let continuation_pattern = if let Some(continuation_pattern) = data.continuation_pattern {
+            continuation_pattern
+        } else {
+            return Err(Error::MissingContinuationPattern(id));
+        };
+        let initialization_pattern =
+            if let Some(initialization_pattern) = data.initialization_pattern {
+                initialization_pattern
+            } else {
+                return Err(Error::MissingInitializationPattern(id));
+            };
+        let sample_rate = if let Some(sample_rate) = data.sample_rate {
+            sample_rate
+        } else {
+            return Err(Error::MissingSampleRate(id));
+        };
         Ok(AudioTrack {
-            bandwidth,
+            bandwidth: data.bandwidth,
             uid: TrackUid::new(presentation_id, Self::TRACK_TYPE, switching_set_id, id),
-            segments,
-            active_segment_id,
-            active_sequence_number,
-            average_bandwidth,
-            channels,
+            segments: data.segments,
+            active_segment_id: data.active_segment_id,
+            active_sequence_number: data.active_sequence_number,
+            average_bandwidth: data.average_bandwidth,
+            channels: data.channels,
             codecs,
             continuation_pattern: ContinuationPattern::new(base_url.clone(), continuation_pattern)?,
-            frame_rate: frame_rate.unwrap_or(default_frame_rate),
-            label,
+            frame_rate: data.frame_rate.unwrap_or_default(),
+            label: data.label,
             initialization_pattern: InitializationPattern::new(base_url, initialization_pattern)?,
-            media_time_offset: media_time_offset.unwrap_or(default_media_time_offset),
+            media_time_offset: data.media_time_offset.unwrap_or_default(),
             sample_rate,
-            segment_duration,
-            transmission,
+            segment_duration: data.segment_duration,
+            transmission: data.transmission,
         })
     }
 }

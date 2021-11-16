@@ -26,40 +26,29 @@ impl MetadataSwitchingSet {
         presentation_url: &Url,
         data: MetadataSwitchingSetData,
     ) -> Result<Self> {
-        let MetadataSwitchingSetData {
-            id,
-            scheme_id,
-            language,
-            tracks,
-            align_id,
-            base_url,
-            continuation_pattern,
-            label,
-            media_time_offset,
-            mime_type,
-        } = data;
-        let base_url = base_url.resolve(presentation_url)?;
-        let tracks = tracks
+        let base_url = data.base_url.resolve(presentation_url)?;
+        let tracks = data
+            .tracks
             .into_iter()
             .map(|track| {
                 MetadataTrack::new(
                     presentation_id.to_owned(),
-                    id.clone(),
+                    data.id.clone(),
                     &base_url,
-                    track,
-                    continuation_pattern.as_deref(),
-                    media_time_offset,
+                    track
+                        .with_default_continuation_pattern(&data.continuation_pattern)
+                        .with_default_media_time_offset(data.media_time_offset),
                 )
             })
             .into_entities()?;
         Ok(MetadataSwitchingSet {
-            id,
-            language,
+            id: data.id,
+            language: data.language,
             tracks,
-            scheme_id,
-            align_id,
-            label,
-            mime_type,
+            scheme_id: data.scheme_id,
+            align_id: data.align_id,
+            label: data.label,
+            mime_type: data.mime_type,
         })
     }
 }

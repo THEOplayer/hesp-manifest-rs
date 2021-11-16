@@ -1,6 +1,5 @@
 use url::Url;
 
-use crate::model::track::validate_segments;
 use crate::util::{Entity, RelativeUrl};
 use crate::*;
 
@@ -55,39 +54,24 @@ impl MetadataTrack {
         switching_set_id: String,
         switching_set_url: &Url,
         data: MetadataTrackData,
-        default_continuation_pattern: Option<&str>,
-        default_media_time_offset: ScaledValue,
     ) -> Result<Self> {
-        let MetadataTrackData {
-            bandwidth,
-            id,
-            segments,
-            active_segment_id,
-            average_bandwidth,
-            base_url,
-            continuation_pattern,
-            label,
-            media_time_offset,
-            segment_duration,
-        } = data;
-        let base_url = base_url.resolve(switching_set_url)?;
-        validate_segments(&id, segment_duration, &segments)?;
-        default!(
-            id,
-            continuation_pattern,
-            default_continuation_pattern,
-            Error::MissingContinuationPattern
-        );
+        let id = data.id;
+        let base_url = data.base_url.resolve(switching_set_url)?;
+        let continuation_pattern = if let Some(continuation_pattern) = data.continuation_pattern {
+            continuation_pattern
+        } else {
+            return Err(Error::MissingContinuationPattern(id));
+        };
         Ok(MetadataTrack {
-            bandwidth,
+            bandwidth: data.bandwidth,
             uid: TrackUid::new(presentation_id, Self::TRACK_TYPE, switching_set_id, id),
-            segments,
-            active_segment_id,
-            average_bandwidth,
+            segments: data.segments,
+            active_segment_id: data.active_segment_id,
+            average_bandwidth: data.average_bandwidth,
             continuation_pattern: ContinuationPattern::new(base_url, continuation_pattern)?,
-            label,
-            media_time_offset: media_time_offset.unwrap_or(default_media_time_offset),
-            segment_duration,
+            label: data.label,
+            media_time_offset: data.media_time_offset.unwrap_or_default(),
+            segment_duration: data.segment_duration,
         })
     }
 }

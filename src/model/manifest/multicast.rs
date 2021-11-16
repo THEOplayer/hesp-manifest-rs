@@ -60,7 +60,7 @@ impl MulticastManifest {
     pub fn all_toi_limits(
         &self,
     ) -> impl Iterator<Item = (&TrackUid, TransferObjectIdentifierLimits)> + '_ {
-        fn toi<'a, T: MediaTrack>(track: &'a T) -> Option<(&'a TrackUid, TransferObjectIdentifierLimits)> {
+        fn toi<T: MediaTrack>(track: &T) -> Option<(&TrackUid, TransferObjectIdentifierLimits)> {
             match track.transmission() {
                 TrackTransmission::Unicast => None,
                 &TrackTransmission::Multicast { toi_limits } => Some((track.uid(), toi_limits)),

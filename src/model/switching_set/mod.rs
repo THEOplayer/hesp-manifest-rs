@@ -1,5 +1,4 @@
 pub use protection::SwitchingSetProtection;
-pub use switching_set::*;
 
 use crate::util::{Entity, EntityIter, EntityIterMut};
 use crate::*;

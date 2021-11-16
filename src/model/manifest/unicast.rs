@@ -6,25 +6,6 @@ use crate::*;
 
 use super::data::ManifestData;
 
-// TODO
-// impl Validate for UnicastManifest {
-//     fn validate(&self) -> Result<()> {
-//         if let UnicastStreamType::Live(LiveStream {
-//                                            active_presentation,
-//                                            ..
-//                                        }) = &self.stream_type
-//         {
-//             self.presentation(active_presentation)
-//                 .ok_or_else(|| Error::InvalidActivePresentationId(active_presentation.to_owned()))?
-//                 .validate_active()?;
-//         }
-//         for presentation in self.presentations() {
-//             presentation.ensure_unicast()?;
-//         }
-//         Ok(())
-//     }
-// }
-
 #[derive(Debug, Clone)]
 pub struct UnicastManifest {
     pub(crate) creation_date: DateTime,
@@ -56,16 +37,23 @@ impl UnicastManifest {
 
 impl Manifest for UnicastManifest {
     fn new(base_url: &Url, data: ManifestData) -> Result<Self> {
+        if data.manifest_version != ManifestVersion::V1_0_0 {
+            return Err(Error::InvalidUnicastVersion(data.manifest_version))
+        }
         let url = data.content_base_url.resolve(base_url)?;
-        //TODO check manifest version unicast
+        let presentations = data
+            .presentations
+            .into_iter()
+            .map(|p| Presentation::new(&url, p))
+            .into_entities()?;
+        for presentation in &presentations {
+            presentation.ensure_unicast()?;
+        }
+        validate_active(&data.stream_type, &presentations)?;
         let manifest = Self {
             creation_date: data.creation_date,
             fallback_poll_rate: data.fallback_poll_rate,
-            presentations: data
-                .presentations
-                .into_iter()
-                .map(|p| Presentation::new(&url, p))
-                .into_entities()?,
+            presentations,
             stream_type: data.stream_type,
         };
 
@@ -82,6 +70,17 @@ impl Manifest for UnicastManifest {
     }
     fn presentation_mut(&mut self, id: &str) -> Option<&mut Presentation> {
         self.presentations.get_mut(id)
+    }
+}
+
+pub(crate) fn validate_active(stream_type: &UnicastStreamType, presentations: &EntityMap<Presentation>) -> Result<()> {
+    if let UnicastStreamType::Live(LiveStream{active_presentation,..}) = stream_type {
+        presentations
+            .get(active_presentation)
+            .ok_or_else(|| Error::InvalidActivePresentationId(active_presentation.to_owned()))?
+            .validate_active()
+    } else {
+        Ok(())
     }
 }
 
@@ -108,7 +107,7 @@ mod tests {
                     }
                 ],
                 "streamType": "live",
-                "activePresentation": "0",
+                "activePresentation": "0"
             }"#;
         let url = Url::parse("https://www.theoplayer.com")?;
         let result = UnicastManifest::from_json(&url, data);

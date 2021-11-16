@@ -1,7 +1,7 @@
-use url::Url;
+use super::ManifestData;
 use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
 use crate::*;
-use super::ManifestData;
+use url::Url;
 
 #[derive(Debug, Clone)]
 pub struct MulticastManifest {
@@ -38,7 +38,7 @@ impl TryFrom<UnicastStreamType> for MulticastStreamType {
     fn try_from(value: UnicastStreamType) -> Result<Self> {
         match value {
             UnicastStreamType::Live(stream) => Ok(MulticastStreamType::Live(stream)),
-            UnicastStreamType::Vod => Err(Error::InvalidMulticastStreamType)
+            UnicastStreamType::Vod => Err(Error::InvalidMulticastStreamType),
         }
     }
 }
@@ -92,7 +92,7 @@ impl MulticastManifest {
                 .audio_switching_set(track.switching_set_id())?
                 .track(track.track_id())?
                 .transmission(),
-            TrackType::Metadata => unimplemented!("no multicast support for metadata yet")
+            TrackType::Metadata => unimplemented!("no multicast support for metadata yet"),
         })
     }
 
@@ -132,18 +132,21 @@ impl MulticastManifest {
 impl Manifest for MulticastManifest {
     fn new(base_url: &Url, data: ManifestData) -> Result<Self> {
         let url = data.content_base_url.resolve(base_url)?;
-        //TODO check manifest version multicast
+        if data.manifest_version != ManifestVersion::V1_0_0Multicast {
+            return Err(Error::InvalidMulticastVersion(data.manifest_version));
+        }
+        let presentations = data
+            .presentations
+            .into_iter()
+            .map(|p| Presentation::new(&url, p))
+            .into_entities()?;
+        validate_active(&data.stream_type, &presentations)?;
         let manifest = Self {
             creation_date: data.creation_date,
             fallback_poll_rate: data.fallback_poll_rate,
-            presentations: data
-                .presentations
-                .into_iter()
-                .map(|p| Presentation::new(&url, p))
-                .into_entities()?,
+            presentations,
             stream_type: data.stream_type.try_into()?,
         };
-
         Ok(manifest)
     }
     fn presentations(&self) -> EntityIter<Presentation> {

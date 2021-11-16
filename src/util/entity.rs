@@ -34,7 +34,6 @@ impl<E: Entity> EntityMap<E> {
             inner: self.inner.values_mut(),
         }
     }
-
 }
 
 impl<E:Entity> IntoIterator for EntityMap<E> {
@@ -46,6 +45,27 @@ impl<E:Entity> IntoIterator for EntityMap<E> {
         self.inner.into_values()
     }
 }
+
+impl<'a, E:Entity> IntoIterator for &'a EntityMap<E> {
+    type Item = &'a E;
+    type IntoIter = EntityIter<'a, E>;
+
+    #[inline]
+    fn into_iter(self) -> EntityIter<'a, E> {
+        self.iter()
+    }
+}
+
+impl<'a, E:Entity> IntoIterator for &'a mut EntityMap<E> {
+    type Item =  &'a mut E;
+    type IntoIter = EntityIterMut<'a, E>;
+
+    #[inline]
+    fn into_iter(self) -> EntityIterMut<'a, E> {
+        self.iter_mut()
+    }
+}
+
 
 pub struct EntityIter<'a, E: Entity> {
     inner: hash_map::Values<'a, String, E>,

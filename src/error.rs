@@ -40,6 +40,10 @@ pub enum Error {
     InvalidInitializationPattern(String),
     #[error("Presentation '{0}' must not contain multicast data")]
     InvalidUnicastPresentation(String),
+    #[error("'{0:?}' is not a valid version for a unicast manifest")]
+    InvalidUnicastVersion(ManifestVersion),
+    #[error("'{0:?}' is not a valid version for a multicast manifest")]
+    InvalidMulticastVersion(ManifestVersion),
     #[error("Presentation '{presentation}' is {transmission:?} therefore Track '{track}' must be {transmission:?}")]
     InvalidTrackTransmission {
         presentation: String,

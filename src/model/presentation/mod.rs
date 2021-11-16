@@ -25,39 +25,32 @@ pub struct Presentation {
 
 impl Presentation {
     pub fn new(manifest_url: &Url, data: PresentationData) -> Result<Self> {
-        let PresentationData {
-            id,
-            time_bounds,
-            audio,
-            base_url,
-            current_time,
-            events,
-            metadata,
-            video,
-            transmission,
-        } = data;
-        let base_url = base_url.resolve(manifest_url)?;
-        let audio = audio
+        let id = data.id;
+        let base_url = data.base_url.resolve(manifest_url)?;
+        let audio = data
+            .audio
             .into_iter()
             .map(|a| AudioSwitchingSet::new(&id, &base_url, a))
             .into_entities()?;
-        let metadata = metadata
+        let metadata = data
+            .metadata
             .into_iter()
             .map(|m| MetadataSwitchingSet::new(&id, &base_url, m))
             .into_entities()?;
-        let video = video
+        let video = data
+            .video
             .into_iter()
             .map(|v| VideoSwitchingSet::new(&id, &base_url, v))
             .into_entities()?;
         Ok(Self {
             id,
-            time_bounds,
+            time_bounds: data.time_bounds,
             audio,
-            current_time,
-            events: events.into_iter().map(Ok).into_entities()?,
+            current_time: data.current_time,
+            events: data.events.into_iter().map(Ok).into_entities()?,
             metadata,
             video,
-            transmission,
+            transmission: data.transmission,
         })
     }
 

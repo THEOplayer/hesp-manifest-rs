@@ -46,7 +46,7 @@ impl SegmentId {
 impl TryFrom<Vec<Segment>> for Segments {
     type Error = Error;
 
-    fn try_from(vec: Vec<Segment>) ->Result<Self> {
+    fn try_from(vec: Vec<Segment>) -> Result<Self> {
         let jump = vec
             .iter()
             .map(Segment::id)
@@ -134,8 +134,10 @@ mod tests {
         let result = serde_json::from_str::<Segments>(data);
 
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("13 must not follow 11"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("13 must not follow 11"));
         Ok(())
     }
-
 }

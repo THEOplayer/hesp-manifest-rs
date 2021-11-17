@@ -167,16 +167,6 @@ impl Manifest for MulticastManifest {
     }
 }
 
-//TODO
-// impl Validate for MulticastManifest {
-//     fn validate(&self) -> Result<()> {
-//         let active_id = &self.stream_type.live_data().active_presentation;
-//         self.presentation(active_id)
-//             .ok_or_else(|| Error::InvalidActivePresentationId(active_id.to_owned()))?
-//             .validate_active()
-//     }
-// }
-
 impl From<MulticastManifest> for UnicastManifest {
     fn from(input: MulticastManifest) -> Self {
         let MulticastManifest {

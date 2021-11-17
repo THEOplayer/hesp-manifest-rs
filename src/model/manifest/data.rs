@@ -29,6 +29,8 @@ impl From<UnicastManifest> for ManifestData {
                 .map(PresentationData::from)
                 .collect(),
             stream_type: input.stream_type,
+            //TODO normalize all Urls, now the full URL is stored in all initialization-/continuation-patterns
+            // same goes for switching set data defaults
             content_base_url: None,
         }
     }

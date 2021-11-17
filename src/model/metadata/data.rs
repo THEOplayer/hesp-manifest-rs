@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
+use crate::util::Entity;
 use crate::*;
 
 #[skip_serializing_none]
@@ -16,8 +17,24 @@ pub struct MetadataSwitchingSetData {
     pub continuation_pattern: Option<String>,
     pub label: Option<String>,
     pub language: Option<Language>,
-    #[serde(default)]
-    pub media_time_offset: ScaledValue,
+    pub media_time_offset: Option<ScaledValue>,
+}
+
+impl From<MetadataSwitchingSet> for MetadataSwitchingSetData {
+    fn from(input: MetadataSwitchingSet) -> Self {
+        Self {
+            id: input.id,
+            mime_type: input.mime_type,
+            tracks: input.tracks.into_iter().map(From::from).collect(),
+            scheme_id: input.scheme_id,
+            align_id: input.align_id,
+            base_url: None,
+            continuation_pattern: None,
+            label: input.label,
+            language: input.language,
+            media_time_offset: None,
+        }
+    }
 }
 
 #[skip_serializing_none]
@@ -37,6 +54,23 @@ pub struct MetadataTrackData {
     pub segment_duration: Option<ScaledValue>,
 }
 
+impl From<MetadataTrack> for MetadataTrackData {
+    fn from(input: MetadataTrack) -> Self {
+        Self {
+            id: input.id().to_owned(),
+            segments: Default::default(),
+            active_segment_id: input.active_segment_id,
+            average_bandwidth: input.average_bandwidth,
+            bandwidth: input.bandwidth,
+            base_url: None,
+            continuation_pattern: Some(input.continuation_pattern.to_string()),
+            label: input.label,
+            media_time_offset: Some(input.media_time_offset),
+            segment_duration: input.segment_duration,
+        }
+    }
+}
+
 impl MetadataTrackData {
     pub fn with_default_continuation_pattern(
         mut self,
@@ -48,9 +82,12 @@ impl MetadataTrackData {
         self
     }
 
-    pub fn with_default_media_time_offset(mut self, media_time_offset: ScaledValue) -> Self {
+    pub fn with_default_media_time_offset(
+        mut self,
+        media_time_offset: Option<ScaledValue>,
+    ) -> Self {
         if self.media_time_offset.is_none() {
-            self.media_time_offset = Some(media_time_offset)
+            self.media_time_offset = media_time_offset
         }
         self
     }

@@ -8,14 +8,14 @@ use super::data::AudioSwitchingSetData;
 
 #[derive(Debug, Clone)]
 pub struct AudioSwitchingSet {
-    id: String,
-    language: Language,
-    tracks: EntityMap<AudioTrack>,
-    align_id: Option<String>,
-    channels: Option<u64>,
-    label: Option<String>,
-    mime_type: AudioMimeType,
-    protection: Option<SwitchingSetProtection>,
+    pub(super) id: String,
+    pub(super) language: Language,
+    pub(super) tracks: EntityMap<AudioTrack>,
+    pub(super) align_id: Option<String>,
+    pub(super) channels: Option<u64>,
+    pub(super) label: Option<String>,
+    pub(super) mime_type: AudioMimeType,
+    pub(super) protection: Option<SwitchingSetProtection>,
 }
 
 impl Entity for AudioSwitchingSet {
@@ -86,7 +86,7 @@ impl AudioSwitchingSet {
             align_id: data.align_id,
             channels: data.channels,
             label: data.label,
-            mime_type: data.mime_type,
+            mime_type: data.mime_type.unwrap_or_default(),
             protection: data.protection,
         })
     }

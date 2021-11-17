@@ -22,3 +22,19 @@ pub struct PresentationData {
     pub video: Vec<VideoSwitchingSetData>,
     pub transmission: PresentationTransmission,
 }
+
+impl From<Presentation> for PresentationData {
+    fn from(input: Presentation) -> Self {
+        Self {
+            id: input.id,
+            time_bounds: input.time_bounds,
+            audio: input.audio.into_iter().map(From::from).collect(),
+            base_url: None,
+            current_time: input.current_time,
+            events: input.events.into_iter().map(From::from).collect(),
+            metadata: input.metadata.into_iter().map(From::from).collect(),
+            video: input.video.into_iter().map(From::from).collect(),
+            transmission: input.transmission,
+        }
+    }
+}

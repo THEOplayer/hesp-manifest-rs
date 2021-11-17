@@ -16,3 +16,37 @@ pub struct ManifestData {
     pub stream_type: UnicastStreamType,
     pub content_base_url: Option<String>,
 }
+
+impl From<UnicastManifest> for ManifestData {
+    fn from(input: UnicastManifest) -> Self {
+        Self {
+            creation_date: input.creation_date,
+            fallback_poll_rate: input.fallback_poll_rate,
+            manifest_version: ManifestVersion::V1_0_0,
+            presentations: input
+                .presentations
+                .into_iter()
+                .map(PresentationData::from)
+                .collect(),
+            stream_type: input.stream_type,
+            content_base_url: None,
+        }
+    }
+}
+
+impl From<MulticastManifest> for ManifestData {
+    fn from(input: MulticastManifest) -> Self {
+        Self {
+            creation_date: input.creation_date,
+            fallback_poll_rate: input.fallback_poll_rate,
+            manifest_version: ManifestVersion::V1_0_0,
+            presentations: input
+                .presentations
+                .into_iter()
+                .map(PresentationData::from)
+                .collect(),
+            stream_type: input.stream_type.into(),
+            content_base_url: None,
+        }
+    }
+}

@@ -6,14 +6,14 @@ use crate::*;
 #[derive(Debug, Clone)]
 pub struct MetadataTrack {
     uid: TrackUid,
-    segments: Segments,
-    active_segment_id: Option<SegmentId>,
-    average_bandwidth: Option<Number>,
-    bandwidth: Option<Number>,
-    continuation_pattern: ContinuationPattern,
-    label: Option<String>,
-    media_time_offset: ScaledValue,
-    segment_duration: Option<ScaledValue>,
+    pub(super) segments: Segments,
+    pub(super) active_segment_id: Option<SegmentId>,
+    pub(super) average_bandwidth: Option<Number>,
+    pub(super) bandwidth: Option<Number>,
+    pub(super) continuation_pattern: ContinuationPattern,
+    pub(super) label: Option<String>,
+    pub(super) media_time_offset: ScaledValue,
+    pub(super) segment_duration: Option<ScaledValue>,
 }
 
 impl Entity for MetadataTrack {

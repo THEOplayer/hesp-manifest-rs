@@ -11,10 +11,10 @@ pub struct TrackUid(Arc<TrackUIDData>);
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 struct TrackUIDData {
-    presentation_id: String,
-    track_type: TrackType,
-    switching_set_id: String,
-    track_id: String,
+    pub(crate) presentation_id: String,
+    pub(crate) track_type: TrackType,
+    pub(crate) switching_set_id: String,
+    pub(crate) track_id: String,
 }
 
 impl TrackUid {

@@ -6,7 +6,8 @@ use crate::*;
 
 use super::data::ManifestData;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
+#[serde(into = "ManifestData")]
 pub struct UnicastManifest {
     pub(crate) creation_date: DateTime,
     pub(crate) fallback_poll_rate: Number,

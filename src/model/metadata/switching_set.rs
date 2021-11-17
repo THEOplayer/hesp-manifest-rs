@@ -5,13 +5,13 @@ use crate::*;
 
 #[derive(Clone, Debug)]
 pub struct MetadataSwitchingSet {
-    id: String,
-    language: Option<Language>,
-    tracks: EntityMap<MetadataTrack>,
-    scheme_id: String,
-    align_id: Option<String>,
-    label: Option<String>,
-    mime_type: String,
+    pub(super) id: String,
+    pub(super) language: Option<Language>,
+    pub(super) tracks: EntityMap<MetadataTrack>,
+    pub(super) scheme_id: String,
+    pub(super) align_id: Option<String>,
+    pub(super) label: Option<String>,
+    pub(super) mime_type: String,
 }
 
 impl Entity for MetadataSwitchingSet {

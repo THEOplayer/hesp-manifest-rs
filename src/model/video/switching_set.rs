@@ -5,12 +5,12 @@ use crate::*;
 
 #[derive(Debug, Clone)]
 pub struct VideoSwitchingSet {
-    id: String,
-    tracks: EntityMap<VideoTrack>,
-    align_id: Option<String>,
-    label: Option<String>,
-    mime_type: VideoMimeType,
-    protection: Option<SwitchingSetProtection>,
+    pub(super) id: String,
+    pub(super) tracks: EntityMap<VideoTrack>,
+    pub(super) align_id: Option<String>,
+    pub(super) label: Option<String>,
+    pub(super) mime_type: VideoMimeType,
+    pub(super) protection: Option<SwitchingSetProtection>,
 }
 
 impl Entity for VideoSwitchingSet {
@@ -69,58 +69,8 @@ impl VideoSwitchingSet {
             tracks,
             align_id: data.align_id,
             label: data.label,
-            mime_type: data.mime_type,
+            mime_type: data.mime_type.unwrap_or_default(),
             protection: data.protection,
         })
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn deserialize_and_serialize() -> anyhow::Result<()> {
-        let data = r#"
-          {
-            "id": "main-video",
-            "baseUrl": "video/",
-            "frameRate": {
-              "value": 25
-            },
-            "continuationPattern": "content-{segmentId}.mp4",
-            "initializationPattern": "init-{initId}.mp4",
-            "tracks": [
-              {
-                "id": "720p",
-                "activeSegment": 1799,
-                "activeSequenceNumber": 269999,
-                "bandwidth": 3000000,
-                "baseUrl": "720p/",
-                "codecs": "avc1.4d001f",
-                "resolution": {
-                  "width": 1280,
-                  "height": 720
-                },
-                "segmentDuration": {
-                  "value": 540000,
-                  "scale": 90000
-                },
-                "segments": [
-                  {
-                    "id": 1799,
-                    "timeBounds": {
-                      "startTime": 971460000,
-                      "scale": 90000
-                    }
-                  }
-                ]
-              }
-            ]
-          }"#;
-        //TODO
-        // let value = serde_json::from_str::<VideoSwitchingSet>(data)?;
-        // serde_json::to_string(&value)?;
-        Ok(())
     }
 }

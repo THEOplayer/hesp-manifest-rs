@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
+use crate::util::Entity;
 use crate::*;
 
 #[skip_serializing_none]
@@ -15,24 +16,43 @@ pub struct AudioSwitchingSetData {
     pub channels: Option<u64>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
-    #[serde(default)]
-    pub frame_rate: SamplesPerFrame,
+    pub frame_rate: Option<SamplesPerFrame>,
     pub initialization_pattern: Option<String>,
     pub label: Option<String>,
-    #[serde(default)]
-    pub media_time_offset: ScaledValue,
-    #[serde(default)]
-    pub mime_type: AudioMimeType,
+    pub media_time_offset: Option<ScaledValue>,
+    pub mime_type: Option<AudioMimeType>,
     pub protection: Option<SwitchingSetProtection>,
     pub sample_rate: Option<u64>,
+}
+
+impl From<AudioSwitchingSet> for AudioSwitchingSetData {
+    fn from(input: AudioSwitchingSet) -> Self {
+        Self {
+            id: input.id,
+            language: input.language,
+            tracks: input.tracks.into_iter().map(From::from).collect(),
+            align_id: input.align_id,
+            base_url: None,
+            channels: input.channels,
+            codecs: None,
+            continuation_pattern: None,
+            frame_rate: None,
+            initialization_pattern: None,
+            label: input.label,
+            media_time_offset: None,
+            mime_type: None,
+            protection: input.protection,
+            sample_rate: None,
+        }
+    }
 }
 
 #[skip_serializing_none]
 #[derive(Clone, Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AudioTrackData {
-    pub bandwidth: Number,
     pub id: String,
+    pub bandwidth: Number,
     pub segments: Segments,
     #[serde(rename = "activeSegment")]
     pub active_segment_id: Option<SegmentId>,
@@ -49,6 +69,31 @@ pub struct AudioTrackData {
     pub sample_rate: Option<u64>,
     pub segment_duration: Option<ScaledValue>,
     pub transmission: TrackTransmission,
+}
+
+impl From<AudioTrack> for AudioTrackData {
+    fn from(input: AudioTrack) -> Self {
+        let id = input.id().to_owned();
+        Self {
+            id,
+            bandwidth: input.bandwidth,
+            segments: input.segments,
+            active_segment_id: input.active_segment_id,
+            active_sequence_number: input.active_sequence_number,
+            average_bandwidth: input.average_bandwidth,
+            base_url: None,
+            channels: input.channels,
+            codecs: Some(input.codecs),
+            continuation_pattern: Some(input.continuation_pattern.to_string()),
+            frame_rate: Some(input.frame_rate),
+            label: input.label,
+            initialization_pattern: Some(input.initialization_pattern.to_string()),
+            media_time_offset: Some(input.media_time_offset),
+            sample_rate: Some(input.sample_rate),
+            segment_duration: input.segment_duration,
+            transmission: input.transmission,
+        }
+    }
 }
 
 impl AudioTrackData {
@@ -79,16 +124,19 @@ impl AudioTrackData {
         self
     }
 
-    pub fn with_default_frame_rate(mut self, frame_rate: SamplesPerFrame) -> Self {
+    pub fn with_default_frame_rate(mut self, frame_rate: Option<SamplesPerFrame>) -> Self {
         if self.frame_rate.is_none() {
-            self.frame_rate = Some(frame_rate)
+            self.frame_rate = frame_rate
         }
         self
     }
 
-    pub fn with_default_media_time_offset(mut self, media_time_offset: ScaledValue) -> Self {
+    pub fn with_default_media_time_offset(
+        mut self,
+        media_time_offset: Option<ScaledValue>,
+    ) -> Self {
         if self.media_time_offset.is_none() {
-            self.media_time_offset = Some(media_time_offset)
+            self.media_time_offset = media_time_offset
         }
         self
     }

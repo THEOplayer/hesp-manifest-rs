@@ -1,14 +1,18 @@
-use super::ManifestData;
-use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
-use crate::*;
+use serde::Serialize;
 use url::Url;
 
-#[derive(Debug, Clone)]
+use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
+use crate::*;
+
+use super::ManifestData;
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(into = "ManifestData")]
 pub struct MulticastManifest {
-    creation_date: DateTime,
-    fallback_poll_rate: Number,
-    presentations: EntityMap<Presentation>,
-    stream_type: MulticastStreamType,
+    pub(super) creation_date: DateTime,
+    pub(super) fallback_poll_rate: Number,
+    pub(super) presentations: EntityMap<Presentation>,
+    pub(super) stream_type: MulticastStreamType,
 }
 
 #[derive(Debug, Clone)]

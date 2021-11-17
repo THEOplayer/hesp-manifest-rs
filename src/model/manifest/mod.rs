@@ -45,10 +45,11 @@ mod tests {
         let url = Url::parse("https://www.theoplayer.com/")?;
         let input = fs::read_to_string("tests/example-manifest.json")?;
 
-        let result = UnicastManifest::from_json(&url, &input)?;
-        //TODO serialize
-        // let json = serde_json::to_string(&result)?;
-        // UnicastManifest::deserialize(&url, &json)?;
+        let result1 = UnicastManifest::from_json(&url, &input)?;
+        let output = serde_json::to_string(&result1)?;
+        let _result2 = UnicastManifest::from_json(&url, &output)?;
+
+        // assert_eq!(format!("{:?}", result1), format!("{:?}", result2));
 
         Ok(())
     }

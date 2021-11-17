@@ -60,6 +60,17 @@ impl InitializationPattern {
     }
 }
 
+impl fmt::Display for InitializationPattern {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.base
+            .join(&self.pattern)
+            .unwrap()
+            .to_string()
+            .replace("%7BinitId%7D", Self::INIT_ID_PATTERN)
+            .fmt(f)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

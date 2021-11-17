@@ -1,3 +1,4 @@
+use std::fmt;
 use url::Url;
 
 use crate::*;
@@ -25,5 +26,13 @@ impl ContinuationPattern {
             .pattern
             .replace(Self::SEGMENT_ID_PATTERN, &id.to_string());
         self.base.join(&rel).unwrap()
+    }
+}
+
+impl fmt::Display for ContinuationPattern {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.base.join(&self.pattern).unwrap().to_string()
+            .replace("%7BsegmentId%7D", Self::SEGMENT_ID_PATTERN)
+            .fmt(f)
     }
 }

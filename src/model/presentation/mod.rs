@@ -42,7 +42,7 @@ impl Presentation {
             .into_iter()
             .map(|v| VideoSwitchingSet::new(&id, &base_url, v))
             .into_entities()?;
-        Ok(Self {
+        let result = Self {
             id,
             time_bounds: data.time_bounds,
             audio,
@@ -51,7 +51,9 @@ impl Presentation {
             metadata,
             video,
             transmission: data.transmission,
-        })
+        };
+        result.validate_tracks()?;
+        Ok(result)
     }
 
     pub fn audio(&self) -> EntityIter<AudioSwitchingSet> {
@@ -112,6 +114,16 @@ impl Presentation {
 
     pub fn audio_tracks_mut(&mut self) -> impl Iterator<Item = &mut AudioTrack> {
         self.audio.iter_mut().flat_map(|set| set.tracks_mut())
+    }
+
+    fn validate_tracks(&self) -> Result<()> {
+        for track in self.video_tracks() {
+            self.validate_track(track)?
+        }
+        for track in self.audio_tracks() {
+            self.validate_track(track)?
+        }
+        Ok(())
     }
 
     fn validate_track<T: MediaTrack>(&self, track: &T) -> Result<()> {

@@ -178,16 +178,3 @@ impl Entity for Presentation {
         &self.id
     }
 }
-
-//TODO
-// impl Validate for Presentation {
-//     fn validate(&self) -> Result<()> {
-//         for (_, track) in self.video_tracks() {
-//             self.validate_track(track)?
-//         }
-//         for (_, track) in self.audio_tracks() {
-//             self.validate_track(track)?
-//         }
-//         Ok(())
-//     }
-// }

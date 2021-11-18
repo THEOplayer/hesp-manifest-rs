@@ -28,7 +28,6 @@ mod scaled_value;
 mod segment;
 mod time_bounds;
 mod time_source;
-#[macro_use]
 mod track;
 mod media;
 mod switching_set;

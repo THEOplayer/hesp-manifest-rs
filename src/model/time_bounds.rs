@@ -13,6 +13,7 @@ pub struct TimeBounds {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct TimeBoundsData {
     start_time: Option<u64>,
     end_time: Option<u64>,

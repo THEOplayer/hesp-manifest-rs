@@ -5,11 +5,7 @@ pub use event::*;
 pub use multicast::*;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
-use crate::{
-    AudioSwitchingSet, AudioTrack, Error, MediaTrack, MetadataSwitchingSet, Result, ScaledValue,
-    SwitchingSet, TimeBounds, TrackTransmission, TrackUid, TransferObjectIdentifierLimits,
-    TransmissionType, VideoSwitchingSet, VideoTrack,
-};
+use crate::{AudioSwitchingSet, AudioTrack, Error, MediaSwitchingSet, MediaTrack, MetadataSwitchingSet, Result, ScaledValue, SwitchingSet, TimeBounds, TrackTransmission, TrackUid, TransferObjectIdentifierLimits, TransmissionType, VideoSwitchingSet, VideoTrack};
 
 mod data;
 mod event;
@@ -92,10 +88,15 @@ impl Presentation {
 impl Presentation {
     pub(super) fn validate_active(&self) -> Result<()> {
         if self.current_time.is_none() {
-            Err(Error::MissingCurrentTime(self.id.clone()))
-        } else {
-            Ok(())
+            return Err(Error::MissingCurrentTime(self.id.clone()));
         }
+        for set in &self.video {
+            set.validate_active()?;
+        }
+        for set in &self.audio {
+            set.validate_active()?;
+        }
+        Ok(())
     }
     pub(super) fn ensure_unicast(&self) -> Result<()> {
         match self.transmission {

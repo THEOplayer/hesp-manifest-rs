@@ -1,7 +1,7 @@
 pub use protection::SwitchingSetProtection;
 
 use crate::util::{Entity, EntityIter, EntityIterMut};
-use crate::{MediaTrack, MediaType, Track};
+use crate::{MediaTrack, MediaType, Track, Result};
 
 mod protection;
 
@@ -16,4 +16,11 @@ pub trait SwitchingSet: Entity {
 pub trait MediaSwitchingSet: SwitchingSet<Track = <Self as MediaSwitchingSet>::MediaTrack> {
     type MediaTrack: MediaTrack;
     const MEDIA_TYPE: MediaType;
+
+    fn validate_active(&self) -> Result<()> {
+        for track in self.tracks() {
+            track.validate_active()?
+        }
+        Ok(())
+    }
 }

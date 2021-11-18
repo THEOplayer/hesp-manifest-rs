@@ -1,7 +1,10 @@
 use url::Url;
 
 use crate::util::{Entity, RelativeUrl};
-use crate::*;
+use crate::{
+    ContinuationPattern, Error, MetadataTrackData, Number, Result, ScaledValue, Segment, SegmentId,
+    Segments, Track, TrackType, TrackUid,
+};
 
 #[derive(Debug, Clone)]
 pub struct MetadataTrack {

@@ -1,7 +1,10 @@
 use url::Url;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
-use crate::*;
+use crate::{
+    MediaSwitchingSet, MediaType, Result, SwitchingSet, SwitchingSetProtection, VideoMimeType,
+    VideoSwitchingSetData, VideoTrack,
+};
 
 #[derive(Debug, Clone)]
 pub struct VideoSwitchingSet {

@@ -4,6 +4,7 @@ use serde_with::skip_serializing_none;
 use crate::util::Validate;
 use crate::*;
 
+//TODO remove this macros as this is the only one still used
 validate_on_deserialize!(TimeBounds);
 #[skip_serializing_none]
 #[derive(Deserialize, Debug, Serialize, Clone, Copy)]

@@ -1,7 +1,8 @@
 use std::fmt;
+
 use url::Url;
 
-use crate::*;
+use crate::{Error, Result, SegmentId};
 
 #[derive(Debug, Clone)]
 pub struct ContinuationPattern {

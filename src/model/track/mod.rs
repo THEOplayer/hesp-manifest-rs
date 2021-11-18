@@ -4,7 +4,10 @@ pub use track_type::TrackType;
 pub use uid::TrackUid;
 
 use crate::util::Entity;
-use crate::*;
+use crate::{
+    ContinuationPattern, InitializationPattern, MediaType, ScaledValue, Segment, SegmentId,
+    TrackTransmission,
+};
 
 mod track_type;
 mod uid;

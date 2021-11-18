@@ -2,7 +2,9 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 use crate::util::Entity;
-use crate::*;
+use crate::{
+    Language, MetadataSwitchingSet, MetadataTrack, Number, ScaledValue, SegmentId, Segments,
+};
 
 #[skip_serializing_none]
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -58,7 +60,7 @@ impl From<MetadataTrack> for MetadataTrackData {
     fn from(input: MetadataTrack) -> Self {
         Self {
             id: input.id().to_owned(),
-            segments: Default::default(),
+            segments: input.segments,
             active_segment_id: input.active_segment_id,
             average_bandwidth: input.average_bandwidth,
             bandwidth: input.bandwidth,
@@ -77,7 +79,7 @@ impl MetadataTrackData {
         continuation_pattern: &Option<String>,
     ) -> Self {
         if self.continuation_pattern.is_none() {
-            self.continuation_pattern = continuation_pattern.clone()
+            self.continuation_pattern = continuation_pattern.clone();
         }
         self
     }
@@ -87,7 +89,7 @@ impl MetadataTrackData {
         media_time_offset: Option<ScaledValue>,
     ) -> Self {
         if self.media_time_offset.is_none() {
-            self.media_time_offset = media_time_offset
+            self.media_time_offset = media_time_offset;
         }
         self
     }

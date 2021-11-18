@@ -15,10 +15,10 @@ impl Default for VideoMimeType {
 impl TryFrom<String> for VideoMimeType {
     type Error = Error;
     fn try_from(value: String) -> Result<Self> {
-        if !value.starts_with("video/") {
-            Err(Error::InvalidAudioMime(value))
-        } else {
+        if value.starts_with("video/") {
             Ok(VideoMimeType(value))
+        } else {
+            Err(Error::InvalidAudioMime(value))
         }
     }
 }

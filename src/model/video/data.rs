@@ -2,7 +2,10 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 use crate::util::Entity;
-use crate::*;
+use crate::{
+    Number, Resolution, ScaledValue, SegmentId, Segments, SwitchingSetProtection,
+    TrackTransmission, VideoMimeType, VideoSwitchingSet, VideoTrack,
+};
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -91,7 +94,7 @@ impl From<VideoTrack> for VideoTrackData {
 impl VideoTrackData {
     pub fn with_default_codecs(mut self, codecs: &Option<String>) -> Self {
         if self.codecs.is_none() {
-            self.codecs = codecs.clone()
+            self.codecs = codecs.clone();
         }
         self
     }
@@ -101,7 +104,7 @@ impl VideoTrackData {
         continuation_pattern: &Option<String>,
     ) -> Self {
         if self.continuation_pattern.is_none() {
-            self.continuation_pattern = continuation_pattern.clone()
+            self.continuation_pattern = continuation_pattern.clone();
         }
         self
     }
@@ -111,14 +114,14 @@ impl VideoTrackData {
         initialization_pattern: &Option<String>,
     ) -> Self {
         if self.initialization_pattern.is_none() {
-            self.initialization_pattern = initialization_pattern.clone()
+            self.initialization_pattern = initialization_pattern.clone();
         }
         self
     }
 
     pub fn with_default_frame_rate(mut self, frame_rate: Option<ScaledValue>) -> Self {
         if self.frame_rate.is_none() {
-            self.frame_rate = frame_rate
+            self.frame_rate = frame_rate;
         }
         self
     }
@@ -128,7 +131,7 @@ impl VideoTrackData {
         media_time_offset: Option<ScaledValue>,
     ) -> Self {
         if self.media_time_offset.is_none() {
-            self.media_time_offset = media_time_offset
+            self.media_time_offset = media_time_offset;
         }
         self
     }

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
-use crate::*;
+use crate::{Error, Result};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SwitchingSetProtection {

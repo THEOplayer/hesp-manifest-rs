@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::*;
+use crate::Number;
 
 #[derive(Deserialize, Debug, Serialize, Clone, Eq, PartialEq)]
 pub struct Resolution {

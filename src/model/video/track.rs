@@ -1,7 +1,11 @@
 use url::Url;
 
 use crate::util::{Entity, RelativeUrl};
-use crate::*;
+use crate::{
+    ContinuationPattern, Error, InitializationPattern, MediaTrack, MediaType, Number, Resolution,
+    Result, ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission, TrackType,
+    TrackUid, VideoTrackData,
+};
 
 #[derive(Debug, Clone)]
 pub struct VideoTrack {

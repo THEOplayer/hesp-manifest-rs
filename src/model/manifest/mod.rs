@@ -1,6 +1,6 @@
 use url::Url;
 
-use data::ManifestData;
+pub use data::ManifestData;
 pub use live::LiveStream;
 pub use multicast::*;
 pub use unicast::*;
@@ -9,7 +9,7 @@ pub use version::ManifestVersion;
 use crate::util::{EntityIter, EntityIterMut};
 use crate::{Presentation, Result};
 
-pub mod data;
+mod data;
 mod live;
 mod multicast;
 mod unicast;

@@ -1,13 +1,17 @@
 use url::Url;
 
-use data::PresentationData;
+pub use data::PresentationData;
 pub use event::*;
 pub use multicast::*;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
-use crate::*;
+use crate::{
+    AudioSwitchingSet, AudioTrack, Error, MediaTrack, MetadataSwitchingSet, Result, ScaledValue,
+    SwitchingSet, TimeBounds, TrackTransmission, TrackUid, TransferObjectIdentifierLimits,
+    TransmissionType, VideoSwitchingSet, VideoTrack,
+};
 
-pub mod data;
+mod data;
 mod event;
 mod multicast;
 
@@ -88,7 +92,7 @@ impl Presentation {
 impl Presentation {
     pub(super) fn validate_active(&self) -> Result<()> {
         if self.current_time.is_none() {
-            Err(Error::MissingCurrentTime(self.id.to_owned()))
+            Err(Error::MissingCurrentTime(self.id.clone()))
         } else {
             Ok(())
         }
@@ -96,7 +100,7 @@ impl Presentation {
     pub(super) fn ensure_unicast(&self) -> Result<()> {
         match self.transmission {
             PresentationTransmission::Unicast => Ok(()),
-            _ => Err(Error::InvalidUnicastPresentation(self.id.to_owned())),
+            PresentationTransmission::Multicast(_) => Err(Error::InvalidUnicastPresentation(self.id.clone())),
         }
     }
 
@@ -118,24 +122,24 @@ impl Presentation {
 
     fn validate_tracks(&self) -> Result<()> {
         for track in self.video_tracks() {
-            self.validate_track(track)?
+            self.validate_track(track)?;
         }
         for track in self.audio_tracks() {
-            self.validate_track(track)?
+            self.validate_track(track)?;
         }
         Ok(())
     }
 
     fn validate_track<T: MediaTrack>(&self, track: &T) -> Result<()> {
         let transmission = self.transmission.get_type();
-        if track.transmission().get_type() != transmission {
+        if track.transmission().get_type() == transmission {
+            Ok(())
+        } else {
             Err(Error::InvalidTrackTransmission {
-                presentation: self.id.to_owned(),
+                presentation: self.id.clone(),
                 track: track.id().to_owned(),
                 transmission,
             })
-        } else {
-            Ok(())
         }
     }
 

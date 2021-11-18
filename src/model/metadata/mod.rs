@@ -1,4 +1,4 @@
-pub(crate) use data::*;
+pub use data::*;
 pub use switching_set::MetadataSwitchingSet;
 pub use track::MetadataTrack;
 

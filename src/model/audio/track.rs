@@ -1,8 +1,12 @@
 use url::Url;
 
-use super::data::AudioTrackData;
 use crate::util::{Entity, RelativeUrl};
-use crate::*;
+use crate::{
+    ContinuationPattern, Error, InitializationPattern, MediaTrack, MediaType, Number, Result,
+    SamplesPerFrame, ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission,
+    TrackType, TrackUid,AudioTrackData
+};
+
 
 #[derive(Debug, Clone)]
 pub struct AudioTrack {
@@ -49,7 +53,7 @@ impl Track for AudioTrack {
         &self.continuation_pattern
     }
     fn set_continuation_pattern(&mut self, pattern: ContinuationPattern) {
-        self.continuation_pattern = pattern
+        self.continuation_pattern = pattern;
     }
     fn average_bandwidth(&self) -> Option<f64> {
         self.average_bandwidth.as_ref().and_then(Number::as_f64)

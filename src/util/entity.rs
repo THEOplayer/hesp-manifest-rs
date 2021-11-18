@@ -1,6 +1,6 @@
 use std::collections::{hash_map, HashMap};
 
-use crate::*;
+use crate::{Error, Result};
 
 pub trait Entity {
     fn id(&self) -> &str;

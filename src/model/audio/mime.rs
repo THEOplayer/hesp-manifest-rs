@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::*;
+use crate::{Error, MediaType, Result};
 
 #[derive(Debug, Deserialize, Clone, Serialize)]
 #[serde(try_from = "String", into = "String")]
@@ -15,10 +15,10 @@ impl Default for AudioMimeType {
 impl TryFrom<String> for AudioMimeType {
     type Error = Error;
     fn try_from(value: String) -> Result<Self> {
-        if !value.starts_with("audio/") {
-            Err(Error::InvalidAudioMime(value))
-        } else {
+        if value.starts_with("audio/") {
             Ok(AudioMimeType(value))
+        } else {
+            Err(Error::InvalidAudioMime(value))
         }
     }
 }

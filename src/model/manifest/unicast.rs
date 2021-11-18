@@ -2,9 +2,8 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
-use crate::*;
+use crate::{DateTime, Error, LiveStream, Manifest, ManifestVersion, Number, Presentation, Result,ManifestData};
 
-use super::data::ManifestData;
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(into = "ManifestData")]
@@ -30,7 +29,7 @@ impl UnicastManifest {
     pub fn active_presentation(&self) -> Option<&Presentation> {
         match &self.stream_type {
             UnicastStreamType::Live(live_data) => self.presentation(&live_data.active_presentation),
-            _ => None,
+            UnicastStreamType::Vod => None,
         }
     }
 }
@@ -84,7 +83,7 @@ pub(crate) fn validate_active(
     {
         presentations
             .get(active_presentation)
-            .ok_or_else(|| Error::InvalidActivePresentationId(active_presentation.to_owned()))?
+            .ok_or_else(|| Error::InvalidActivePresentationId(active_presentation.clone()))?
             .validate_active()
     } else {
         Ok(())

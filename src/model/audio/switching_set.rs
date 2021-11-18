@@ -2,9 +2,11 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
-use crate::*;
+use crate::{
+    AudioMimeType, AudioTrack, Language, MediaSwitchingSet, MediaType, Result, SwitchingSet,
+    SwitchingSetProtection,AudioSwitchingSetData
+};
 
-use super::data::AudioSwitchingSetData;
 
 #[derive(Debug, Clone)]
 pub struct AudioSwitchingSet {

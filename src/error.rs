@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use crate::*;
+use crate::{ManifestVersion, SegmentId, TransmissionType};
 
 #[derive(Error, Debug)]
 pub enum Error {

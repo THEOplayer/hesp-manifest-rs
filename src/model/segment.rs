@@ -6,7 +6,7 @@ use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::*;
+use crate::{Error, Result, ScaledValue, TimeBounds};
 
 #[derive(
     Serialize,
@@ -107,24 +107,22 @@ impl Sub<u32> for SegmentId {
 
 impl AddAssign<u32> for SegmentId {
     fn add_assign(&mut self, rhs: u32) {
-        self.0 += rhs
+        self.0 += rhs;
     }
 }
 
 impl SubAssign<u32> for SegmentId {
     fn sub_assign(&mut self, rhs: u32) {
-        self.0 -= rhs
+        self.0 -= rhs;
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use anyhow::Result;
-
     use super::*;
 
     #[test]
-    fn deserialize_checks_sequential_ids() -> Result<()> {
+    fn deserialize_checks_sequential_ids() {
         let data = r#"
         [
            {"id": 10},
@@ -138,6 +136,5 @@ mod tests {
             .unwrap_err()
             .to_string()
             .contains("13 must not follow 11"));
-        Ok(())
     }
 }

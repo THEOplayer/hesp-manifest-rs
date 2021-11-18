@@ -1,7 +1,7 @@
 use url::Url;
 
 use crate::util::{Entity, EntityMap, FromEntities, RelativeUrl};
-use crate::*;
+use crate::{Language, MetadataSwitchingSetData, MetadataTrack, Result};
 
 #[derive(Clone, Debug)]
 pub struct MetadataSwitchingSet {

@@ -2,7 +2,11 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 use crate::util::Entity;
-use crate::*;
+use crate::{
+    AudioMimeType, AudioSwitchingSet, AudioTrack, Language, Number, SamplesPerFrame,
+    ScaledValue, SegmentId, Segments, SwitchingSetProtection,
+    TrackTransmission,
+};
 
 #[skip_serializing_none]
 #[derive(Clone, Deserialize, Serialize, Debug)]
@@ -99,7 +103,7 @@ impl From<AudioTrack> for AudioTrackData {
 impl AudioTrackData {
     pub fn with_default_codecs(mut self, codecs: &Option<String>) -> Self {
         if self.codecs.is_none() {
-            self.codecs = codecs.clone()
+            self.codecs = codecs.clone();
         }
         self
     }
@@ -109,7 +113,7 @@ impl AudioTrackData {
         continuation_pattern: &Option<String>,
     ) -> Self {
         if self.continuation_pattern.is_none() {
-            self.continuation_pattern = continuation_pattern.clone()
+            self.continuation_pattern = continuation_pattern.clone();
         }
         self
     }
@@ -119,14 +123,14 @@ impl AudioTrackData {
         initialization_pattern: &Option<String>,
     ) -> Self {
         if self.initialization_pattern.is_none() {
-            self.initialization_pattern = initialization_pattern.clone()
+            self.initialization_pattern = initialization_pattern.clone();
         }
         self
     }
 
     pub fn with_default_frame_rate(mut self, frame_rate: Option<SamplesPerFrame>) -> Self {
         if self.frame_rate.is_none() {
-            self.frame_rate = frame_rate
+            self.frame_rate = frame_rate;
         }
         self
     }
@@ -136,14 +140,14 @@ impl AudioTrackData {
         media_time_offset: Option<ScaledValue>,
     ) -> Self {
         if self.media_time_offset.is_none() {
-            self.media_time_offset = media_time_offset
+            self.media_time_offset = media_time_offset;
         }
         self
     }
 
     pub fn with_default_sample_rate(mut self, sample_rate: Option<u64>) -> Self {
         if self.sample_rate.is_none() {
-            self.sample_rate = sample_rate
+            self.sample_rate = sample_rate;
         }
         self
     }

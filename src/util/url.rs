@@ -1,5 +1,6 @@
-use crate::*;
 use url::Url;
+
+use crate::Result;
 
 pub trait RelativeUrl {
     fn resolve(&self, url: &Url) -> Result<Url>;

@@ -1,7 +1,7 @@
 pub use protection::SwitchingSetProtection;
 
 use crate::util::{Entity, EntityIter, EntityIterMut};
-use crate::*;
+use crate::{MediaTrack, MediaType, Track};
 
 mod protection;
 

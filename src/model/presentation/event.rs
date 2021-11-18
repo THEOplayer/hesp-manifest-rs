@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::util::Entity;
-use crate::*;
+use crate::TimeBounds;
 
 #[derive(Deserialize, Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]

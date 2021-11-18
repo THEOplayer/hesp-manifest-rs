@@ -1,6 +1,6 @@
 use serde::{self, Deserialize, Serialize};
 
-use crate::*;
+use crate::TransmissionType;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

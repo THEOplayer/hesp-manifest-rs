@@ -1,6 +1,7 @@
-use crate::*;
 use std::fmt;
 use std::str::FromStr;
+
+use crate::{Error, Result};
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Copy)]
 pub enum TrackType {

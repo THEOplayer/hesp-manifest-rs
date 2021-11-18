@@ -4,7 +4,7 @@ use std::str::FromStr;
 
 use url::Url;
 
-use crate::*;
+use crate::{Error, Result};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum InitId {

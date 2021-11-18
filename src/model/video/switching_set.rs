@@ -67,7 +67,7 @@ impl VideoSwitchingSet {
                 )
             })
             .into_entities()?;
-        Ok(VideoSwitchingSet {
+        Ok(Self {
             id: data.id,
             tracks,
             align_id: data.align_id,

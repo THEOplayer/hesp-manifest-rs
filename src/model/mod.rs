@@ -6,7 +6,7 @@ pub use media::MediaType;
 pub use metadata::*;
 pub use presentation::*;
 pub use resolution::Resolution;
-pub use scaled_value::ScaledValue;
+pub use scaled_value::*;
 pub use segment::*;
 pub use switching_set::*;
 pub use time_bounds::TimeBounds;

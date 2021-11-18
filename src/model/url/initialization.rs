@@ -17,8 +17,8 @@ impl FromStr for InitId {
 
     fn from_str(input: &str) -> std::result::Result<Self, Self::Err> {
         match input {
-            "now" => Ok(InitId::Now),
-            number => number.parse().map(InitId::Numbered),
+            "now" => Ok(Self::Now),
+            number => number.parse().map(Self::Numbered),
         }
     }
 }

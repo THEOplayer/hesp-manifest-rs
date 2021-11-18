@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-
 use crate::{
-    DateTime, ManifestVersion, MulticastManifest, Number, UnicastManifest, UnicastStreamType,PresentationData
+    DateTime, ManifestVersion, MulticastManifest, Number, PresentationData, UnicastManifest,
+    UnicastStreamType,
 };
 
 #[skip_serializing_none]

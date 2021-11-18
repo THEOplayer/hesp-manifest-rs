@@ -80,28 +80,28 @@ impl Default for Segments {
 }
 
 impl Segment {
-    pub fn id(&self) -> SegmentId {
+    pub const fn id(&self) -> SegmentId {
         self.id
     }
     pub fn duration(&self) -> Option<ScaledValue> {
         self.time_bounds?.duration()
     }
-    pub fn has_time_bounds(&self) -> bool {
+    pub const fn has_time_bounds(&self) -> bool {
         self.time_bounds.is_some()
     }
 }
 
 impl Add<u32> for SegmentId {
-    type Output = SegmentId;
+    type Output = Self;
     fn add(self, rhs: u32) -> Self {
-        SegmentId(self.0 + rhs)
+        Self(self.0 + rhs)
     }
 }
 
 impl Sub<u32> for SegmentId {
-    type Output = SegmentId;
+    type Output = Self;
     fn sub(self, rhs: u32) -> Self {
-        SegmentId(self.0 - rhs)
+        Self(self.0 - rhs)
     }
 }
 

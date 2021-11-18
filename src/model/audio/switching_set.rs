@@ -3,10 +3,9 @@ use url::Url;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
 use crate::{
-    AudioMimeType, AudioTrack, Language, MediaSwitchingSet, MediaType, Result, SwitchingSet,
-    SwitchingSetProtection,AudioSwitchingSetData
+    AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, MediaSwitchingSet, MediaType,
+    Result, SwitchingSet, SwitchingSetProtection,
 };
-
 
 #[derive(Debug, Clone)]
 pub struct AudioSwitchingSet {
@@ -52,7 +51,7 @@ pub struct SamplesPerFrame(u64);
 
 impl Default for SamplesPerFrame {
     fn default() -> Self {
-        SamplesPerFrame(1024)
+        Self(1024)
     }
 }
 
@@ -81,7 +80,7 @@ impl AudioSwitchingSet {
                 )
             })
             .into_entities()?;
-        Ok(AudioSwitchingSet {
+        Ok(Self {
             id: data.id,
             language: data.language,
             tracks,

@@ -10,7 +10,7 @@ pub enum MediaType {
 }
 
 impl MediaType {
-    pub fn content_type(self) -> &'static str {
+    pub const fn content_type(self) -> &'static str {
         match self {
             MediaType::Audio => "audio/mp4",
             MediaType::Video => "video/mp4",
@@ -31,8 +31,8 @@ impl FromStr for MediaType {
     type Err = Error;
     fn from_str(input: &str) -> Result<Self> {
         match input {
-            "audio" => Ok(MediaType::Audio),
-            "video" => Ok(MediaType::Video),
+            "audio" => Ok(Self::Audio),
+            "video" => Ok(Self::Video),
             _ => Err(Error::InvalidMediaType(input.to_owned())),
         }
     }

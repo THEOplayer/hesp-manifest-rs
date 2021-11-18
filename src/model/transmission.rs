@@ -24,8 +24,8 @@ pub enum TrackTransmission {
 impl From<Option<TransferObjectIdentifierLimits>> for TrackTransmission {
     fn from(input: Option<TransferObjectIdentifierLimits>) -> Self {
         match input {
-            None => TrackTransmission::Unicast,
-            Some(toi_limits) => TrackTransmission::Multicast { toi_limits },
+            None => Self::Unicast,
+            Some(toi_limits) => Self::Multicast { toi_limits },
         }
     }
 }
@@ -40,7 +40,7 @@ impl From<TrackTransmission> for Option<TransferObjectIdentifierLimits> {
 }
 
 impl TrackTransmission {
-    pub fn get_type(&self) -> TransmissionType {
+    pub const fn get_type(&self) -> TransmissionType {
         match self {
             TrackTransmission::Unicast => TransmissionType::Unicast,
             TrackTransmission::Multicast { .. } => TransmissionType::Multicast,

@@ -84,7 +84,7 @@ impl MetadataTrackData {
         self
     }
 
-    pub fn with_default_media_time_offset(
+    pub const fn with_default_media_time_offset(
         mut self,
         media_time_offset: Option<ScaledValue>,
     ) -> Self {

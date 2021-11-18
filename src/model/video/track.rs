@@ -112,7 +112,7 @@ impl VideoTrack {
         } else {
             return Err(Error::MissingFrameRate(id));
         };
-        Ok(VideoTrack {
+        Ok(Self {
             bandwidth: data.bandwidth,
             uid: TrackUid::new(presentation_id, Self::TRACK_TYPE, switching_set_id, id),
             resolution: data.resolution,

@@ -2,8 +2,13 @@ use serde::Serialize;
 use url::Url;
 
 use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
-use crate::{DateTime, Error, LiveStream, Manifest, ManifestVersion, MediaTrack, Number, Presentation, PresentationTransmission, Result, SwitchingSet, TrackTransmission, TrackType, TrackUid, TransferObjectIdentifierLimits, UnicastManifest, UnicastStreamType, validate_active};
+use crate::{
+    DateTime, Error, LiveStream, Manifest, ManifestVersion, MediaTrack, Number, Presentation,
+    PresentationTransmission, Result, SwitchingSet, TrackTransmission, TrackType, TrackUid,
+    TransferObjectIdentifierLimits, UnicastManifest, UnicastStreamType,
+};
 
+use super::unicast::validate_active;
 use super::ManifestData;
 
 #[derive(Debug, Clone, Serialize)]
@@ -21,7 +26,7 @@ pub enum MulticastStreamType {
 }
 
 impl MulticastStreamType {
-    fn live_data(&self) -> &LiveStream {
+    const fn live_data(&self) -> &LiveStream {
         match &self {
             MulticastStreamType::Live(live_data) => live_data,
         }
@@ -31,7 +36,7 @@ impl MulticastStreamType {
 impl From<MulticastStreamType> for UnicastStreamType {
     fn from(stream_type: MulticastStreamType) -> Self {
         match stream_type {
-            MulticastStreamType::Live(data) => UnicastStreamType::Live(data),
+            MulticastStreamType::Live(data) => Self::Live(data),
         }
     }
 }
@@ -41,7 +46,7 @@ impl TryFrom<UnicastStreamType> for MulticastStreamType {
 
     fn try_from(value: UnicastStreamType) -> Result<Self> {
         match value {
-            UnicastStreamType::Live(stream) => Ok(MulticastStreamType::Live(stream)),
+            UnicastStreamType::Live(stream) => Ok(Self::Live(stream)),
             UnicastStreamType::Vod => Err(Error::InvalidMulticastStreamType),
         }
     }
@@ -53,7 +58,7 @@ impl MulticastManifest {
             .unwrap()
     }
 
-    pub fn stream_type(&self) -> &MulticastStreamType {
+    pub const fn stream_type(&self) -> &MulticastStreamType {
         &self.stream_type
     }
 
@@ -124,7 +129,7 @@ impl MulticastManifest {
             .map(presentation_transformer)
             .map(Ok)
             .into_entities()?;
-        Ok(MulticastManifest {
+        Ok(Self {
             creation_date,
             fallback_poll_rate,
             presentations,
@@ -179,7 +184,7 @@ impl From<MulticastManifest> for UnicastManifest {
         for presentation in presentations.iter_mut() {
             presentation.set_unicast();
         }
-        UnicastManifest {
+        Self {
             creation_date,
             fallback_poll_rate,
             presentations,
@@ -188,7 +193,7 @@ impl From<MulticastManifest> for UnicastManifest {
     }
 }
 
-fn multicast_tsi(presentation: &Presentation) -> Option<u32> {
+const fn multicast_tsi(presentation: &Presentation) -> Option<u32> {
     match presentation.transmission() {
         PresentationTransmission::Unicast => None,
         PresentationTransmission::Multicast(data) => Some(data.transport_session_id()),

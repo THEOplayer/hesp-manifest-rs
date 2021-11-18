@@ -2,11 +2,10 @@ use url::Url;
 
 use crate::util::{Entity, RelativeUrl};
 use crate::{
-    ContinuationPattern, Error, InitializationPattern, MediaTrack, MediaType, Number, Result,
-    SamplesPerFrame, ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission,
-    TrackType, TrackUid,AudioTrackData
+    AudioTrackData, ContinuationPattern, Error, InitializationPattern, MediaTrack, MediaType,
+    Number, Result, SamplesPerFrame, ScaledValue, Segment, SegmentId, Segments, Track,
+    TrackTransmission, TrackType, TrackUid,
 };
-
 
 #[derive(Debug, Clone)]
 pub struct AudioTrack {
@@ -112,7 +111,7 @@ impl AudioTrack {
         } else {
             return Err(Error::MissingSampleRate(id));
         };
-        Ok(AudioTrack {
+        Ok(Self {
             bandwidth: data.bandwidth,
             uid: TrackUid::new(presentation_id, Self::TRACK_TYPE, switching_set_id, id),
             segments: data.segments,

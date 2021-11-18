@@ -16,7 +16,7 @@ impl TryFrom<String> for AudioMimeType {
     type Error = Error;
     fn try_from(value: String) -> Result<Self> {
         if value.starts_with("audio/") {
-            Ok(AudioMimeType(value))
+            Ok(Self(value))
         } else {
             Err(Error::InvalidAudioMime(value))
         }

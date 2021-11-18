@@ -119,14 +119,14 @@ impl VideoTrackData {
         self
     }
 
-    pub fn with_default_frame_rate(mut self, frame_rate: Option<ScaledValue>) -> Self {
+    pub const fn with_default_frame_rate(mut self, frame_rate: Option<ScaledValue>) -> Self {
         if self.frame_rate.is_none() {
             self.frame_rate = frame_rate;
         }
         self
     }
 
-    pub fn with_default_media_time_offset(
+    pub const fn with_default_media_time_offset(
         mut self,
         media_time_offset: Option<ScaledValue>,
     ) -> Self {

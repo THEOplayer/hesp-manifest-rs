@@ -3,9 +3,8 @@ use serde_with::skip_serializing_none;
 
 use crate::util::Entity;
 use crate::{
-    AudioMimeType, AudioSwitchingSet, AudioTrack, Language, Number, SamplesPerFrame,
-    ScaledValue, SegmentId, Segments, SwitchingSetProtection,
-    TrackTransmission,
+    AudioMimeType, AudioSwitchingSet, AudioTrack, Language, Number, SamplesPerFrame, ScaledValue,
+    SegmentId, Segments, SwitchingSetProtection, TrackTransmission,
 };
 
 #[skip_serializing_none]
@@ -128,14 +127,14 @@ impl AudioTrackData {
         self
     }
 
-    pub fn with_default_frame_rate(mut self, frame_rate: Option<SamplesPerFrame>) -> Self {
+    pub const fn with_default_frame_rate(mut self, frame_rate: Option<SamplesPerFrame>) -> Self {
         if self.frame_rate.is_none() {
             self.frame_rate = frame_rate;
         }
         self
     }
 
-    pub fn with_default_media_time_offset(
+    pub const fn with_default_media_time_offset(
         mut self,
         media_time_offset: Option<ScaledValue>,
     ) -> Self {
@@ -145,7 +144,7 @@ impl AudioTrackData {
         self
     }
 
-    pub fn with_default_sample_rate(mut self, sample_rate: Option<u64>) -> Self {
+    pub const fn with_default_sample_rate(mut self, sample_rate: Option<u64>) -> Self {
         if self.sample_rate.is_none() {
             self.sample_rate = sample_rate;
         }

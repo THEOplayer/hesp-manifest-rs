@@ -11,7 +11,7 @@ pub struct PresentationMulticastMetadata {
 }
 
 impl PresentationMulticastMetadata {
-    pub fn new(fec: FecMetadata, transport_session_id: u32, address: String) -> Self {
+    pub const fn new(fec: FecMetadata, transport_session_id: u32, address: String) -> Self {
         Self {
             fec,
             transport_session_id,
@@ -19,7 +19,7 @@ impl PresentationMulticastMetadata {
         }
     }
 
-    pub fn transport_session_id(&self) -> u32 {
+    pub const fn transport_session_id(&self) -> u32 {
         self.transport_session_id
     }
 }
@@ -46,8 +46,8 @@ pub enum PresentationTransmission {
 impl From<Option<PresentationMulticastMetadata>> for PresentationTransmission {
     fn from(input: Option<PresentationMulticastMetadata>) -> Self {
         match input {
-            None => PresentationTransmission::Unicast,
-            Some(data) => PresentationTransmission::Multicast(data),
+            None => Self::Unicast,
+            Some(data) => Self::Multicast(data),
         }
     }
 }
@@ -62,7 +62,7 @@ impl From<PresentationTransmission> for Option<PresentationMulticastMetadata> {
 }
 
 impl PresentationTransmission {
-    pub fn get_type(&self) -> TransmissionType {
+    pub const fn get_type(&self) -> TransmissionType {
         match self {
             PresentationTransmission::Unicast => TransmissionType::Unicast,
             PresentationTransmission::Multicast { .. } => TransmissionType::Multicast,

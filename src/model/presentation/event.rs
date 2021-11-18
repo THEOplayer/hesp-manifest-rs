@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::util::Entity;
-use crate::TimeBounds;
+use crate::Scale;
 
 #[derive(Deserialize, Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -26,8 +26,8 @@ pub struct PresentationEventTimeBounds {
     start_time_offset: u64,
     #[serde(default)]
     duration: u64,
-    #[serde(default = "TimeBounds::default_scale")]
-    scale: u64,
+    #[serde(default)]
+    scale: Scale,
 }
 
 #[derive(Deserialize, Debug, Serialize, Copy, Clone, Eq, PartialEq, Hash)]

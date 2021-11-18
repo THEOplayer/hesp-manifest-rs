@@ -65,7 +65,7 @@ impl MetadataTrack {
         } else {
             return Err(Error::MissingContinuationPattern(id));
         };
-        Ok(MetadataTrack {
+        Ok(Self {
             bandwidth: data.bandwidth,
             uid: TrackUid::new(presentation_id, Self::TRACK_TYPE, switching_set_id, id),
             segments: data.segments,

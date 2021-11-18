@@ -41,7 +41,7 @@ impl MetadataSwitchingSet {
                 )
             })
             .into_entities()?;
-        Ok(MetadataSwitchingSet {
+        Ok(Self {
             id: data.id,
             language: data.language,
             tracks,

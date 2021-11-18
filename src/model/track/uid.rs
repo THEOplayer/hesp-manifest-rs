@@ -30,7 +30,7 @@ impl TrackUid {
             switching_set_id,
             track_id,
         };
-        TrackUid(Arc::new(data))
+        Self(Arc::new(data))
     }
     #[inline]
     pub fn presentation_id(&self) -> &str {

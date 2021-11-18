@@ -2,8 +2,8 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 use crate::{
-    MetadataSwitchingSetData, Presentation, PresentationEvent, PresentationTransmission,
-    ScaledValue, TimeBounds, VideoSwitchingSetData,AudioSwitchingSetData
+    AudioSwitchingSetData, MetadataSwitchingSetData, Presentation, PresentationEvent,
+    PresentationTransmission, ScaledValue, TimeBounds, VideoSwitchingSetData,
 };
 
 #[skip_serializing_none]

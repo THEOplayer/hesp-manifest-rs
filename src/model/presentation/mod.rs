@@ -75,7 +75,7 @@ impl Presentation {
     pub fn video_mut(&mut self) -> EntityIterMut<VideoSwitchingSet> {
         self.video.iter_mut()
     }
-    pub fn transmission(&self) -> &PresentationTransmission {
+    pub const fn transmission(&self) -> &PresentationTransmission {
         &self.transmission
     }
     pub fn video_switching_set(&self, switching_set_id: &str) -> Option<&VideoSwitchingSet> {
@@ -100,7 +100,9 @@ impl Presentation {
     pub(super) fn ensure_unicast(&self) -> Result<()> {
         match self.transmission {
             PresentationTransmission::Unicast => Ok(()),
-            PresentationTransmission::Multicast(_) => Err(Error::InvalidUnicastPresentation(self.id.clone())),
+            PresentationTransmission::Multicast(_) => {
+                Err(Error::InvalidUnicastPresentation(self.id.clone()))
+            }
         }
     }
 

@@ -2,8 +2,10 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
-use crate::{DateTime, Error, LiveStream, Manifest, ManifestVersion, Number, Presentation, Result,ManifestData};
-
+use crate::{
+    DateTime, Error, LiveStream, Manifest, ManifestData, ManifestVersion, Number, Presentation,
+    Result,
+};
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(into = "ManifestData")]
@@ -22,7 +24,7 @@ pub enum UnicastStreamType {
 }
 
 impl UnicastManifest {
-    pub fn stream_type(&self) -> &UnicastStreamType {
+    pub const fn stream_type(&self) -> &UnicastStreamType {
         &self.stream_type
     }
 
@@ -72,7 +74,7 @@ impl Manifest for UnicastManifest {
     }
 }
 
-pub(crate) fn validate_active(
+pub(super) fn validate_active(
     stream_type: &UnicastStreamType,
     presentations: &EntityMap<Presentation>,
 ) -> Result<()> {

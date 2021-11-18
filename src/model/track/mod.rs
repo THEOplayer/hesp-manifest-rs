@@ -43,6 +43,13 @@ pub trait MediaTrack: Track {
     fn set_initialization_pattern(&mut self, pattern: InitializationPattern);
     fn active_sequence_number(&self) -> Option<u64>;
     fn transmission(&self) -> &TrackTransmission;
+    fn validate_active(&self) -> Result<()> {
+        if self.active_sequence_number().is_none() {
+            Err(Error::MissingActiveSequenceNumber(self.id().to_owned()))
+        } else {
+            Ok(())
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Copy, Serialize, Deserialize)]

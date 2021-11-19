@@ -19,6 +19,7 @@ pub struct ManifestData {
     pub content_base_url: Option<String>,
 }
 
+//TODO make sure manifest location url is removed when serializing
 impl From<UnicastManifest> for ManifestData {
     fn from(input: UnicastManifest) -> Self {
         Self {

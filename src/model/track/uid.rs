@@ -7,10 +7,10 @@ use itertools::Itertools;
 use crate::{Error, Result, TrackType};
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub struct TrackUid(Arc<TrackUIDData>);
+pub struct TrackUid(Arc<TrackUidData>);
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-struct TrackUIDData {
+struct TrackUidData {
     pub(crate) presentation_id: String,
     pub(crate) track_type: TrackType,
     pub(crate) switching_set_id: String,
@@ -24,7 +24,7 @@ impl TrackUid {
         switching_set_id: String,
         track_id: String,
     ) -> Self {
-        let data = TrackUIDData {
+        let data = TrackUidData {
             presentation_id,
             track_type,
             switching_set_id,
@@ -66,13 +66,13 @@ impl fmt::Display for TrackUid {
 impl FromStr for TrackUid {
     type Err = Error;
     fn from_str(input: &str) -> Result<Self> {
-        let (presentation_id, media_type, switching_set_id, track_id) = input
+        let (presentation_id, track_type, switching_set_id, track_id) = input
             .split('/')
             .collect_tuple()
             .ok_or_else(|| Error::InvalidTrackPath(input.to_owned()))?;
         Ok(Self::new(
             presentation_id.to_owned(),
-            media_type.parse()?,
+            track_type.parse()?,
             switching_set_id.to_owned(),
             track_id.to_owned(),
         ))

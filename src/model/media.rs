@@ -10,7 +10,7 @@ pub enum MediaType {
 }
 
 impl MediaType {
-    pub const fn content_type(self) -> &'static str {
+    pub const fn default_content_type(self) -> &'static str {
         match self {
             MediaType::Audio => "audio/mp4",
             MediaType::Video => "video/mp4",

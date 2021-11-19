@@ -8,7 +8,7 @@ pub struct AudioMimeType(String);
 
 impl Default for AudioMimeType {
     fn default() -> Self {
-        Self(MediaType::Audio.content_type().to_owned())
+        Self(MediaType::Audio.default_content_type().to_owned())
     }
 }
 

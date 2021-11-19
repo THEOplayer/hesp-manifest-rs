@@ -8,7 +8,7 @@ pub struct VideoMimeType(String);
 
 impl Default for VideoMimeType {
     fn default() -> Self {
-        Self(MediaType::Video.content_type().to_owned())
+        Self(MediaType::Video.default_content_type().to_owned())
     }
 }
 

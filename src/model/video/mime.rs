@@ -18,7 +18,7 @@ impl TryFrom<String> for VideoMimeType {
         if value.starts_with("video/") {
             Ok(Self(value))
         } else {
-            Err(Error::InvalidAudioMime(value))
+            Err(Error::InvalidVideoMime(value))
         }
     }
 }

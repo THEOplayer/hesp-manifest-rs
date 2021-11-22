@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::{Error, Result, Scale, ScaledValue};
+use crate::{Error, Result, Scale, ScaledDuration};
 
 #[skip_serializing_none]
 #[derive(Deserialize, Debug, Serialize, Clone, Copy)]
@@ -34,16 +34,23 @@ impl TimeBounds {
         }
     }
 
-    /// Converts the time bounds to a `Option<ScaledValue>` representing the duration.
-    ///
-    /// # Panics
-    ///
-    /// Panics if `self.end_time - self.start_time` cannot be represented by an `i64`.
-    pub fn duration(self) -> Option<ScaledValue> {
-        Some(ScaledValue {
-            value: i64::try_from(self.end_time? - self.start_time?).unwrap(),
+    pub fn duration(self) -> Option<ScaledDuration> {
+        Some(ScaledDuration {
+            value: self.end_time? - self.start_time?,
             scale: self.scale,
         })
+    }
+
+    pub fn start_time(&self) -> Option<u64> {
+        self.start_time
+    }
+
+    pub fn end_time(&self) -> Option<u64> {
+        self.end_time
+    }
+
+    pub fn scale(&self) -> Scale {
+        self.scale
     }
 }
 

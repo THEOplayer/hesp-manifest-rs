@@ -1,0 +1,40 @@
+use std::time::Duration;
+
+use serde::{Deserialize, Serialize};
+
+use crate::Scale;
+
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Default)]
+pub struct ScaledDuration {
+    pub value: u64, // seconds * scale
+    pub scale: Scale,
+}
+
+const NANOS_PER_SEC: u32 = 1_000_000_000;
+
+impl From<ScaledDuration> for Duration {
+    #[allow(clippy::cast_lossless, clippy::cast_possible_truncation)]
+    fn from(duration: ScaledDuration) -> Self {
+        let nanos =
+            duration.value as u128 * NANOS_PER_SEC as u128 / duration.scale.as_u64() as u128;
+        let secs = (nanos / (NANOS_PER_SEC as u128)) as u64;
+        let nanos = (nanos % (NANOS_PER_SEC as u128)) as u32;
+        Self::new(secs, nanos)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn scaled_duration_is_lossless_and_does_not_truncate() {
+        let duration = ScaledDuration {
+            value: u64::MAX,
+            scale: Scale::default(),
+        };
+        let duration: Duration = duration.into();
+        assert_eq!(duration.as_secs(), u64::MAX);
+        assert_eq!(duration.subsec_nanos(), 0);
+    }
+}

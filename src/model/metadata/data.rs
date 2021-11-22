@@ -3,7 +3,8 @@ use serde_with::skip_serializing_none;
 
 use crate::util::Entity;
 use crate::{
-    Language, MetadataSwitchingSet, MetadataTrack, Number, ScaledValue, SegmentId, Segments,
+    Language, MetadataSwitchingSet, MetadataTrack, Number, ScaledDuration, ScaledValue, SegmentId,
+    Segments,
 };
 
 #[skip_serializing_none]
@@ -53,7 +54,7 @@ pub struct MetadataTrackData {
     pub continuation_pattern: Option<String>,
     pub label: Option<String>,
     pub media_time_offset: Option<ScaledValue>,
-    pub segment_duration: Option<ScaledValue>,
+    pub segment_duration: Option<ScaledDuration>,
 }
 
 impl From<MetadataTrack> for MetadataTrackData {

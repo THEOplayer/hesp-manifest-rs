@@ -3,8 +3,8 @@ use serde_with::skip_serializing_none;
 
 use crate::util::Entity;
 use crate::{
-    AudioMimeType, AudioSwitchingSet, AudioTrack, Language, Number, SamplesPerFrame, ScaledValue,
-    SegmentId, Segments, SwitchingSetProtection, TrackTransmission,
+    AudioMimeType, AudioSwitchingSet, AudioTrack, Language, Number, SamplesPerFrame,
+    ScaledDuration, ScaledValue, SegmentId, Segments, SwitchingSetProtection, TrackTransmission,
 };
 
 #[skip_serializing_none]
@@ -70,7 +70,7 @@ pub struct AudioTrackData {
     pub initialization_pattern: Option<String>,
     pub media_time_offset: Option<ScaledValue>,
     pub sample_rate: Option<u64>,
-    pub segment_duration: Option<ScaledValue>,
+    pub segment_duration: Option<ScaledDuration>,
     pub transmission: TrackTransmission,
 }
 

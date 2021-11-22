@@ -3,8 +3,8 @@ use url::Url;
 use crate::util::{Entity, RelativeUrl};
 use crate::{
     AudioTrackData, ContinuationPattern, Error, Initialization, InitializationPattern, MediaType,
-    Number, Result, SamplesPerFrame, ScaledValue, Segment, SegmentId, Segments, Track,
-    TrackTransmission, TrackUid,
+    Number, Result, SamplesPerFrame, ScaledDuration, ScaledValue, Segment, SegmentId, Segments,
+    Track, TrackTransmission, TrackUid,
 };
 
 #[derive(Debug, Clone)]
@@ -23,7 +23,7 @@ pub struct AudioTrack {
     pub(super) initialization_pattern: InitializationPattern,
     pub(super) media_time_offset: ScaledValue,
     pub(super) sample_rate: u64,
-    pub(super) segment_duration: Option<ScaledValue>,
+    pub(super) segment_duration: Option<ScaledDuration>,
     pub(crate) transmission: TrackTransmission,
 }
 
@@ -51,7 +51,7 @@ impl Track for AudioTrack {
         }
     }
 
-    fn segment_duration(&self) -> Option<ScaledValue> {
+    fn segment_duration(&self) -> Option<ScaledDuration> {
         self.segment_duration
     }
 

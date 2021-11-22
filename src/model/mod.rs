@@ -1,5 +1,6 @@
 pub use audio::*;
 pub use date_time::DateTime;
+pub use duration::ScaledDuration;
 pub use language::Language;
 pub use manifest::*;
 pub use media::MediaType;
@@ -17,6 +18,7 @@ pub use video::*;
 
 mod audio;
 mod date_time;
+mod duration;
 mod language;
 mod manifest;
 mod media;

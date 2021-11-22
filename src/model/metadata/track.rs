@@ -2,8 +2,8 @@ use url::Url;
 
 use crate::util::{Entity, RelativeUrl};
 use crate::{
-    ContinuationPattern, Error, MediaType, MetadataTrackData, Number, Result, ScaledValue, Segment,
-    SegmentId, Segments, Track, TrackTransmission, TrackUid,
+    ContinuationPattern, Error, MediaType, MetadataTrackData, Number, Result, ScaledDuration,
+    ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission, TrackUid,
 };
 
 #[derive(Debug, Clone)]
@@ -16,7 +16,7 @@ pub struct MetadataTrack {
     pub(super) continuation_pattern: ContinuationPattern,
     pub(super) label: Option<String>,
     pub(super) media_time_offset: ScaledValue,
-    pub(super) segment_duration: Option<ScaledValue>,
+    pub(super) segment_duration: Option<ScaledDuration>,
 }
 
 impl Entity for MetadataTrack {
@@ -42,7 +42,7 @@ impl Track for MetadataTrack {
             None => None,
         }
     }
-    fn segment_duration(&self) -> Option<ScaledValue> {
+    fn segment_duration(&self) -> Option<ScaledDuration> {
         self.segment_duration
     }
     fn segments(&self) -> &[Segment] {

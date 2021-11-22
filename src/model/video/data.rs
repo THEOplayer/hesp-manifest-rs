@@ -3,7 +3,7 @@ use serde_with::skip_serializing_none;
 
 use crate::util::Entity;
 use crate::{
-    Number, Resolution, ScaledValue, SegmentId, Segments, SwitchingSetProtection,
+    Number, Resolution, ScaledDuration, ScaledValue, SegmentId, Segments, SwitchingSetProtection,
     TrackTransmission, VideoMimeType, VideoSwitchingSet, VideoTrack,
 };
 
@@ -63,7 +63,7 @@ pub struct VideoTrackData {
     pub label: Option<String>,
     pub initialization_pattern: Option<String>,
     pub media_time_offset: Option<ScaledValue>,
-    pub segment_duration: Option<ScaledValue>,
+    pub segment_duration: Option<ScaledDuration>,
     pub transmission: TrackTransmission,
 }
 

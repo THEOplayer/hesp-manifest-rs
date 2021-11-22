@@ -1,8 +1,7 @@
-use std::time::Duration;
-
+use crate::{Error, Result};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Default)]
 pub struct ScaledValue {
     pub value: i64,
     #[serde(default)]
@@ -10,7 +9,30 @@ pub struct ScaledValue {
 }
 
 #[derive(Deserialize, Debug, Serialize, Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Hash)]
+#[serde(try_from = "u64")]
 pub struct Scale(u64);
+
+impl TryFrom<u64> for Scale {
+    type Error = Error;
+
+    fn try_from(value: u64) -> Result<Self> {
+        if value == 0 {
+            Err(Error::NullScale())
+        } else {
+            Ok(Scale(value))
+        }
+    }
+}
+
+impl Scale {
+    pub fn as_u64(self) -> u64 {
+        self.0
+    }
+
+    pub fn as_f64(self) -> f64 {
+        self.0 as f64
+    }
+}
 
 impl Default for Scale {
     fn default() -> Self {
@@ -25,24 +47,10 @@ impl ScaledValue {
             scale: Scale::default(),
         }
     }
-
-    pub fn into_duration_secs(self) -> Duration {
-        Duration::from_secs_f64(self.into())
-    }
 }
 
 impl From<ScaledValue> for f64 {
-    fn from(value: ScaledValue) -> Self {
-        let ScaledValue { value, scale } = value;
-        value as f64 / scale.0 as f64
-    }
-}
-
-impl Default for ScaledValue {
-    fn default() -> Self {
-        Self {
-            value: 0,
-            scale: Scale::default(),
-        }
+    fn from(input: ScaledValue) -> Self {
+        input.value as f64 / input.scale.as_f64()
     }
 }

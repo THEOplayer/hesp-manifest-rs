@@ -6,7 +6,7 @@ use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::{Error, Result, ScaledValue, TimeBounds};
+use crate::{Error, Result, ScaledDuration, TimeBounds};
 
 #[derive(
     Serialize,
@@ -83,7 +83,7 @@ impl Segment {
     pub const fn id(&self) -> SegmentId {
         self.id
     }
-    pub fn duration(&self) -> Option<ScaledValue> {
+    pub fn duration(&self) -> Option<ScaledDuration> {
         self.time_bounds?.duration()
     }
     pub const fn has_time_bounds(&self) -> bool {

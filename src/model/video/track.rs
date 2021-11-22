@@ -3,8 +3,8 @@ use url::Url;
 use crate::util::{Entity, RelativeUrl};
 use crate::{
     ContinuationPattern, Error, Initialization, InitializationPattern, MediaType, Number,
-    Resolution, Result, ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission,
-    TrackUid, VideoTrackData,
+    Resolution, Result, ScaledDuration, ScaledValue, Segment, SegmentId, Segments, Track,
+    TrackTransmission, TrackUid, VideoTrackData,
 };
 
 #[derive(Debug, Clone)]
@@ -22,7 +22,7 @@ pub struct VideoTrack {
     pub(super) label: Option<String>,
     pub(super) initialization_pattern: InitializationPattern,
     pub(super) media_time_offset: ScaledValue,
-    pub(super) segment_duration: Option<ScaledValue>,
+    pub(super) segment_duration: Option<ScaledDuration>,
     pub(crate) transmission: TrackTransmission,
 }
 
@@ -50,7 +50,7 @@ impl Track for VideoTrack {
         }
     }
 
-    fn segment_duration(&self) -> Option<ScaledValue> {
+    fn segment_duration(&self) -> Option<ScaledDuration> {
         self.segment_duration
     }
 

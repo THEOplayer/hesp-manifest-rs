@@ -4,6 +4,8 @@ use crate::{ManifestVersion, SegmentId, TransmissionType};
 
 #[derive(Error, Debug)]
 pub enum Error {
+    #[error("Scale must be strictly positive")]
+    NullScale(),
     #[error("activePresentation references unknown id {0}")]
     InvalidActivePresentationId(String),
     #[error("'{0}' is not a valid audio MIME Type")]

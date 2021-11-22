@@ -3,7 +3,7 @@ pub use initialization::*;
 pub use uid::TrackUid;
 
 use crate::util::Entity;
-use crate::{MediaType, Result, ScaledValue, Segment, SegmentId, TrackTransmission};
+use crate::{MediaType, Result, ScaledDuration, Segment, SegmentId, TrackTransmission};
 
 mod continuation;
 mod initialization;
@@ -14,7 +14,7 @@ pub trait Track: Entity {
     fn uid(&self) -> &TrackUid;
     fn bandwidth(&self) -> Option<f64>;
     fn active_segment(&self) -> Option<&Segment>;
-    fn segment_duration(&self) -> Option<ScaledValue>;
+    fn segment_duration(&self) -> Option<ScaledDuration>;
     fn segments(&self) -> &[Segment];
     fn continuation_pattern(&self) -> &ContinuationPattern;
     fn set_continuation_pattern(&mut self, pattern: ContinuationPattern);
@@ -24,7 +24,7 @@ pub trait Track: Entity {
             .iter()
             .find(|segment| segment.id() == segment_id)
     }
-    fn duration_for_segment(&self, segment_id: SegmentId) -> Option<ScaledValue> {
+    fn duration_for_segment(&self, segment_id: SegmentId) -> Option<ScaledDuration> {
         self.segment_duration().or_else(|| {
             self.segment(segment_id)
                 .map(|segment| segment.duration().unwrap())

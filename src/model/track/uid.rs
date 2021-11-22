@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use itertools::Itertools;
 
-use crate::{Error, Result, MediaType};
+use crate::{Error, MediaType, Result};
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct TrackUid(Arc<TrackUidData>);

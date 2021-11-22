@@ -2,7 +2,11 @@ use serde::Serialize;
 use url::Url;
 
 use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
-use crate::{DateTime, Error, LiveStream, Manifest, ManifestVersion, Number, Presentation, PresentationTransmission, Result, SwitchingSet, TrackTransmission, MediaType, TrackUid, TransferObjectIdentifierLimits, UnicastManifest, UnicastStreamType, Track};
+use crate::{
+    DateTime, Error, LiveStream, Manifest, ManifestVersion, MediaType, Number, Presentation,
+    PresentationTransmission, Result, SwitchingSet, Track, TrackTransmission, TrackUid,
+    TransferObjectIdentifierLimits, UnicastManifest, UnicastStreamType,
+};
 
 use super::unicast::validate_active;
 use super::ManifestData;

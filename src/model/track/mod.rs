@@ -3,7 +3,7 @@ pub use initialization::*;
 pub use uid::TrackUid;
 
 use crate::util::Entity;
-use crate::{MediaType, ScaledValue, Segment, SegmentId, TrackTransmission, Result};
+use crate::{MediaType, Result, ScaledValue, Segment, SegmentId, TrackTransmission};
 
 mod continuation;
 mod initialization;

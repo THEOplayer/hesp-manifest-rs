@@ -59,11 +59,11 @@ impl Track for MetadataTrack {
     }
 
     fn transmission(&self) -> &TrackTransmission {
-        todo!()
+        &TrackTransmission::Unicast
     }
 
     fn validate_active(&self) -> Result<()> {
-        todo!()
+        Ok(())
     }
 }
 

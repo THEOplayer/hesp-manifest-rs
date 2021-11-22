@@ -116,6 +116,8 @@ impl<'a, E: Entity> ExactSizeIterator for EntityIterMut<'a, E> {
     }
 }
 
+// this could be replaced by `impl<E: Entity, I: IntoIterator<Item = Result<E>>> TryFrom<I> for EntityMap<E>`
+// but this does not work because of https://github.com/rust-lang/rust/issues/50133
 pub trait FromEntities<E: Entity> {
     fn into_entities(self) -> Result<EntityMap<E>>;
 }

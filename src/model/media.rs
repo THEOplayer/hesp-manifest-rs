@@ -7,22 +7,15 @@ use crate::{Error, Result};
 pub enum MediaType {
     Audio,
     Video,
-}
-
-impl MediaType {
-    pub const fn default_content_type(self) -> &'static str {
-        match self {
-            MediaType::Audio => "audio/mp4",
-            MediaType::Video => "video/mp4",
-        }
-    }
+    Metadata,
 }
 
 impl fmt::Display for MediaType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            MediaType::Audio => write!(f, "audio"),
-            MediaType::Video => write!(f, "video"),
+            Self::Audio => write!(f, "audio"),
+            Self::Video => write!(f, "video"),
+            Self::Metadata => write!(f, "metadata"),
         }
     }
 }
@@ -33,6 +26,7 @@ impl FromStr for MediaType {
         match input {
             "audio" => Ok(Self::Audio),
             "video" => Ok(Self::Video),
+            "metadata" => Ok(Self::Metadata),
             _ => Err(Error::InvalidMediaType(input.to_owned())),
         }
     }

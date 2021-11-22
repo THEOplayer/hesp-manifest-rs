@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use itertools::Itertools;
 
-use crate::{Error, Result, TrackType};
+use crate::{Error, Result, MediaType};
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct TrackUid(Arc<TrackUidData>);
@@ -12,7 +12,7 @@ pub struct TrackUid(Arc<TrackUidData>);
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 struct TrackUidData {
     pub(crate) presentation_id: String,
-    pub(crate) track_type: TrackType,
+    pub(crate) track_type: MediaType,
     pub(crate) switching_set_id: String,
     pub(crate) track_id: String,
 }
@@ -20,7 +20,7 @@ struct TrackUidData {
 impl TrackUid {
     pub fn new(
         presentation_id: String,
-        track_type: TrackType,
+        track_type: MediaType,
         switching_set_id: String,
         track_id: String,
     ) -> Self {
@@ -37,7 +37,7 @@ impl TrackUid {
         &self.0.presentation_id
     }
     #[inline]
-    pub fn track_type(&self) -> TrackType {
+    pub fn track_type(&self) -> MediaType {
         self.0.track_type
     }
     #[inline]
@@ -91,7 +91,7 @@ mod tests {
             uid,
             TrackUid::new(
                 "main-pres".to_owned(),
-                TrackType::Video,
+                MediaType::Video,
                 "main".to_owned(),
                 "720p".to_owned(),
             )

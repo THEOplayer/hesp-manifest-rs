@@ -1,11 +1,7 @@
 use url::Url;
 
 use crate::util::{Entity, RelativeUrl};
-use crate::{
-    ContinuationPattern, Error, InitializationPattern, MediaTrack, MediaType, Number, Resolution,
-    Result, ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission, TrackType,
-    TrackUid, VideoTrackData,
-};
+use crate::{ContinuationPattern, Error, Initialization, InitializationPattern, MediaType, Number, Resolution, Result, ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission, TrackUid, VideoTrackData};
 
 #[derive(Debug, Clone)]
 pub struct VideoTrack {
@@ -33,7 +29,15 @@ impl Entity for VideoTrack {
 }
 
 impl Track for VideoTrack {
-    const TRACK_TYPE: TrackType = TrackType::Video;
+    const TRACK_TYPE: MediaType = MediaType::Video;
+
+    fn uid(&self) -> &TrackUid {
+        &self.uid
+    }
+
+    fn bandwidth(&self) -> Option<f64> {
+        self.bandwidth.as_f64()
+    }
 
     fn active_segment(&self) -> Option<&Segment> {
         match self.active_segment_id {
@@ -41,44 +45,47 @@ impl Track for VideoTrack {
             None => None,
         }
     }
+
     fn segment_duration(&self) -> Option<ScaledValue> {
         self.segment_duration
     }
+
     fn segments(&self) -> &[Segment] {
         &self.segments
     }
+
     fn continuation_pattern(&self) -> &ContinuationPattern {
         &self.continuation_pattern
     }
+
     fn set_continuation_pattern(&mut self, pattern: ContinuationPattern) {
         self.continuation_pattern = pattern;
     }
+
     fn average_bandwidth(&self) -> Option<f64> {
         self.average_bandwidth.as_ref().and_then(Number::as_f64)
     }
+
+    fn transmission(&self) -> &TrackTransmission {
+        &self.transmission
+    }
+
+    fn validate_active(&self) -> Result<()> {
+        Initialization::validate_active(self)
+    }
 }
 
-impl MediaTrack for VideoTrack {
-    const MEDIA_TYPE: MediaType = MediaType::Video;
-
-    fn uid(&self) -> &TrackUid {
-        &self.uid
-    }
-
-    fn bandwidth(&self) -> f64 {
-        self.bandwidth.as_f64().unwrap()
-    }
+impl Initialization for VideoTrack {
     fn initialization_pattern(&self) -> &InitializationPattern {
         &self.initialization_pattern
     }
+
     fn set_initialization_pattern(&mut self, pattern: InitializationPattern) {
         self.initialization_pattern = pattern;
     }
+
     fn active_sequence_number(&self) -> Option<u64> {
         self.active_sequence_number
-    }
-    fn transmission(&self) -> &TrackTransmission {
-        &self.transmission
     }
 }
 

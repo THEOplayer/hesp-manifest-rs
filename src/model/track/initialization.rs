@@ -4,7 +4,21 @@ use std::str::FromStr;
 
 use url::Url;
 
-use crate::{Error, Result};
+use crate::{Error, Result, Track};
+
+pub trait Initialization: Track {
+    fn initialization_pattern(&self) -> &InitializationPattern;
+    fn set_initialization_pattern(&mut self, pattern: InitializationPattern);
+    fn active_sequence_number(&self) -> Option<u64>;
+
+    fn validate_active(&self) -> Result<()> {
+        if self.active_sequence_number().is_none() {
+            Err(Error::MissingActiveSequenceNumber(self.id().to_owned()))
+        } else {
+            Ok(())
+        }
+    }
+}
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum InitId {

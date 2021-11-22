@@ -6,8 +6,8 @@ pub use multicast::*;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
 use crate::{
-    AudioSwitchingSet, AudioTrack, Error, MediaSwitchingSet, MediaTrack, MetadataSwitchingSet,
-    Result, ScaledValue, SwitchingSet, TimeBounds, TrackTransmission, TrackUid,
+    AudioSwitchingSet, AudioTrack, Error, MetadataSwitchingSet, Result,
+    ScaledValue, SwitchingSet, TimeBounds, Track, TrackTransmission, TrackUid,
     TransferObjectIdentifierLimits, TransmissionType, VideoSwitchingSet, VideoTrack,
 };
 
@@ -137,7 +137,7 @@ impl Presentation {
         Ok(())
     }
 
-    fn validate_track<T: MediaTrack>(&self, track: &T) -> Result<()> {
+    fn validate_track<T: Track>(&self, track: &T) -> Result<()> {
         let transmission = self.transmission.get_type();
         if track.transmission().get_type() == transmission {
             Ok(())

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{Error, MediaType, Result};
+use crate::{Error, Result};
 
 #[derive(Debug, Deserialize, Clone, Serialize)]
 #[serde(try_from = "String", into = "String")]
@@ -8,7 +8,7 @@ pub struct AudioMimeType(String);
 
 impl Default for AudioMimeType {
     fn default() -> Self {
-        Self(MediaType::Audio.default_content_type().to_owned())
+        Self("audio/mp4".to_owned())
     }
 }
 

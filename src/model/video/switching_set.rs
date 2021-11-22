@@ -2,8 +2,7 @@ use url::Url;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
 use crate::{
-    MediaSwitchingSet, MediaType, Result, SwitchingSet, SwitchingSetProtection, VideoMimeType,
-    VideoSwitchingSetData, VideoTrack,
+    Result, SwitchingSet, SwitchingSetProtection, VideoMimeType, VideoSwitchingSetData, VideoTrack,
 };
 
 #[derive(Debug, Clone)]
@@ -36,11 +35,6 @@ impl SwitchingSet for VideoSwitchingSet {
     fn mime_type(&self) -> &str {
         self.mime_type.as_ref()
     }
-}
-
-impl MediaSwitchingSet for VideoSwitchingSet {
-    type MediaTrack = VideoTrack;
-    const MEDIA_TYPE: MediaType = MediaType::Video;
 }
 
 impl VideoSwitchingSet {

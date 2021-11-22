@@ -2,8 +2,8 @@ use url::Url;
 
 use crate::util::{Entity, RelativeUrl};
 use crate::{
-    ContinuationPattern, Error, MetadataTrackData, Number, Result, ScaledValue, Segment, SegmentId,
-    Segments, Track, TrackType, TrackUid,
+    ContinuationPattern, Error, MediaType, MetadataTrackData, Number, Result, ScaledValue, Segment,
+    SegmentId, Segments, Track, TrackTransmission, TrackUid,
 };
 
 #[derive(Debug, Clone)]
@@ -26,7 +26,15 @@ impl Entity for MetadataTrack {
 }
 
 impl Track for MetadataTrack {
-    const TRACK_TYPE: TrackType = TrackType::Metadata;
+    const TRACK_TYPE: MediaType = MediaType::Metadata;
+
+    fn uid(&self) -> &TrackUid {
+        &self.uid
+    }
+
+    fn bandwidth(&self) -> Option<f64> {
+        self.bandwidth.as_ref().and_then(Number::as_f64)
+    }
 
     fn active_segment(&self) -> Option<&Segment> {
         match self.active_segment_id {
@@ -48,6 +56,14 @@ impl Track for MetadataTrack {
     }
     fn average_bandwidth(&self) -> Option<f64> {
         self.average_bandwidth.as_ref().and_then(Number::as_f64)
+    }
+
+    fn transmission(&self) -> &TrackTransmission {
+        todo!()
+    }
+
+    fn validate_active(&self) -> Result<()> {
+        todo!()
     }
 }
 

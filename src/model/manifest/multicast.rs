@@ -2,11 +2,7 @@ use serde::Serialize;
 use url::Url;
 
 use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
-use crate::{
-    DateTime, Error, LiveStream, Manifest, ManifestVersion, MediaTrack, Number, Presentation,
-    PresentationTransmission, Result, SwitchingSet, TrackTransmission, TrackType, TrackUid,
-    TransferObjectIdentifierLimits, UnicastManifest, UnicastStreamType,
-};
+use crate::{DateTime, Error, LiveStream, Manifest, ManifestVersion, Number, Presentation, PresentationTransmission, Result, SwitchingSet, TrackTransmission, MediaType, TrackUid, TransferObjectIdentifierLimits, UnicastManifest, UnicastStreamType, Track};
 
 use super::unicast::validate_active;
 use super::ManifestData;
@@ -69,7 +65,7 @@ impl MulticastManifest {
     pub fn all_toi_limits(
         &self,
     ) -> impl Iterator<Item = (&TrackUid, TransferObjectIdentifierLimits)> + '_ {
-        fn toi<T: MediaTrack>(track: &T) -> Option<(&TrackUid, TransferObjectIdentifierLimits)> {
+        fn toi<T: Track>(track: &T) -> Option<(&TrackUid, TransferObjectIdentifierLimits)> {
             match track.transmission() {
                 TrackTransmission::Unicast => None,
                 &TrackTransmission::Multicast { toi_limits } => Some((track.uid(), toi_limits)),
@@ -93,15 +89,15 @@ impl MulticastManifest {
     pub fn track_transmission(&self, track: &TrackUid) -> Option<TrackTransmission> {
         let presentation = self.presentation(track.presentation_id())?;
         Some(*match track.track_type() {
-            TrackType::Video => presentation
+            MediaType::Video => presentation
                 .video_switching_set(track.switching_set_id())?
                 .track(track.track_id())?
                 .transmission(),
-            TrackType::Audio => presentation
+            MediaType::Audio => presentation
                 .audio_switching_set(track.switching_set_id())?
                 .track(track.track_id())?
                 .transmission(),
-            TrackType::Metadata => unimplemented!("no multicast support for metadata yet"),
+            MediaType::Metadata => unimplemented!("no multicast support for metadata yet"),
         })
     }
 

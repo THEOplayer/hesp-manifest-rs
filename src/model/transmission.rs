@@ -1,7 +1,5 @@
 use serde::{self, Deserialize, Serialize};
 
-use crate::TransferObjectIdentifierLimits;
-
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Copy)]
 pub enum TransmissionType {
     Unicast,
@@ -20,6 +18,13 @@ pub enum TrackTransmission {
         toi_limits: TransferObjectIdentifierLimits,
     },
 }
+
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Copy, Serialize, Deserialize)]
+pub struct TransferObjectIdentifierLimits {
+    pub start: u32,
+    pub end: u32,
+}
+
 
 impl From<Option<TransferObjectIdentifierLimits>> for TrackTransmission {
     fn from(input: Option<TransferObjectIdentifierLimits>) -> Self {

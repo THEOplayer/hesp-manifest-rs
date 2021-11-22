@@ -3,8 +3,8 @@ use url::Url;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
 use crate::{
-    AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, MediaSwitchingSet, MediaType,
-    Result, SwitchingSet, SwitchingSetProtection,
+    AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, Result, SwitchingSet,
+    SwitchingSetProtection,
 };
 
 #[derive(Debug, Clone)]
@@ -27,6 +27,7 @@ impl Entity for AudioSwitchingSet {
 
 impl SwitchingSet for AudioSwitchingSet {
     type Track = AudioTrack;
+
     fn tracks(&self) -> EntityIter<AudioTrack> {
         self.tracks.iter()
     }
@@ -39,11 +40,6 @@ impl SwitchingSet for AudioSwitchingSet {
     fn mime_type(&self) -> &str {
         self.mime_type.as_ref()
     }
-}
-
-impl MediaSwitchingSet for AudioSwitchingSet {
-    type MediaTrack = AudioTrack;
-    const MEDIA_TYPE: MediaType = MediaType::Audio;
 }
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Deserialize, Serialize, Copy)]

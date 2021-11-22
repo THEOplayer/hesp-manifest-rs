@@ -58,8 +58,6 @@ pub enum Error {
     InvalidTrackPath(String),
     #[error("'{0}' is not a valid MediaType")]
     InvalidMediaType(String),
-    #[error("'{0}' is not a valid TrackType")]
-    InvalidTrackType(String),
     #[error(transparent)]
     UrlParseError(#[from] url::ParseError),
     #[error(transparent)]

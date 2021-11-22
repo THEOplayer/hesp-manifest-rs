@@ -15,8 +15,6 @@ pub use track::*;
 pub use transmission::*;
 pub use video::*;
 
-pub use self::url::*;
-
 mod audio;
 mod date_time;
 mod language;
@@ -32,7 +30,6 @@ mod time_bounds;
 mod time_source;
 mod track;
 mod transmission;
-mod url;
 mod video;
 
 pub type Number = serde_json::Number;

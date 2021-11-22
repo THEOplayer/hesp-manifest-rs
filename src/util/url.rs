@@ -7,6 +7,7 @@ pub trait RelativeUrl {
 }
 
 impl RelativeUrl for Option<String> {
+    #[allow(clippy::option_if_let_else)]
     fn resolve(&self, url: &Url) -> Result<Url> {
         if let Some(relative_url) = self {
             relative_url.resolve(url)

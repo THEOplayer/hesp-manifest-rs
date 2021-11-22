@@ -1,20 +1,18 @@
-use serde::{Deserialize, Serialize};
-
-pub use track_type::TrackType;
+pub use continuation::ContinuationPattern;
+pub use initialization::*;
 pub use uid::TrackUid;
 
 use crate::util::Entity;
-use crate::{
-    ContinuationPattern, Error, InitializationPattern, MediaType, Result, ScaledValue, Segment,
-    SegmentId, TrackTransmission,
-};
+use crate::{MediaType, ScaledValue, Segment, SegmentId, TrackTransmission, Result};
 
-mod track_type;
+mod continuation;
+mod initialization;
 mod uid;
 
 pub trait Track: Entity {
-    const TRACK_TYPE: TrackType;
-
+    const TRACK_TYPE: MediaType;
+    fn uid(&self) -> &TrackUid;
+    fn bandwidth(&self) -> Option<f64>;
     fn active_segment(&self) -> Option<&Segment>;
     fn segment_duration(&self) -> Option<ScaledValue>;
     fn segments(&self) -> &[Segment];
@@ -32,28 +30,6 @@ pub trait Track: Entity {
                 .map(|segment| segment.duration().unwrap())
         })
     }
-}
-
-pub trait MediaTrack: Track {
-    //TODO check if this is still needed now we have TrackType
-    const MEDIA_TYPE: MediaType;
-    fn uid(&self) -> &TrackUid;
-    fn bandwidth(&self) -> f64;
-    fn initialization_pattern(&self) -> &InitializationPattern;
-    fn set_initialization_pattern(&mut self, pattern: InitializationPattern);
-    fn active_sequence_number(&self) -> Option<u64>;
     fn transmission(&self) -> &TrackTransmission;
-    fn validate_active(&self) -> Result<()> {
-        if self.active_sequence_number().is_none() {
-            Err(Error::MissingActiveSequenceNumber(self.id().to_owned()))
-        } else {
-            Ok(())
-        }
-    }
-}
-
-#[derive(Clone, Debug, PartialEq, Eq, Hash, Copy, Serialize, Deserialize)]
-pub struct TransferObjectIdentifierLimits {
-    pub start: u32,
-    pub end: u32,
+    fn validate_active(&self) -> Result<()>;
 }

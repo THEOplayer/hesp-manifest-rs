@@ -4,7 +4,7 @@ use std::str::FromStr;
 
 use url::Url;
 
-use crate::{Error, Result, Track};
+use crate::{Error, Result, Track, UrlPattern};
 
 pub trait Initialization: Track {
     fn initialization_pattern(&self) -> &InitializationPattern;
@@ -47,41 +47,25 @@ impl fmt::Display for InitId {
 }
 
 #[derive(Debug, Clone)]
-pub struct InitializationPattern {
-    base: Url,
-    pattern: String,
-}
+pub struct InitializationPattern(UrlPattern);
 
 impl InitializationPattern {
     const INIT_ID_PATTERN: &'static str = "{initId}";
 
-    pub fn new(base: Url, pattern: String) -> Result<Self> {
-        base.join(&pattern)?;
-        if pattern.contains(Self::INIT_ID_PATTERN) {
-            Ok(Self { base, pattern })
-        } else {
-            Err(Error::InvalidInitializationPattern(pattern))
-        }
+    pub fn new(base: &Url, pattern: String) -> Result<Self> {
+        UrlPattern::new(base, pattern, Self::INIT_ID_PATTERN).map(Self)
     }
 
     pub fn now(&self) -> Url {
         self.init_id(InitId::Now)
     }
-    pub fn init_id<I: Into<InitId>>(&self, init_id: I) -> Url {
-        let init_id = init_id.into().to_string();
-        let rel = self.pattern.replace(Self::INIT_ID_PATTERN, &init_id);
-        self.base.join(&rel).unwrap()
-    }
-}
 
-impl fmt::Display for InitializationPattern {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.base
-            .join(&self.pattern)
-            .unwrap()
-            .to_string()
-            .replace("%7BinitId%7D", Self::INIT_ID_PATTERN)
-            .fmt(f)
+    pub fn init_id<I: Into<InitId>>(&self, init_id: I) -> Url {
+        self.0.resolve(&init_id.into().to_string())
+    }
+
+    pub fn make_relative(&self, url: &Url) -> String {
+        self.0.make_relative(url)
     }
 }
 

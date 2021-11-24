@@ -1,6 +1,6 @@
 use url::Url;
 
-use crate::util::{Entity, RelativeUrl};
+use crate::util::Entity;
 use crate::{
     ContinuationPattern, Error, Initialization, InitializationPattern, MediaType, Number,
     Resolution, Result, ScaledDuration, ScaledValue, Segment, SegmentId, Segments, Track,
@@ -132,10 +132,10 @@ impl VideoTrack {
             active_sequence_number: data.active_sequence_number,
             average_bandwidth: data.average_bandwidth,
             codecs,
-            continuation_pattern: ContinuationPattern::new(base_url.clone(), continuation_pattern)?,
+            continuation_pattern: ContinuationPattern::new(&base_url, continuation_pattern)?,
             frame_rate,
             label: data.label,
-            initialization_pattern: InitializationPattern::new(base_url, initialization_pattern)?,
+            initialization_pattern: InitializationPattern::new(&base_url, initialization_pattern)?,
             media_time_offset: data.media_time_offset.unwrap_or_default(),
             segment_duration: data.segment_duration,
             transmission: data.transmission,

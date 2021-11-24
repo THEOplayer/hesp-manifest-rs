@@ -1,6 +1,6 @@
 use url::Url;
 
-use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
+use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
     Result, SwitchingSet, SwitchingSetProtection, VideoMimeType, VideoSwitchingSetData, VideoTrack,
 };

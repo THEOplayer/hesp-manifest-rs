@@ -1,39 +1,52 @@
+use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::Result;
 
-pub trait RelativeUrl {
-    fn resolve(&self, url: &Url) -> Result<Url>;
-    fn make_relative(&mut self, url: &Url);
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(from = "Option<String>", into = "Option<String>")]
+pub enum RelativeUrl {
+    Absolute(Url),
+    Path(String),
+    None,
 }
 
-impl RelativeUrl for Option<String> {
-    #[allow(clippy::option_if_let_else)]
-    fn resolve(&self, url: &Url) -> Result<Url> {
-        if let Some(relative_url) = self {
-            relative_url.resolve(url)
-        } else {
-            Ok(url.clone())
-        }
+impl RelativeUrl {
+    pub fn resolve(&self, url: &Url) -> Result<Url> {
+        Ok(match self {
+            Self::Absolute(url) => url.clone(),
+            Self::Path(path) => url.join(path)?,
+            Self::None => url.clone(),
+        })
     }
 
-    fn make_relative(&mut self, url: &Url) {
-        if let Some(relative_url) = self {
-            relative_url.make_relative(url);
+    // pub fn make_relative(&mut self, url: &Url) {
+    //     if let Self::Absolute(absolute) = self {
+    //         if let Some(relative) = url.make_relative(&absolute) {
+    //             *self = relative.into();
+    //         }
+    //     }
+    // }
+}
+
+impl From<Option<String>> for RelativeUrl {
+    fn from(input: Option<String>) -> Self {
+        match input {
+            None => Self::None,
+            Some(input) => match Url::parse(&input) {
+                Ok(url) => Self::Absolute(url),
+                Err(_) => Self::Path(input),
+            },
         }
     }
 }
 
-impl RelativeUrl for String {
-    fn resolve(&self, url: &Url) -> Result<Url> {
-        Ok(url.join(self)?)
-    }
-
-    fn make_relative(&mut self, url: &Url) {
-        if let Ok(absolute) = Url::parse(self) {
-            if let Some(relative) = url.make_relative(&absolute) {
-                *self = relative;
-            }
+impl From<RelativeUrl> for Option<String> {
+    fn from(input: RelativeUrl) -> Self {
+        match input {
+            RelativeUrl::Absolute(url) => Some(url.to_string()),
+            RelativeUrl::Path(path) => Some(path),
+            RelativeUrl::None => None,
         }
     }
 }

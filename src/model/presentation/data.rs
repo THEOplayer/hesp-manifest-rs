@@ -16,7 +16,7 @@ pub struct PresentationData {
     pub time_bounds: TimeBounds,
     #[serde(default)]
     pub audio: Vec<AudioSwitchingSetData>,
-    pub base_url: Option<String>,
+    pub base_url: RelativeUrl,
     pub current_time: Option<ScaledValue>,
     #[serde(default)]
     pub events: Vec<PresentationEvent>,
@@ -28,38 +28,32 @@ pub struct PresentationData {
 }
 
 impl PresentationData {
-    pub fn make_relative(&mut self, url: &Url) {
-        for set in &mut self.audio {
-            for track in &mut set.tracks {
-                track.initialization_pattern.make_relative(url);
-                track.continuation_pattern.make_relative(url);
-            }
-        }
-        for set in &mut self.video {
-            for track in &mut set.tracks {
-                track.initialization_pattern.make_relative(url);
-                track.continuation_pattern.make_relative(url);
-            }
-        }
-        for set in &mut self.metadata {
-            for track in &mut set.tracks {
-                track.continuation_pattern.make_relative(url);
-            }
-        }
-    }
-}
-
-impl From<Presentation> for PresentationData {
-    fn from(input: Presentation) -> Self {
+    pub fn new(input: Presentation, location: &Url) -> Self {
         Self {
             id: input.id,
             time_bounds: input.time_bounds,
-            audio: input.audio.into_iter().map(From::from).collect(),
-            base_url: None,
+            audio: input
+                .audio
+                .into_iter()
+                .map(|a| AudioSwitchingSetData::new(a, location))
+                .collect(),
+            base_url: RelativeUrl::None,
             current_time: input.current_time,
-            events: input.events.into_iter().map(From::from).collect(),
-            metadata: input.metadata.into_iter().map(From::from).collect(),
-            video: input.video.into_iter().map(From::from).collect(),
+            events: input
+                .events
+                .into_iter()
+                .map(PresentationEvent::from)
+                .collect(),
+            metadata: input
+                .metadata
+                .into_iter()
+                .map(|m| MetadataSwitchingSetData::new(m, location))
+                .collect(),
+            video: input
+                .video
+                .into_iter()
+                .map(|v| VideoSwitchingSetData::new(v, location))
+                .collect(),
             transmission: input.transmission,
         }
     }

@@ -1,6 +1,6 @@
 use url::Url;
 
-use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
+use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{Language, MetadataSwitchingSetData, MetadataTrack, Result, SwitchingSet};
 
 #[derive(Clone, Debug)]

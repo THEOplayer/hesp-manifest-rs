@@ -1,5 +1,6 @@
 pub use continuation::ContinuationPattern;
 pub use initialization::*;
+pub use pattern::UrlPattern;
 pub use uid::TrackUid;
 
 use crate::util::Entity;
@@ -7,6 +8,7 @@ use crate::{MediaType, Result, ScaledDuration, Segment, SegmentId, TrackTransmis
 
 mod continuation;
 mod initialization;
+mod pattern;
 mod uid;
 
 pub trait Track: Entity {

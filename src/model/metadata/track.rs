@@ -1,6 +1,6 @@
 use url::Url;
 
-use crate::util::{Entity, RelativeUrl};
+use crate::util::Entity;
 use crate::{
     ContinuationPattern, Error, MediaType, MetadataTrackData, Number, Result, ScaledDuration,
     ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission, TrackUid,
@@ -87,7 +87,7 @@ impl MetadataTrack {
             segments: data.segments,
             active_segment_id: data.active_segment_id,
             average_bandwidth: data.average_bandwidth,
-            continuation_pattern: ContinuationPattern::new(base_url, continuation_pattern)?,
+            continuation_pattern: ContinuationPattern::new(&base_url, continuation_pattern)?,
             label: data.label,
             media_time_offset: data.media_time_offset.unwrap_or_default(),
             segment_duration: data.segment_duration,

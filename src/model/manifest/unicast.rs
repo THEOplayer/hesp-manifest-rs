@@ -1,7 +1,7 @@
 use serde::Serialize;
 use url::Url;
 
-use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
+use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
     AudioTrack, DateTime, Error, LiveStream, Manifest, ManifestData, ManifestVersion,
     MetadataTrack, Number, Presentation, Result, StreamType, VideoTrack,

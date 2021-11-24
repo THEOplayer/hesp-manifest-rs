@@ -1,6 +1,6 @@
 use url::Url;
 
-use crate::util::{Entity, RelativeUrl};
+use crate::util::Entity;
 use crate::{
     AudioTrackData, ContinuationPattern, Error, Initialization, InitializationPattern, MediaType,
     Number, Result, SamplesPerFrame, ScaledDuration, ScaledValue, Segment, SegmentId, Segments,
@@ -133,10 +133,10 @@ impl AudioTrack {
             average_bandwidth: data.average_bandwidth,
             channels: data.channels,
             codecs,
-            continuation_pattern: ContinuationPattern::new(base_url.clone(), continuation_pattern)?,
+            continuation_pattern: ContinuationPattern::new(&base_url, continuation_pattern)?,
             frame_rate: data.frame_rate.unwrap_or_default(),
             label: data.label,
-            initialization_pattern: InitializationPattern::new(base_url, initialization_pattern)?,
+            initialization_pattern: InitializationPattern::new(&base_url, initialization_pattern)?,
             media_time_offset: data.media_time_offset.unwrap_or_default(),
             sample_rate,
             segment_duration: data.segment_duration,

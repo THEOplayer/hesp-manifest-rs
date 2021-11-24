@@ -1,42 +1,22 @@
-use std::fmt;
-
 use url::Url;
 
-use crate::{Error, Result, SegmentId};
+use crate::{Result, SegmentId, UrlPattern};
 
 #[derive(Debug, Clone)]
-pub struct ContinuationPattern {
-    base: Url,
-    pattern: String,
-}
+pub struct ContinuationPattern(UrlPattern);
 
 impl ContinuationPattern {
     const SEGMENT_ID_PATTERN: &'static str = "{segmentId}";
 
-    pub fn new(base: Url, pattern: String) -> Result<Self> {
-        base.join(&pattern)?;
-        if pattern.contains(Self::SEGMENT_ID_PATTERN) {
-            Ok(Self { base, pattern })
-        } else {
-            Err(Error::InvalidContinuationPattern(pattern))
-        }
+    pub fn new(base: &Url, pattern: String) -> Result<Self> {
+        UrlPattern::new(base, pattern, Self::SEGMENT_ID_PATTERN).map(Self)
     }
 
     pub fn segment(&self, id: SegmentId) -> Url {
-        let rel = self
-            .pattern
-            .replace(Self::SEGMENT_ID_PATTERN, &id.to_string());
-        self.base.join(&rel).unwrap()
+        self.0.resolve(&id.to_string())
     }
-}
 
-impl fmt::Display for ContinuationPattern {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.base
-            .join(&self.pattern)
-            .unwrap()
-            .to_string()
-            .replace("%7BsegmentId%7D", Self::SEGMENT_ID_PATTERN)
-            .fmt(f)
+    pub fn make_relative(&self, url: &Url) -> String {
+        self.0.make_relative(url)
     }
 }

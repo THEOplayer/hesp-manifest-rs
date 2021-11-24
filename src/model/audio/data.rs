@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use url::Url;
 
-use crate::util::Entity;
+use crate::util::{Entity, RelativeUrl};
 use crate::{
     AudioMimeType, AudioSwitchingSet, AudioTrack, Language, Number, SamplesPerFrame,
     ScaledDuration, ScaledValue, SegmentId, Segments, SwitchingSetProtection, TrackTransmission,
@@ -15,7 +16,7 @@ pub struct AudioSwitchingSetData {
     pub language: Language,
     pub tracks: Vec<AudioTrackData>,
     pub align_id: Option<String>,
-    pub base_url: Option<String>,
+    pub base_url: RelativeUrl,
     pub channels: Option<u64>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
@@ -28,14 +29,18 @@ pub struct AudioSwitchingSetData {
     pub sample_rate: Option<u64>,
 }
 
-impl From<AudioSwitchingSet> for AudioSwitchingSetData {
-    fn from(input: AudioSwitchingSet) -> Self {
+impl AudioSwitchingSetData {
+    pub fn new(input: AudioSwitchingSet, location: &Url) -> Self {
         Self {
             id: input.id,
             language: input.language,
-            tracks: input.tracks.into_iter().map(From::from).collect(),
+            tracks: input
+                .tracks
+                .into_iter()
+                .map(|track| AudioTrackData::new(track, location))
+                .collect(),
             align_id: input.align_id,
-            base_url: None,
+            base_url: RelativeUrl::None,
             channels: input.channels,
             codecs: None,
             continuation_pattern: None,
@@ -61,7 +66,7 @@ pub struct AudioTrackData {
     pub active_segment_id: Option<SegmentId>,
     pub active_sequence_number: Option<u64>,
     pub average_bandwidth: Option<Number>,
-    pub base_url: Option<String>,
+    pub base_url: RelativeUrl,
     pub channels: Option<u64>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
@@ -74,8 +79,8 @@ pub struct AudioTrackData {
     pub transmission: TrackTransmission,
 }
 
-impl From<AudioTrack> for AudioTrackData {
-    fn from(input: AudioTrack) -> Self {
+impl AudioTrackData {
+    pub fn new(input: AudioTrack, location: &Url) -> Self {
         let id = input.id().to_owned();
         Self {
             id,
@@ -84,13 +89,13 @@ impl From<AudioTrack> for AudioTrackData {
             active_segment_id: input.active_segment_id,
             active_sequence_number: input.active_sequence_number,
             average_bandwidth: input.average_bandwidth,
-            base_url: None,
+            base_url: RelativeUrl::None,
             channels: input.channels,
             codecs: Some(input.codecs),
-            continuation_pattern: Some(input.continuation_pattern.to_string()),
+            continuation_pattern: Some(input.continuation_pattern.make_relative(location)),
             frame_rate: Some(input.frame_rate),
             label: input.label,
-            initialization_pattern: Some(input.initialization_pattern.to_string()),
+            initialization_pattern: Some(input.initialization_pattern.make_relative(location)),
             media_time_offset: Some(input.media_time_offset),
             sample_rate: Some(input.sample_rate),
             segment_duration: input.segment_duration,

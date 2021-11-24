@@ -38,10 +38,8 @@ pub enum Error {
     MissingInitializationPattern(String),
     #[error("Ids must be unique (found duplicate: {0})")]
     DuplicateId(String),
-    #[error("ContinuationPattern '{0}' must contain {{segmentId}}")]
-    InvalidContinuationPattern(String),
-    #[error("InitializationPattern '{0}' must contain {{initId}}")]
-    InvalidInitializationPattern(String),
+    #[error("Pattern '{0}' must contain {1}")]
+    InvalidPattern(String, &'static str),
     #[error("Presentation '{0}' must not contain multicast data")]
     InvalidUnicastPresentation(String),
     #[error("'{0:?}' is not a valid version for a unicast manifest")]

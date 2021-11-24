@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use url::Url;
 
-use crate::util::Entity;
+use crate::util::{Entity, RelativeUrl};
 use crate::{
     Number, Resolution, ScaledDuration, ScaledValue, SegmentId, Segments, SwitchingSetProtection,
     TrackTransmission, VideoMimeType, VideoSwitchingSet, VideoTrack,
@@ -14,7 +15,7 @@ pub struct VideoSwitchingSetData {
     pub id: String,
     pub tracks: Vec<VideoTrackData>,
     pub align_id: Option<String>,
-    pub base_url: Option<String>,
+    pub base_url: RelativeUrl,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
     pub frame_rate: Option<ScaledValue>,
@@ -25,13 +26,17 @@ pub struct VideoSwitchingSetData {
     pub protection: Option<SwitchingSetProtection>,
 }
 
-impl From<VideoSwitchingSet> for VideoSwitchingSetData {
-    fn from(input: VideoSwitchingSet) -> Self {
+impl VideoSwitchingSetData {
+    pub fn new(input: VideoSwitchingSet, location: &Url) -> Self {
         Self {
             id: input.id,
-            tracks: input.tracks.into_iter().map(VideoTrackData::from).collect(),
+            tracks: input
+                .tracks
+                .into_iter()
+                .map(|track| VideoTrackData::new(track, location))
+                .collect(),
             align_id: input.align_id,
-            base_url: None,
+            base_url: RelativeUrl::None,
             codecs: None,
             continuation_pattern: None,
             frame_rate: None,
@@ -56,7 +61,7 @@ pub struct VideoTrackData {
     pub active_segment_id: Option<SegmentId>,
     pub active_sequence_number: Option<u64>,
     pub average_bandwidth: Option<Number>,
-    pub base_url: Option<String>,
+    pub base_url: RelativeUrl,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
     pub frame_rate: Option<ScaledValue>,
@@ -67,8 +72,8 @@ pub struct VideoTrackData {
     pub transmission: TrackTransmission,
 }
 
-impl From<VideoTrack> for VideoTrackData {
-    fn from(input: VideoTrack) -> Self {
+impl VideoTrackData {
+    pub fn new(input: VideoTrack, location: &Url) -> Self {
         let id = input.id().to_owned();
         Self {
             id,
@@ -78,12 +83,12 @@ impl From<VideoTrack> for VideoTrackData {
             active_segment_id: input.active_segment_id,
             active_sequence_number: input.active_sequence_number,
             average_bandwidth: input.average_bandwidth,
-            base_url: None,
+            base_url: RelativeUrl::None,
             codecs: Some(input.codecs),
-            continuation_pattern: Some(input.continuation_pattern.to_string()),
+            continuation_pattern: Some(input.continuation_pattern.make_relative(location)),
             frame_rate: Some(input.frame_rate),
             label: input.label,
-            initialization_pattern: Some(input.initialization_pattern.to_string()),
+            initialization_pattern: Some(input.initialization_pattern.make_relative(location)),
             media_time_offset: Some(input.media_time_offset),
             segment_duration: input.segment_duration,
             transmission: input.transmission,

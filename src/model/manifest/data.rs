@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
@@ -19,7 +20,6 @@ pub struct ManifestData {
     pub content_base_url: Option<String>,
 }
 
-//TODO make sure manifest location url is removed when serializing
 impl From<UnicastManifest> for ManifestData {
     fn from(input: UnicastManifest) -> Self {
         Self {
@@ -30,10 +30,9 @@ impl From<UnicastManifest> for ManifestData {
                 .presentations
                 .into_iter()
                 .map(PresentationData::from)
+                .update(|p| p.make_relative(&input.location))
                 .collect(),
             stream_type: input.stream_type,
-            //TODO normalize all Urls, now the full URL is stored in all initialization-/continuation-patterns
-            // same goes for switching set data defaults
             content_base_url: None,
         }
     }

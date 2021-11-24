@@ -1,7 +1,7 @@
 use url::Url;
 
-use crate::util::{Entity, EntityMap, FromEntities, RelativeUrl};
-use crate::{Language, MetadataSwitchingSetData, MetadataTrack, Result};
+use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
+use crate::{Language, MetadataSwitchingSetData, MetadataTrack, Result, SwitchingSet};
 
 #[derive(Clone, Debug)]
 pub struct MetadataSwitchingSet {
@@ -17,6 +17,26 @@ pub struct MetadataSwitchingSet {
 impl Entity for MetadataSwitchingSet {
     fn id(&self) -> &str {
         &self.id
+    }
+}
+
+impl SwitchingSet for MetadataSwitchingSet {
+    type Track = MetadataTrack;
+
+    fn tracks(&self) -> EntityIter<MetadataTrack> {
+        self.tracks.iter()
+    }
+
+    fn track(&self, id: &str) -> Option<&MetadataTrack> {
+        self.tracks.get(id)
+    }
+
+    fn tracks_mut(&mut self) -> EntityIterMut<MetadataTrack> {
+        self.tracks.iter_mut()
+    }
+
+    fn mime_type(&self) -> &str {
+        &self.mime_type
     }
 }
 

@@ -89,11 +89,11 @@ impl MulticastManifest {
 }
 
 impl Manifest for MulticastManifest {
-    fn new(base_url: &Url, data: ManifestData) -> Result<Self> {
+    fn new(location: Url, data: ManifestData) -> Result<Self> {
         if data.manifest_version != ManifestVersion::V1_0_0Multicast {
             return Err(Error::InvalidMulticastVersion(data.manifest_version));
         }
-        let inner = UnicastManifest::new(base_url, data)?;
+        let inner = UnicastManifest::new(location, data)?;
         Ok(Self { inner })
     }
 

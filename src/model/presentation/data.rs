@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use url::Url;
 
+use crate::util::RelativeUrl;
 use crate::{
     AudioSwitchingSetData, MetadataSwitchingSetData, Presentation, PresentationEvent,
     PresentationTransmission, ScaledValue, TimeBounds, VideoSwitchingSetData,
@@ -23,6 +25,28 @@ pub struct PresentationData {
     #[serde(default)]
     pub video: Vec<VideoSwitchingSetData>,
     pub transmission: PresentationTransmission,
+}
+
+impl PresentationData {
+    pub fn make_relative(&mut self, url: &Url) {
+        for set in &mut self.audio {
+            for track in &mut set.tracks {
+                track.initialization_pattern.make_relative(url);
+                track.continuation_pattern.make_relative(url);
+            }
+        }
+        for set in &mut self.video {
+            for track in &mut set.tracks {
+                track.initialization_pattern.make_relative(url);
+                track.continuation_pattern.make_relative(url);
+            }
+        }
+        for set in &mut self.metadata {
+            for track in &mut set.tracks {
+                track.continuation_pattern.make_relative(url);
+            }
+        }
+    }
 }
 
 impl From<Presentation> for PresentationData {

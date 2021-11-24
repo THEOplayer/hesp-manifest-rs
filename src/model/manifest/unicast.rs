@@ -3,8 +3,8 @@ use url::Url;
 
 use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
 use crate::{
-    DateTime, Error, LiveStream, Manifest, ManifestData, ManifestVersion, Number, Presentation,
-    Result, StreamType,
+    AudioTrack, DateTime, Error, LiveStream, Manifest, ManifestData, ManifestVersion,
+    MetadataTrack, Number, Presentation, Result, StreamType, VideoTrack,
 };
 
 #[derive(Debug, Clone, Serialize)]
@@ -14,6 +14,7 @@ pub struct UnicastManifest {
     pub(super) fallback_poll_rate: Number,
     pub(super) presentations: EntityMap<Presentation>,
     pub(super) stream_type: StreamType,
+    pub(super) location: Url,
 }
 
 impl UnicastManifest {
@@ -27,14 +28,26 @@ impl UnicastManifest {
             StreamType::Vod => None,
         }
     }
+
+    pub fn audio_tracks(&self) -> impl Iterator<Item = &AudioTrack> {
+        self.presentations().flat_map(Presentation::audio_tracks)
+    }
+
+    pub fn video_tracks(&self) -> impl Iterator<Item = &VideoTrack> {
+        self.presentations().flat_map(Presentation::video_tracks)
+    }
+
+    pub fn metadata_tracks(&self) -> impl Iterator<Item = &MetadataTrack> {
+        self.presentations().flat_map(Presentation::metadata_tracks)
+    }
 }
 
 impl Manifest for UnicastManifest {
-    fn new(base_url: &Url, data: ManifestData) -> Result<Self> {
+    fn new(location: Url, data: ManifestData) -> Result<Self> {
         if data.manifest_version != ManifestVersion::V1_0_0 {
             return Err(Error::InvalidUnicastVersion(data.manifest_version));
         }
-        let url = data.content_base_url.resolve(base_url)?;
+        let url = data.content_base_url.resolve(&location)?;
         let presentations = data
             .presentations
             .into_iter()
@@ -49,6 +62,7 @@ impl Manifest for UnicastManifest {
             fallback_poll_rate: data.fallback_poll_rate,
             presentations,
             stream_type: data.stream_type,
+            location,
         };
 
         Ok(manifest)
@@ -114,8 +128,8 @@ mod tests {
                 "streamType": "live",
                 "activePresentation": "0"
             }"#;
-        let url = Url::parse("https://www.theoplayer.com")?;
-        let result = UnicastManifest::from_json(&url, data);
+        let location = Url::parse("https://www.theoplayer.com")?;
+        let result = UnicastManifest::from_json(location, data);
 
         assert!(result.is_err());
         let error = result.unwrap_err().to_string();
@@ -144,8 +158,8 @@ mod tests {
                 "streamType": "live",
                 "activePresentation": "0"
             }"#;
-        let url = Url::parse("https://www.theoplayer.com")?;
-        let result = UnicastManifest::from_json(&url, data);
+        let location = Url::parse("https://www.theoplayer.com")?;
+        let result = UnicastManifest::from_json(location, data);
 
         assert!(result.is_err());
         let error = result.unwrap_err().to_string();

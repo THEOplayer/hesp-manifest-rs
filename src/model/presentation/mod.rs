@@ -6,8 +6,8 @@ pub use multicast::*;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
 use crate::{
-    AudioSwitchingSet, AudioTrack, Error, MetadataSwitchingSet, Result, ScaledValue, SwitchingSet,
-    TimeBounds, Track, TrackTransmission, TrackUid, TransferObjectIdentifierLimits,
+    AudioSwitchingSet, AudioTrack, Error, MetadataSwitchingSet, MetadataTrack, Result, ScaledValue,
+    SwitchingSet, TimeBounds, Track, TrackTransmission, TrackUid, TransferObjectIdentifierLimits,
     TransmissionType, VideoSwitchingSet, VideoTrack,
 };
 
@@ -117,6 +117,10 @@ impl Presentation {
 
     pub fn audio_tracks(&self) -> impl Iterator<Item = &AudioTrack> {
         self.audio().flat_map(|set| set.tracks())
+    }
+
+    pub fn metadata_tracks(&self) -> impl Iterator<Item = &MetadataTrack> {
+        self.metadata().flat_map(|set| set.tracks())
     }
 
     pub fn video_tracks_mut(&mut self) -> impl Iterator<Item = &mut VideoTrack> {

@@ -1,37 +1,30 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use url::Url;
 
 use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
 use crate::{
     DateTime, Error, LiveStream, Manifest, ManifestData, ManifestVersion, Number, Presentation,
-    Result,
+    Result, StreamType,
 };
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(into = "ManifestData")]
 pub struct UnicastManifest {
-    pub(crate) creation_date: DateTime,
-    pub(crate) fallback_poll_rate: Number,
-    pub(crate) presentations: EntityMap<Presentation>,
-    pub(crate) stream_type: UnicastStreamType,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(tag = "streamType", rename_all = "lowercase")]
-pub enum UnicastStreamType {
-    Live(LiveStream),
-    Vod,
+    pub(super) creation_date: DateTime,
+    pub(super) fallback_poll_rate: Number,
+    pub(super) presentations: EntityMap<Presentation>,
+    pub(super) stream_type: StreamType,
 }
 
 impl UnicastManifest {
-    pub const fn stream_type(&self) -> &UnicastStreamType {
+    pub const fn stream_type(&self) -> &StreamType {
         &self.stream_type
     }
 
     pub fn active_presentation(&self) -> Option<&Presentation> {
         match &self.stream_type {
-            UnicastStreamType::Live(live_data) => self.presentation(&live_data.active_presentation),
-            UnicastStreamType::Vod => None,
+            StreamType::Live(live_data) => self.presentation(&live_data.active_presentation),
+            StreamType::Vod => None,
         }
     }
 }
@@ -72,13 +65,17 @@ impl Manifest for UnicastManifest {
     fn presentation_mut(&mut self, id: &str) -> Option<&mut Presentation> {
         self.presentations.get_mut(id)
     }
+
+    fn stream_type(&self) -> &StreamType {
+        &self.stream_type
+    }
 }
 
 pub(super) fn validate_active(
-    stream_type: &UnicastStreamType,
+    stream_type: &StreamType,
     presentations: &EntityMap<Presentation>,
 ) -> Result<()> {
-    if let UnicastStreamType::Live(LiveStream {
+    if let StreamType::Live(LiveStream {
         active_presentation,
         ..
     }) = stream_type

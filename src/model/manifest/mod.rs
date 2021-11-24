@@ -1,8 +1,8 @@
 use url::Url;
 
 pub use data::ManifestData;
-pub use live::LiveStream;
 pub use multicast::*;
+pub use stream::*;
 pub use unicast::*;
 pub use version::ManifestVersion;
 
@@ -10,8 +10,8 @@ use crate::util::{EntityIter, EntityIterMut};
 use crate::{Presentation, Result};
 
 mod data;
-mod live;
 mod multicast;
+mod stream;
 mod unicast;
 mod version;
 
@@ -23,6 +23,7 @@ pub trait Manifest {
     fn presentations_mut(&mut self) -> EntityIterMut<Presentation>;
     fn presentation(&self, id: &str) -> Option<&Presentation>;
     fn presentation_mut(&mut self, id: &str) -> Option<&mut Presentation>;
+    fn stream_type(&self) -> &StreamType;
 
     fn from_json(base_url: &Url, json: &str) -> Result<Self>
     where

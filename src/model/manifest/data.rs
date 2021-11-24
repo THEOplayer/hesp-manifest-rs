@@ -2,8 +2,8 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 use crate::{
-    DateTime, ManifestVersion, MulticastManifest, Number, PresentationData, UnicastManifest,
-    UnicastStreamType,
+    DateTime, ManifestVersion, MulticastManifest, Number, PresentationData, StreamType,
+    UnicastManifest,
 };
 
 #[skip_serializing_none]
@@ -15,7 +15,7 @@ pub struct ManifestData {
     pub manifest_version: ManifestVersion,
     pub presentations: Vec<PresentationData>,
     #[serde(flatten)]
-    pub stream_type: UnicastStreamType,
+    pub stream_type: StreamType,
     pub content_base_url: Option<String>,
 }
 
@@ -41,17 +41,6 @@ impl From<UnicastManifest> for ManifestData {
 
 impl From<MulticastManifest> for ManifestData {
     fn from(input: MulticastManifest) -> Self {
-        Self {
-            creation_date: input.creation_date,
-            fallback_poll_rate: input.fallback_poll_rate,
-            manifest_version: ManifestVersion::V1_0_0,
-            presentations: input
-                .presentations
-                .into_iter()
-                .map(PresentationData::from)
-                .collect(),
-            stream_type: input.stream_type.into(),
-            content_base_url: None,
-        }
+        input.inner.into()
     }
 }

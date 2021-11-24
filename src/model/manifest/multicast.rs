@@ -1,65 +1,24 @@
 use serde::Serialize;
 use url::Url;
 
-use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities, RelativeUrl};
+use crate::util::{EntityIter, EntityIterMut, FromEntities};
 use crate::{
-    DateTime, Error, LiveStream, Manifest, ManifestVersion, MediaType, Number, Presentation,
-    PresentationTransmission, Result, SwitchingSet, Track, TrackTransmission, TrackUid,
-    TransferObjectIdentifierLimits, UnicastManifest, UnicastStreamType,
+    Error, Manifest, ManifestVersion, MediaType, Presentation, PresentationTransmission, Result,
+    StreamType, SwitchingSet, Track, TrackTransmission, TrackUid, TransferObjectIdentifierLimits,
+    UnicastManifest,
 };
 
-use super::unicast::validate_active;
 use super::ManifestData;
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(into = "ManifestData")]
 pub struct MulticastManifest {
-    pub(super) creation_date: DateTime,
-    pub(super) fallback_poll_rate: Number,
-    pub(super) presentations: EntityMap<Presentation>,
-    pub(super) stream_type: MulticastStreamType,
-}
-
-#[derive(Debug, Clone)]
-pub enum MulticastStreamType {
-    Live(LiveStream),
-}
-
-impl MulticastStreamType {
-    const fn live_data(&self) -> &LiveStream {
-        match &self {
-            MulticastStreamType::Live(live_data) => live_data,
-        }
-    }
-}
-
-impl From<MulticastStreamType> for UnicastStreamType {
-    fn from(stream_type: MulticastStreamType) -> Self {
-        match stream_type {
-            MulticastStreamType::Live(data) => Self::Live(data),
-        }
-    }
-}
-
-impl TryFrom<UnicastStreamType> for MulticastStreamType {
-    type Error = Error;
-
-    fn try_from(value: UnicastStreamType) -> Result<Self> {
-        match value {
-            UnicastStreamType::Live(stream) => Ok(Self::Live(stream)),
-            UnicastStreamType::Vod => Err(Error::InvalidMulticastStreamType),
-        }
-    }
+    pub(super) inner: UnicastManifest,
 }
 
 impl MulticastManifest {
     pub fn active_presentation(&self) -> &Presentation {
-        self.presentation(&self.stream_type.live_data().active_presentation)
-            .unwrap()
-    }
-
-    pub const fn stream_type(&self) -> &MulticastStreamType {
-        &self.stream_type
+        self.inner.active_presentation().unwrap()
     }
 
     pub fn transport_session_id(&self, presentation_id: &str) -> Option<u32> {
@@ -75,7 +34,7 @@ impl MulticastManifest {
                 &TrackTransmission::Multicast { toi_limits } => Some((track.uid(), toi_limits)),
             }
         }
-        self.presentations.iter().flat_map(|presentation| {
+        self.presentations().flat_map(|presentation| {
             let video_toi = presentation.video_tracks().filter_map(toi);
             let audio_toi = presentation.audio_tracks().filter_map(toi);
             video_toi.chain(audio_toi)
@@ -106,90 +65,66 @@ impl MulticastManifest {
     }
 
     pub fn transport_session_ids(&self) -> impl Iterator<Item = u32> + '_ {
-        self.presentations.iter().filter_map(multicast_tsi)
+        self.presentations().filter_map(multicast_tsi)
     }
 
-    pub fn from_unicast<F>(manifest: UnicastManifest, presentation_transformer: F) -> Result<Self>
+    pub fn from_unicast<F>(
+        mut manifest: UnicastManifest,
+        presentation_transformer: F,
+    ) -> Result<Self>
     where
         F: FnMut(Presentation) -> Presentation,
     {
-        let UnicastManifest {
-            creation_date,
-            fallback_poll_rate,
-            presentations,
-            stream_type,
-        } = manifest;
-        let live_data = if let UnicastStreamType::Live(live_data) = stream_type {
-            live_data
-        } else {
+        if !matches!(manifest.stream_type, StreamType::Live(_)) {
             return Err(Error::InvalidMulticastStreamType);
-        };
-        let presentations = presentations
+        }
+        manifest.presentations = manifest
+            .presentations
             .into_iter()
             .map(presentation_transformer)
             .map(Ok)
             .into_entities()?;
-        Ok(Self {
-            creation_date,
-            fallback_poll_rate,
-            presentations,
-            stream_type: MulticastStreamType::Live(live_data),
-        })
+        Ok(Self { inner: manifest })
     }
 }
 
 impl Manifest for MulticastManifest {
     fn new(base_url: &Url, data: ManifestData) -> Result<Self> {
-        let url = data.content_base_url.resolve(base_url)?;
         if data.manifest_version != ManifestVersion::V1_0_0Multicast {
             return Err(Error::InvalidMulticastVersion(data.manifest_version));
         }
-        let presentations = data
-            .presentations
-            .into_iter()
-            .map(|p| Presentation::new(&url, p))
-            .into_entities()?;
-        validate_active(&data.stream_type, &presentations)?;
-        let manifest = Self {
-            creation_date: data.creation_date,
-            fallback_poll_rate: data.fallback_poll_rate,
-            presentations,
-            stream_type: data.stream_type.try_into()?,
-        };
-        Ok(manifest)
+        let inner = UnicastManifest::new(base_url, data)?;
+        Ok(Self { inner })
     }
+
     fn presentations(&self) -> EntityIter<Presentation> {
-        self.presentations.iter()
+        self.inner.presentations()
     }
+
     fn presentations_mut(&mut self) -> EntityIterMut<Presentation> {
-        self.presentations.iter_mut()
+        self.inner.presentations_mut()
     }
+
     fn presentation(&self, id: &str) -> Option<&Presentation> {
-        self.presentations.get(id)
+        self.inner.presentation(id)
     }
+
     fn presentation_mut(&mut self, id: &str) -> Option<&mut Presentation> {
-        self.presentations.get_mut(id)
+        self.inner.presentation_mut(id)
+    }
+
+    fn stream_type(&self) -> &StreamType {
+        self.inner.stream_type()
     }
 }
 
 impl From<MulticastManifest> for UnicastManifest {
     fn from(input: MulticastManifest) -> Self {
-        let MulticastManifest {
-            creation_date,
-            fallback_poll_rate,
-            mut presentations,
-            stream_type,
-            ..
-        } = input;
-        for presentation in presentations.iter_mut() {
+        let MulticastManifest { mut inner } = input;
+        for presentation in &mut inner.presentations {
             presentation.set_unicast();
         }
-        Self {
-            creation_date,
-            fallback_poll_rate,
-            presentations,
-            stream_type: stream_type.into(),
-        }
+        inner
     }
 }
 

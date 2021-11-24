@@ -9,3 +9,10 @@ pub struct LiveStream {
     pub active_presentation: String,
     pub time_source: Option<TimeSource>,
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(tag = "streamType", rename_all = "lowercase")]
+pub enum StreamType {
+    Live(LiveStream),
+    Vod,
+}

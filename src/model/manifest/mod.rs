@@ -34,37 +34,3 @@ pub trait Manifest {
         Self::new(location, data)
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use std::fs;
-
-    use super::*;
-
-    #[test]
-    fn deserialize_example_manifest() -> anyhow::Result<()> {
-        let location = Url::parse("https://www.theoplayer.com/")?;
-        let input = fs::read_to_string("tests/example-manifest.json")?;
-
-        let result1 = UnicastManifest::from_json(location.clone(), &input)?;
-        let output = serde_json::to_string(&result1)?;
-        let _result2 = UnicastManifest::from_json(location, &output)?;
-
-        // assert_eq!(format!("{:?}", result1), format!("{:?}", result2));
-
-        Ok(())
-    }
-
-    #[test]
-    fn validate_empty_manifest() -> anyhow::Result<()> {
-        let location = Url::parse("https://www.theoplayer.com/")?;
-        let input = fs::read_to_string("tests/empty-manifest.json")?;
-
-        let result = UnicastManifest::from_json(location, &input);
-
-        assert!(result.is_err());
-        let error = result.unwrap_err().to_string();
-        assert!(error.contains("missing field"), "Wrong error `{}`", error);
-        Ok(())
-    }
-}

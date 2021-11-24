@@ -61,6 +61,9 @@ mod tests {
             .unwrap()
             .make_relative(&Url::parse("https://foreign.com/manifest.json").unwrap());
 
-        assert_eq!(relative, "https://example.com/s2/audio/128k-init-{initId}.mp4");
+        assert_eq!(
+            relative,
+            "https://example.com/s2/audio/128k-init-{initId}.mp4"
+        );
     }
 }

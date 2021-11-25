@@ -54,7 +54,7 @@ impl Presentation {
             events: data.events.into_iter().map(Ok).into_entities()?,
             metadata,
             video,
-            transmission: data.transmission,
+            transmission: data.multicast_metadata.into(),
         };
         result.validate_tracks()?;
         Ok(result)

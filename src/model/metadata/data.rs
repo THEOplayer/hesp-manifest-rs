@@ -17,6 +17,7 @@ pub struct MetadataSwitchingSetData {
     pub tracks: Vec<MetadataTrackData>,
     pub scheme_id: String,
     pub align_id: Option<String>,
+    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
     pub base_url: RelativeUrl,
     pub continuation_pattern: Option<String>,
     pub label: Option<String>,
@@ -59,6 +60,7 @@ pub struct MetadataTrackData {
     pub active_segment_id: Option<SegmentId>,
     pub average_bandwidth: Option<Number>,
     pub bandwidth: Option<Number>,
+    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
     pub base_url: RelativeUrl,
     pub continuation_pattern: Option<String>,
     pub label: Option<String>,

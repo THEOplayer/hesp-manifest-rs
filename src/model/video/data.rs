@@ -16,6 +16,7 @@ pub struct VideoSwitchingSetData {
     pub id: String,
     pub tracks: Vec<VideoTrackData>,
     pub align_id: Option<String>,
+    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
     pub base_url: RelativeUrl,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
@@ -73,6 +74,7 @@ pub struct VideoTrackData {
     pub active_segment_id: Option<SegmentId>,
     pub active_sequence_number: Option<u64>,
     pub average_bandwidth: Option<Number>,
+    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
     pub base_url: RelativeUrl,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,

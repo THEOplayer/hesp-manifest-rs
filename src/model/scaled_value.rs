@@ -1,11 +1,18 @@
-use crate::{Error, Result};
 use serde::{Deserialize, Serialize};
+
+use crate::{Error, Result};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, Default)]
 pub struct ScaledValue {
     pub value: i64,
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Scale::is_default")]
     pub scale: Scale,
+}
+
+impl ScaledValue {
+    pub fn is_none(&self) -> bool {
+        self.value == 0
+    }
 }
 
 impl PartialEq for ScaledValue {
@@ -39,6 +46,10 @@ impl Scale {
 
     pub fn as_f64(self) -> f64 {
         self.0 as f64
+    }
+
+    pub fn is_default(&self) -> bool {
+        self.0 == 1
     }
 }
 

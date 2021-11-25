@@ -32,12 +32,7 @@ pub struct FecMetadata {
     pub maximum_source_block_length: u32,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(
-    from = "Option<PresentationMulticastMetadata>",
-    into = "Option<PresentationMulticastMetadata>"
-)]
-#[serde(rename = "multicast_metadata", rename_all = "camelCase")]
+#[derive(Clone, Debug)]
 pub enum PresentationTransmission {
     Unicast,
     Multicast(PresentationMulticastMetadata),

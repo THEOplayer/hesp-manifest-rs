@@ -6,6 +6,7 @@ pub trait Entity {
     fn id(&self) -> &str;
 }
 
+//TODO order is not maintained even though it is a BTreeMap
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct EntityMap<E: Entity> {
     inner: BTreeMap<String, E>,

@@ -1,5 +1,4 @@
 use hesp_manifest::{Manifest, UnicastManifest};
-use serde_json::Value;
 use std::fs;
 use url::Url;
 

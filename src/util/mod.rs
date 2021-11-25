@@ -1,6 +1,7 @@
-pub use self::url::RelativeUrl;
 pub use data::*;
 pub use entity::*;
+
+pub use self::url::RelativeUrl;
 
 mod entity;
 mod url;

@@ -17,6 +17,7 @@ pub struct AudioSwitchingSetData {
     pub language: Language,
     pub tracks: Vec<AudioTrackData>,
     pub align_id: Option<String>,
+    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
     pub base_url: RelativeUrl,
     pub channels: Option<u64>,
     pub codecs: Option<String>,
@@ -79,6 +80,7 @@ pub struct AudioTrackData {
     pub active_segment_id: Option<SegmentId>,
     pub active_sequence_number: Option<u64>,
     pub average_bandwidth: Option<Number>,
+    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
     pub base_url: RelativeUrl,
     pub channels: Option<u64>,
     pub codecs: Option<String>,

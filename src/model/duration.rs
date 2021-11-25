@@ -7,7 +7,14 @@ use crate::Scale;
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, Default)]
 pub struct ScaledDuration {
     pub value: u64, // seconds * scale
+    #[serde(default, skip_serializing_if = "Scale::is_default")]
     pub scale: Scale,
+}
+
+impl ScaledDuration {
+    pub fn is_none(&self) -> bool {
+        self.value == 0
+    }
 }
 
 const NANOS_PER_SEC: u32 = 1_000_000_000;

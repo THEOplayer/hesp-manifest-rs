@@ -5,7 +5,7 @@ use url::Url;
 use crate::util::RelativeUrl;
 use crate::{
     AudioSwitchingSetData, MetadataSwitchingSetData, Presentation, PresentationEvent,
-    PresentationTransmission, ScaledValue, TimeBounds, VideoSwitchingSetData,
+    PresentationMulticastMetadata, ScaledValue, TimeBounds, VideoSwitchingSetData,
 };
 
 #[skip_serializing_none]
@@ -14,17 +14,18 @@ use crate::{
 pub struct PresentationData {
     pub id: String,
     pub time_bounds: TimeBounds,
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub audio: Vec<AudioSwitchingSetData>,
+    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
     pub base_url: RelativeUrl,
     pub current_time: Option<ScaledValue>,
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub events: Vec<PresentationEvent>,
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub metadata: Vec<MetadataSwitchingSetData>,
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub video: Vec<VideoSwitchingSetData>,
-    pub transmission: PresentationTransmission,
+    pub multicast_metadata: Option<PresentationMulticastMetadata>,
 }
 
 impl PresentationData {
@@ -54,7 +55,7 @@ impl PresentationData {
                 .into_iter()
                 .map(|v| VideoSwitchingSetData::new(v, location))
                 .collect(),
-            transmission: input.transmission,
+            multicast_metadata: input.transmission.into(),
         }
     }
 

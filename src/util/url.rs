@@ -19,6 +19,10 @@ impl RelativeUrl {
             Self::None => url.clone(),
         })
     }
+
+    pub fn is_none(&self) -> bool {
+        matches!(self, Self::None)
+    }
 }
 
 impl From<Option<String>> for RelativeUrl {

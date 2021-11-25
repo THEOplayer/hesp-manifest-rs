@@ -17,6 +17,7 @@ pub struct ManifestData {
     pub presentations: Vec<PresentationData>,
     #[serde(flatten)]
     pub stream_type: StreamType,
+    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
     pub content_base_url: RelativeUrl,
 }
 

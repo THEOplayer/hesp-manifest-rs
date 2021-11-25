@@ -140,7 +140,7 @@ impl AudioTrack {
             media_time_offset: data.media_time_offset.unwrap_or_default(),
             sample_rate,
             segment_duration: data.segment_duration,
-            transmission: data.transmission,
+            transmission: data.toi_limits.into(),
         })
     }
 }

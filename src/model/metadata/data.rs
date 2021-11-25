@@ -4,8 +4,8 @@ use url::Url;
 
 use crate::util::{Entity, RelativeUrl};
 use crate::{
-    Language, MetadataSwitchingSet, MetadataTrack, Number, ScaledDuration, ScaledValue, SegmentId,
-    Segments,
+    normalize_tracks, Language, MetadataSwitchingSet, MetadataTrack, Number, ScaledDuration,
+    ScaledValue, SegmentId, Segments,
 };
 
 #[skip_serializing_none]
@@ -42,6 +42,10 @@ impl MetadataSwitchingSetData {
             language: input.language,
             media_time_offset: None,
         }
+    }
+
+    pub fn normalize(&mut self) {
+        normalize_tracks!(self, continuation_pattern, media_time_offset);
     }
 }
 

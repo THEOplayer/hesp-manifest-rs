@@ -4,8 +4,9 @@ use url::Url;
 
 use crate::util::{Entity, RelativeUrl};
 use crate::{
-    AudioMimeType, AudioSwitchingSet, AudioTrack, Language, Number, SamplesPerFrame,
-    ScaledDuration, ScaledValue, SegmentId, Segments, SwitchingSetProtection, TrackTransmission,
+    normalize_tracks, AudioMimeType, AudioSwitchingSet, AudioTrack, Language, Number,
+    SamplesPerFrame, ScaledDuration, ScaledValue, SegmentId, Segments, SwitchingSetProtection,
+    TransferObjectIdentifierLimits,
 };
 
 #[skip_serializing_none]
@@ -48,10 +49,22 @@ impl AudioSwitchingSetData {
             initialization_pattern: None,
             label: input.label,
             media_time_offset: None,
-            mime_type: None,
+            mime_type: Some(input.mime_type),
             protection: input.protection,
             sample_rate: None,
         }
+    }
+
+    pub fn normalize(&mut self) {
+        normalize_tracks!(
+            self,
+            codecs,
+            continuation_pattern,
+            frame_rate,
+            initialization_pattern,
+            media_time_offset,
+            sample_rate
+        );
     }
 }
 
@@ -76,7 +89,7 @@ pub struct AudioTrackData {
     pub media_time_offset: Option<ScaledValue>,
     pub sample_rate: Option<u64>,
     pub segment_duration: Option<ScaledDuration>,
-    pub transmission: TrackTransmission,
+    pub toi_limits: Option<TransferObjectIdentifierLimits>,
 }
 
 impl AudioTrackData {
@@ -99,7 +112,7 @@ impl AudioTrackData {
             media_time_offset: Some(input.media_time_offset),
             sample_rate: Some(input.sample_rate),
             segment_duration: input.segment_duration,
-            transmission: input.transmission,
+            toi_limits: input.transmission.into(),
         }
     }
 }

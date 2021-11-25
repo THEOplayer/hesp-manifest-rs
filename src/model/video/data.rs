@@ -4,8 +4,9 @@ use url::Url;
 
 use crate::util::{Entity, RelativeUrl};
 use crate::{
-    Number, Resolution, ScaledDuration, ScaledValue, SegmentId, Segments, SwitchingSetProtection,
-    TrackTransmission, VideoMimeType, VideoSwitchingSet, VideoTrack,
+    normalize_tracks, Number, Resolution, ScaledDuration, ScaledValue, SegmentId, Segments,
+    SwitchingSetProtection, TransferObjectIdentifierLimits, VideoMimeType, VideoSwitchingSet,
+    VideoTrack,
 };
 
 #[skip_serializing_none]
@@ -47,6 +48,17 @@ impl VideoSwitchingSetData {
             protection: input.protection,
         }
     }
+
+    pub fn normalize(&mut self) {
+        normalize_tracks!(
+            self,
+            codecs,
+            continuation_pattern,
+            frame_rate,
+            initialization_pattern,
+            media_time_offset
+        );
+    }
 }
 
 #[skip_serializing_none]
@@ -69,7 +81,7 @@ pub struct VideoTrackData {
     pub initialization_pattern: Option<String>,
     pub media_time_offset: Option<ScaledValue>,
     pub segment_duration: Option<ScaledDuration>,
-    pub transmission: TrackTransmission,
+    pub toi_limits: Option<TransferObjectIdentifierLimits>,
 }
 
 impl VideoTrackData {
@@ -91,7 +103,7 @@ impl VideoTrackData {
             initialization_pattern: Some(input.initialization_pattern.make_relative(location)),
             media_time_offset: Some(input.media_time_offset),
             segment_duration: input.segment_duration,
-            transmission: input.transmission,
+            toi_limits: input.transmission.into(),
         }
     }
 }

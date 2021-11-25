@@ -1,4 +1,5 @@
 use hesp_manifest::{Manifest, UnicastManifest};
+use serde_json::Value;
 use std::fs;
 use url::Url;
 
@@ -7,12 +8,14 @@ fn deserialize_example_manifest() -> anyhow::Result<()> {
     let location = Url::parse("https://www.theoplayer.com/")?;
     let input = fs::read_to_string("tests/example-manifest.json")?;
     let manifest = UnicastManifest::from_json(location, &input)?;
-    let _output = serde_json::to_string(&manifest)?;
+    let output = serde_json::to_string(&manifest)?;
 
-    // let input: Value = serde_json::from_str(&input)?;
-    // let output: Value = serde_json::from_str(&output)?;
-    //
-    // assert_eq!(output, input);
+    println!("{}", output);
+
+    let input: Value = serde_json::from_str(&input)?;
+    let output: Value = serde_json::from_str(&output)?;
+
+    assert_eq!(output, input);
 
     Ok(())
 }

@@ -20,9 +20,17 @@ pub struct ManifestData {
     pub content_base_url: RelativeUrl,
 }
 
+impl ManifestData {
+    pub fn normalize(&mut self) {
+        for presentation in &mut self.presentations {
+            presentation.normalize();
+        }
+    }
+}
+
 impl From<UnicastManifest> for ManifestData {
     fn from(input: UnicastManifest) -> Self {
-        Self {
+        let mut result = Self {
             creation_date: input.creation_date,
             fallback_poll_rate: input.fallback_poll_rate,
             manifest_version: ManifestVersion::V1_0_0,
@@ -33,7 +41,9 @@ impl From<UnicastManifest> for ManifestData {
                 .collect(),
             stream_type: input.stream_type,
             content_base_url: RelativeUrl::None,
-        }
+        };
+        result.normalize();
+        result
     }
 }
 

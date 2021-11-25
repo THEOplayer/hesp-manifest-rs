@@ -138,7 +138,7 @@ impl VideoTrack {
             initialization_pattern: InitializationPattern::new(&base_url, initialization_pattern)?,
             media_time_offset: data.media_time_offset.unwrap_or_default(),
             segment_duration: data.segment_duration,
-            transmission: data.transmission,
+            transmission: data.toi_limits.into(),
         })
     }
 }

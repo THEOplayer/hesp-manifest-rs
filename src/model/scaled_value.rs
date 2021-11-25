@@ -8,6 +8,14 @@ pub struct ScaledValue {
     pub scale: Scale,
 }
 
+impl PartialEq for ScaledValue {
+    fn eq(&self, other: &Self) -> bool {
+        let left = i128::from(self.value) * i128::from(other.scale.as_u64());
+        let right = i128::from(other.value) * i128::from(self.scale.as_u64());
+        left == right
+    }
+}
+
 #[derive(Deserialize, Debug, Serialize, Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Hash)]
 #[serde(try_from = "u64")]
 pub struct Scale(u64);

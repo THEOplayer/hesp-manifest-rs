@@ -1,4 +1,4 @@
-use std::collections::{hash_map, HashMap};
+use std::collections::{btree_map, BTreeMap};
 
 use crate::{Error, Result};
 
@@ -6,9 +6,9 @@ pub trait Entity {
     fn id(&self) -> &str;
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct EntityMap<E: Entity> {
-    inner: HashMap<String, E>,
+    inner: BTreeMap<String, E>,
 }
 
 impl<E: Entity> EntityMap<E> {
@@ -38,7 +38,7 @@ impl<E: Entity> EntityMap<E> {
 
 impl<E: Entity> IntoIterator for EntityMap<E> {
     type Item = E;
-    type IntoIter = hash_map::IntoValues<String, E>;
+    type IntoIter = btree_map::IntoValues<String, E>;
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
@@ -67,7 +67,7 @@ impl<'a, E: Entity> IntoIterator for &'a mut EntityMap<E> {
 }
 
 pub struct EntityIter<'a, E: Entity> {
-    inner: hash_map::Values<'a, String, E>,
+    inner: btree_map::Values<'a, String, E>,
 }
 
 impl<'a, E: Entity> Iterator for EntityIter<'a, E> {
@@ -92,7 +92,7 @@ impl<'a, E: Entity> ExactSizeIterator for EntityIter<'a, E> {
 }
 
 pub struct EntityIterMut<'a, E: Entity> {
-    inner: hash_map::ValuesMut<'a, String, E>,
+    inner: btree_map::ValuesMut<'a, String, E>,
 }
 
 impl<'a, E: Entity> Iterator for EntityIterMut<'a, E> {
@@ -125,7 +125,7 @@ pub trait FromEntities<E: Entity> {
 impl<E: Entity, I: IntoIterator<Item = Result<E>>> FromEntities<E> for I {
     fn into_entities(self) -> Result<EntityMap<E>> {
         let iter = self.into_iter();
-        let mut map = HashMap::with_capacity(iter.size_hint().0);
+        let mut map = BTreeMap::new();
         for entity in iter {
             let entity = entity?;
             if let Some(duplicate) = map.insert(entity.id().to_owned(), entity) {
@@ -133,13 +133,5 @@ impl<E: Entity, I: IntoIterator<Item = Result<E>>> FromEntities<E> for I {
             }
         }
         Ok(EntityMap { inner: map })
-    }
-}
-
-impl<E: Entity> Default for EntityMap<E> {
-    fn default() -> Self {
-        Self {
-            inner: HashMap::new(),
-        }
     }
 }

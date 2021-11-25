@@ -19,14 +19,6 @@ impl RelativeUrl {
             Self::None => url.clone(),
         })
     }
-
-    // pub fn make_relative(&mut self, url: &Url) {
-    //     if let Self::Absolute(absolute) = self {
-    //         if let Some(relative) = url.make_relative(&absolute) {
-    //             *self = relative.into();
-    //         }
-    //     }
-    // }
 }
 
 impl From<Option<String>> for RelativeUrl {

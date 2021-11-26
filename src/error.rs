@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use crate::{ManifestVersion, SegmentId, TransmissionType};
+use crate::{SegmentId, TransmissionType};
 
 #[derive(Error, Debug)]
 pub enum Error {
@@ -43,9 +43,9 @@ pub enum Error {
     #[error("Presentation '{0}' must not contain multicast data")]
     InvalidUnicastPresentation(String),
     #[error("'{0:?}' is not a valid version for a unicast manifest")]
-    InvalidUnicastVersion(ManifestVersion),
+    InvalidUnicastVersion(&'static str),
     #[error("'{0:?}' is not a valid version for a multicast manifest")]
-    InvalidMulticastVersion(ManifestVersion),
+    InvalidMulticastVersion(&'static str),
     #[error("Presentation '{presentation}' is {transmission:?} therefore Track '{track}' must be {transmission:?}")]
     InvalidTrackTransmission {
         presentation: String,

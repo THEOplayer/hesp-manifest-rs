@@ -3,12 +3,12 @@ use url::Url;
 
 use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    AudioTrack, DateTime, Error, LiveStream, Manifest, ManifestData, ManifestVersion,
-    MetadataTrack, Number, Presentation, Result, StreamType, VideoTrack,
+    AudioTrack, DateTime, Error, LiveStream, Manifest, ManifestData, ManifestDeserialize,
+    ManifestSerialize, MetadataTrack, Number, Presentation, Result, StreamType, VideoTrack,
 };
 
 #[derive(Debug, Clone, Serialize)]
-#[serde(into = "ManifestData")]
+#[serde(into = "ManifestSerialize")]
 pub struct UnicastManifest {
     pub(super) creation_date: DateTime,
     pub(super) fallback_poll_rate: Number,
@@ -44,9 +44,6 @@ impl UnicastManifest {
 
 impl Manifest for UnicastManifest {
     fn new(location: Url, data: ManifestData) -> Result<Self> {
-        if data.manifest_version != ManifestVersion::V1_0_0 {
-            return Err(Error::InvalidUnicastVersion(data.manifest_version));
-        }
         let url = data.content_base_url.resolve(&location)?;
         let presentations = data
             .presentations
@@ -82,6 +79,18 @@ impl Manifest for UnicastManifest {
 
     fn stream_type(&self) -> &StreamType {
         &self.stream_type
+    }
+
+    fn from_json(location: Url, json: &str) -> Result<Self> {
+        let deserializer = &mut serde_json::Deserializer::from_str(json);
+        let data = match serde_path_to_error::deserialize(deserializer)? {
+            ManifestDeserialize::V1_0_0(data) => data.into(),
+            ManifestDeserialize::V1_1_0(data) => data,
+            ManifestDeserialize::V1_1_0Multicast(_) => {
+                return Err(Error::InvalidUnicastVersion("1.1.0-multicast"))
+            }
+        };
+        Self::new(location, data)
     }
 }
 

@@ -3,7 +3,7 @@ use serde::Deserialize;
 use crate::util::RelativeUrl;
 use crate::{
     AudioMimeType, Language, Number, SamplesPerFrame, ScaledDuration, ScaledValue, SegmentId,
-    Segments, SwitchingSetProtection, TransferObjectIdentifierLimits,
+    Segments, SwitchingSetProtection,
 };
 
 #[derive(Clone, Deserialize, Debug)]
@@ -26,14 +26,39 @@ pub struct AudioSwitchingSetData {
     pub sample_rate: Option<u64>,
 }
 
+impl From<AudioSwitchingSetData> for crate::AudioSwitchingSetData {
+    fn from(input: AudioSwitchingSetData) -> Self {
+        Self {
+            id: input.id,
+            language: input.language,
+            tracks: input
+                .tracks
+                .into_iter()
+                .map(crate::AudioTrackData::from)
+                .collect(),
+            align_id: input.align_id,
+            base_url: input.base_url,
+            channels: input.channels,
+            codecs: input.codecs,
+            continuation_pattern: input.continuation_pattern,
+            samples_per_frame: input.frame_rate,
+            initialization_pattern: input.initialization_pattern,
+            label: input.label,
+            media_time_offset: input.media_time_offset,
+            mime_type: input.mime_type,
+            protection: input.protection,
+            sample_rate: input.sample_rate,
+        }
+    }
+}
+
 #[derive(Clone, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AudioTrackData {
     pub id: String,
     pub bandwidth: Number,
     pub segments: Segments,
-    #[serde(rename = "activeSegment")]
-    pub active_segment_id: Option<SegmentId>,
+    pub active_segment: Option<SegmentId>,
     pub active_sequence_number: Option<u64>,
     pub average_bandwidth: Option<Number>,
     pub base_url: RelativeUrl,
@@ -46,5 +71,28 @@ pub struct AudioTrackData {
     pub media_time_offset: Option<ScaledValue>,
     pub sample_rate: Option<u64>,
     pub segment_duration: Option<ScaledDuration>,
-    pub toi_limits: Option<TransferObjectIdentifierLimits>,
+}
+
+impl From<AudioTrackData> for crate::AudioTrackData {
+    fn from(input: AudioTrackData) -> Self {
+        Self {
+            id: input.id,
+            bandwidth: input.bandwidth,
+            segments: input.segments,
+            active_segment_id: input.active_segment,
+            active_sequence_number: input.active_sequence_number,
+            average_bandwidth: input.average_bandwidth,
+            base_url: input.base_url,
+            channels: input.channels,
+            codecs: input.codecs,
+            continuation_pattern: input.continuation_pattern,
+            samples_per_frame: input.frame_rate,
+            label: input.label,
+            initialization_pattern: input.initialization_pattern,
+            media_time_offset: input.media_time_offset,
+            sample_rate: input.sample_rate,
+            segment_duration: input.segment_duration,
+            toi_limits: None,
+        }
+    }
 }

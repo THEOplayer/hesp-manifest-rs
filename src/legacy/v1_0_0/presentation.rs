@@ -1,7 +1,6 @@
 use crate::util::RelativeUrl;
 use crate::{
-    MetadataSwitchingSetData, PresentationEvent, PresentationMulticastMetadata, ScaledValue,
-    TimeBounds,
+    MetadataSwitchingSetData, PresentationEvent, ScaledValue, TimeBounds, VideoSwitchingSetData,
 };
 use serde::Deserialize;
 
@@ -19,6 +18,25 @@ pub struct PresentationData {
     #[serde(default)]
     pub metadata: Vec<MetadataSwitchingSetData>,
     #[serde(default)]
-    pub video: Vec<super::VideoSwitchingSetData>,
-    pub multicast_metadata: Option<PresentationMulticastMetadata>,
+    pub video: Vec<VideoSwitchingSetData>,
+}
+
+impl From<PresentationData> for crate::PresentationData {
+    fn from(input: PresentationData) -> Self {
+        Self {
+            id: input.id,
+            time_bounds: input.time_bounds,
+            audio: input
+                .audio
+                .into_iter()
+                .map(crate::AudioSwitchingSetData::from)
+                .collect(),
+            base_url: input.base_url,
+            current_time: input.current_time,
+            events: input.events,
+            metadata: input.metadata,
+            video: input.video,
+            multicast_metadata: None,
+        }
+    }
 }

@@ -56,6 +56,7 @@ impl MetadataSwitchingSet {
                     data.id.clone(),
                     &base_url,
                     track
+                        .with_default_codecs(&data.codecs)
                         .with_default_continuation_pattern(&data.continuation_pattern)
                         .with_default_media_time_offset(data.media_time_offset),
                 )

@@ -19,6 +19,7 @@ pub struct MetadataSwitchingSetData {
     pub align_id: Option<String>,
     #[serde(skip_serializing_if = "RelativeUrl::is_none")]
     pub base_url: RelativeUrl,
+    pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
     pub label: Option<String>,
     pub language: Option<Language>,
@@ -38,6 +39,7 @@ impl MetadataSwitchingSetData {
             scheme_id: input.scheme_id,
             align_id: input.align_id,
             base_url: RelativeUrl::None,
+            codecs: None,
             continuation_pattern: None,
             label: input.label,
             language: input.language,
@@ -46,7 +48,7 @@ impl MetadataSwitchingSetData {
     }
 
     pub fn normalize(&mut self) {
-        normalize_tracks!(self, continuation_pattern, media_time_offset);
+        normalize_tracks!(self, codecs, continuation_pattern, media_time_offset);
     }
 }
 
@@ -62,6 +64,7 @@ pub struct MetadataTrackData {
     pub bandwidth: Option<Number>,
     #[serde(skip_serializing_if = "RelativeUrl::is_none")]
     pub base_url: RelativeUrl,
+    pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
     pub label: Option<String>,
     pub media_time_offset: Option<ScaledValue>,
@@ -77,6 +80,7 @@ impl MetadataTrackData {
             average_bandwidth: input.average_bandwidth,
             bandwidth: input.bandwidth,
             base_url: RelativeUrl::None,
+            codecs: input.codecs,
             continuation_pattern: Some(input.continuation_pattern.make_relative(location)),
             label: input.label,
             media_time_offset: Some(input.media_time_offset),
@@ -86,6 +90,13 @@ impl MetadataTrackData {
 }
 
 impl MetadataTrackData {
+    pub fn with_default_codecs(mut self, codecs: &Option<String>) -> Self {
+        if self.codecs.is_none() {
+            self.codecs = codecs.clone();
+        }
+        self
+    }
+
     pub fn with_default_continuation_pattern(
         mut self,
         continuation_pattern: &Option<String>,

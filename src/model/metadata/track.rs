@@ -13,6 +13,7 @@ pub struct MetadataTrack {
     pub(super) active_segment_id: Option<SegmentId>,
     pub(super) average_bandwidth: Option<Number>,
     pub(super) bandwidth: Option<Number>,
+    pub(super) codecs: Option<String>,
     pub(super) continuation_pattern: ContinuationPattern,
     pub(super) label: Option<String>,
     pub(super) media_time_offset: ScaledValue,
@@ -91,6 +92,7 @@ impl MetadataTrack {
             label: data.label,
             media_time_offset: data.media_time_offset.unwrap_or_default(),
             segment_duration: data.segment_duration,
+            codecs: data.codecs,
         })
     }
 }

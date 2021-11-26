@@ -69,7 +69,7 @@ impl AudioSwitchingSet {
                     track
                         .with_default_sample_rate(data.sample_rate)
                         .with_default_codecs(&data.codecs)
-                        .with_default_frame_rate(data.frame_rate)
+                        .with_default_samples_per_frame(data.samples_per_frame)
                         .with_default_media_time_offset(data.media_time_offset)
                         .with_default_continuation_pattern(&data.continuation_pattern)
                         .with_default_initialization_pattern(&data.initialization_pattern),

@@ -22,7 +22,7 @@ pub struct AudioSwitchingSetData {
     pub channels: Option<u64>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
-    pub frame_rate: Option<SamplesPerFrame>,
+    pub samples_per_frame: Option<SamplesPerFrame>,
     pub initialization_pattern: Option<String>,
     pub label: Option<String>,
     pub media_time_offset: Option<ScaledValue>,
@@ -46,7 +46,7 @@ impl AudioSwitchingSetData {
             channels: input.channels,
             codecs: None,
             continuation_pattern: None,
-            frame_rate: None,
+            samples_per_frame: None,
             initialization_pattern: None,
             label: input.label,
             media_time_offset: None,
@@ -61,7 +61,7 @@ impl AudioSwitchingSetData {
             self,
             codecs,
             continuation_pattern,
-            frame_rate,
+            samples_per_frame,
             initialization_pattern,
             media_time_offset,
             sample_rate
@@ -85,7 +85,7 @@ pub struct AudioTrackData {
     pub channels: Option<u64>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
-    pub frame_rate: Option<SamplesPerFrame>,
+    pub samples_per_frame: Option<SamplesPerFrame>,
     pub label: Option<String>,
     pub initialization_pattern: Option<String>,
     pub media_time_offset: Option<ScaledValue>,
@@ -108,7 +108,7 @@ impl AudioTrackData {
             channels: input.channels,
             codecs: Some(input.codecs),
             continuation_pattern: Some(input.continuation_pattern.make_relative(location)),
-            frame_rate: Some(input.frame_rate),
+            samples_per_frame: Some(input.samples_per_frame),
             label: input.label,
             initialization_pattern: Some(input.initialization_pattern.make_relative(location)),
             media_time_offset: Some(input.media_time_offset),
@@ -147,9 +147,12 @@ impl AudioTrackData {
         self
     }
 
-    pub const fn with_default_frame_rate(mut self, frame_rate: Option<SamplesPerFrame>) -> Self {
-        if self.frame_rate.is_none() {
-            self.frame_rate = frame_rate;
+    pub const fn with_default_samples_per_frame(
+        mut self,
+        samples_per_frame: Option<SamplesPerFrame>,
+    ) -> Self {
+        if self.samples_per_frame.is_none() {
+            self.samples_per_frame = samples_per_frame;
         }
         self
     }

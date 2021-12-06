@@ -33,7 +33,7 @@ pub struct Segment {
     time_bounds: Option<TimeBounds>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(try_from = "Vec<Segment>")]
 pub struct Segments(Vec<Segment>);
 
@@ -70,12 +70,6 @@ impl Deref for Segments {
 impl Borrow<[Segment]> for Segments {
     fn borrow(&self) -> &[Segment] {
         &self.0
-    }
-}
-
-impl Default for Segments {
-    fn default() -> Self {
-        Self(Vec::new())
     }
 }
 

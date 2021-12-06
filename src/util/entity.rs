@@ -143,28 +143,21 @@ mod tests {
 
     #[test]
     fn entity_map_retains_order() -> Result<()> {
-        let vec = vec![
-            DummyEntity("c".to_owned()),
-            DummyEntity("a".to_owned()),
-            DummyEntity("b".to_owned()),
-        ];
-        let map: EntityMap<DummyEntity> = vec
-            .into_iter()
-            .map(Result::Ok)
-            .into_entities()?;
+        let vec = vec![DummyEntity("h"), DummyEntity("o"), DummyEntity("i")];
+        let map: EntityMap<DummyEntity> = vec.into_iter().map(Result::Ok).into_entities()?;
 
         let mut iter = map.iter().map(DummyEntity::id);
-        assert_eq!(iter.next(), Some("c"));
-        assert_eq!(iter.next(), Some("a"));
-        assert_eq!(iter.next(), Some("b"));
+        assert_eq!(iter.next(), Some("h"));
+        assert_eq!(iter.next(), Some("o"));
+        assert_eq!(iter.next(), Some("i"));
         assert_eq!(iter.next(), None);
         Ok(())
     }
 
-    struct DummyEntity(String);
+    struct DummyEntity(&'static str);
     impl Entity for DummyEntity {
         fn id(&self) -> &str {
-            &self.0
+            self.0
         }
     }
 }

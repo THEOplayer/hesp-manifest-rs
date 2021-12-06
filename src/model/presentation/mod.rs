@@ -112,23 +112,27 @@ impl Presentation {
     }
 
     pub fn video_tracks(&self) -> impl Iterator<Item = &VideoTrack> {
-        self.video().flat_map(|set| set.tracks())
+        self.video().flat_map(VideoSwitchingSet::tracks)
     }
 
     pub fn audio_tracks(&self) -> impl Iterator<Item = &AudioTrack> {
-        self.audio().flat_map(|set| set.tracks())
+        self.audio().flat_map(AudioSwitchingSet::tracks)
     }
 
     pub fn metadata_tracks(&self) -> impl Iterator<Item = &MetadataTrack> {
-        self.metadata().flat_map(|set| set.tracks())
+        self.metadata().flat_map(MetadataSwitchingSet::tracks)
     }
 
     pub fn video_tracks_mut(&mut self) -> impl Iterator<Item = &mut VideoTrack> {
-        self.video.iter_mut().flat_map(|set| set.tracks_mut())
+        self.video
+            .iter_mut()
+            .flat_map(VideoSwitchingSet::tracks_mut)
     }
 
     pub fn audio_tracks_mut(&mut self) -> impl Iterator<Item = &mut AudioTrack> {
-        self.audio.iter_mut().flat_map(|set| set.tracks_mut())
+        self.audio
+            .iter_mut()
+            .flat_map(AudioSwitchingSet::tracks_mut)
     }
 
     fn validate_tracks(&self) -> Result<()> {

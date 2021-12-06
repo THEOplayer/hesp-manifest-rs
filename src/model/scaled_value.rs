@@ -51,7 +51,7 @@ impl Scale {
     }
 
     /// Returns whether this is the default scale.
-    /// See [default()](Scale::default) for more information.
+    /// See [default](Scale::default) for more information.
     pub fn is_default(&self) -> bool {
         self == &Scale::default()
     }
@@ -60,6 +60,9 @@ impl Scale {
 impl Default for Scale {
     /// The default scale is 1 because 1 is the multiplicative identity.
     /// (multiplying or dividing by 1 is a no-op.)
+    ///
+    /// This is also the default value for the HESP Manifest JSON specification and therefore can be
+    /// omitted from the JSON.
     fn default() -> Self {
         Self(1)
     }

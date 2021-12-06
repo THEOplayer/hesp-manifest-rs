@@ -12,7 +12,7 @@ pub struct ScaledDuration {
 }
 
 impl ScaledDuration {
-    pub fn is_none(&self) -> bool {
+    pub fn is_zero(&self) -> bool {
         self.value == 0
     }
 }

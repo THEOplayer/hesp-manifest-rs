@@ -13,7 +13,7 @@ impl ContinuationPattern {
     }
 
     pub fn segment(&self, id: SegmentId) -> Url {
-        self.0.resolve(&id.to_string())
+        self.0.resolve(&id.to_string()).unwrap()
     }
 
     pub fn make_relative(&self, url: &Url) -> String {

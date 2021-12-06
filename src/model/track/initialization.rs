@@ -61,7 +61,7 @@ impl InitializationPattern {
     }
 
     pub fn init_id<I: Into<InitId>>(&self, init_id: I) -> Url {
-        self.0.resolve(&init_id.into().to_string())
+        self.0.resolve(&init_id.into().to_string()).unwrap()
     }
 
     pub fn make_relative(&self, url: &Url) -> String {

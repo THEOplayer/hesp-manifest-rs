@@ -6,7 +6,6 @@ pub trait Entity {
     fn id(&self) -> &str;
 }
 
-//TODO order is not maintained even though it is a BTreeMap
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct EntityMap<E: Entity> {
     inner: BTreeMap<String, E>,
@@ -134,5 +133,38 @@ impl<E: Entity, I: IntoIterator<Item = Result<E>>> FromEntities<E> for I {
             }
         }
         Ok(EntityMap { inner: map })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use anyhow::Result;
+
+    #[test]
+    fn entity_map_retains_order() -> Result<()> {
+        let vec = vec![
+            DummyEntity("c".to_owned()),
+            DummyEntity("a".to_owned()),
+            DummyEntity("b".to_owned()),
+        ];
+        let map: EntityMap<DummyEntity> = vec
+            .into_iter()
+            .map(Result::Ok)
+            .into_entities()?;
+
+        let mut iter = map.iter().map(DummyEntity::id);
+        assert_eq!(iter.next(), Some("c"));
+        assert_eq!(iter.next(), Some("a"));
+        assert_eq!(iter.next(), Some("b"));
+        assert_eq!(iter.next(), None);
+        Ok(())
+    }
+
+    struct DummyEntity(String);
+    impl Entity for DummyEntity {
+        fn id(&self) -> &str {
+            &self.0
+        }
     }
 }

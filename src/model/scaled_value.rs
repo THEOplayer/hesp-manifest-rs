@@ -17,8 +17,8 @@ impl ScaledValue {
 
 impl PartialEq for ScaledValue {
     fn eq(&self, other: &Self) -> bool {
-        let left = i128::from(self.value) * i128::from(other.scale.as_u64());
-        let right = i128::from(other.value) * i128::from(self.scale.as_u64());
+        let left = i128::from(self.value) * i128::from(u64::from(other.scale));
+        let right = i128::from(other.value) * i128::from(u64::from(self.scale));
         left == right
     }
 }
@@ -39,11 +39,13 @@ impl TryFrom<u64> for Scale {
     }
 }
 
-impl Scale {
-    pub fn as_u64(self) -> u64 {
-        self.0
+impl From<Scale> for u64 {
+    fn from(scale: Scale) -> Self {
+        scale.0
     }
+}
 
+impl Scale {
     pub fn as_f64(self) -> f64 {
         self.0 as f64
     }

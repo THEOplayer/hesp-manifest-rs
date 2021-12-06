@@ -1,7 +1,7 @@
 use serde::Deserialize;
 
 use crate::util::RelativeUrl;
-use crate::{DateTime, Number, StreamType};
+use crate::{DateTime, StreamType};
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]

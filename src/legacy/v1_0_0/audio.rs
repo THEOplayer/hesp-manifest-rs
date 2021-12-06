@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 use crate::util::RelativeUrl;
 use crate::{
-    AudioMimeType, Language, Number, SamplesPerFrame, ScaledDuration, ScaledValue, SegmentId,
+    AudioMimeType, Language, SamplesPerFrame, ScaledDuration, ScaledValue, SegmentId,
     Segments, SwitchingSetProtection,
 };
 

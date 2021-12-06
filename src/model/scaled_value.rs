@@ -50,12 +50,16 @@ impl Scale {
         self.0 as f64
     }
 
+    /// Returns whether this is the default scale.
+    /// See [default()](Scale::default) for more information.
     pub fn is_default(&self) -> bool {
-        self.0 == 1
+        self == &Scale::default()
     }
 }
 
 impl Default for Scale {
+    /// The default scale is 1 because 1 is the multiplicative identity.
+    /// (multiplying or dividing by 1 is a no-op.)
     fn default() -> Self {
         Self(1)
     }

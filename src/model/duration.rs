@@ -12,7 +12,7 @@ pub struct ScaledDuration {
 }
 
 impl ScaledDuration {
-    pub fn is_none(&self) -> bool {
+    pub fn is_zero(&self) -> bool {
         self.value == 0
     }
 }
@@ -23,7 +23,7 @@ impl From<ScaledDuration> for Duration {
     #[allow(clippy::cast_lossless, clippy::cast_possible_truncation)]
     fn from(duration: ScaledDuration) -> Self {
         let nanos =
-            duration.value as u128 * NANOS_PER_SEC as u128 / duration.scale.as_u64() as u128;
+            duration.value as u128 * NANOS_PER_SEC as u128 / u64::from(duration.scale) as u128;
         let secs = (nanos / (NANOS_PER_SEC as u128)) as u64;
         let nanos = (nanos % (NANOS_PER_SEC as u128)) as u32;
         Self::new(secs, nanos)

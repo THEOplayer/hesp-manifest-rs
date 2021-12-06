@@ -23,9 +23,9 @@ impl UrlPattern {
         }
     }
 
-    pub fn resolve(&self, input: &str) -> Url {
+    pub fn resolve(&self, input: &str) -> Result<Url> {
         let rel = self.pattern.replace(self.placeholder, input);
-        self.base.join(&rel).unwrap()
+        Ok(self.base.join(&rel)?)
     }
 
     pub fn make_relative(&self, url: &Url) -> String {

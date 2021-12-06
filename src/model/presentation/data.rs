@@ -63,11 +63,11 @@ impl PresentationData {
         for audio in &mut self.audio {
             audio.normalize();
         }
-        // for video in &mut self.video {
-        //     video.normalize();
-        // }
-        // for metadata in &mut self.metadata {
-        //     metadata.normalize();
-        // }
+        for video in &mut self.video {
+            video.normalize();
+        }
+        for metadata in &mut self.metadata {
+            metadata.normalize();
+        }
     }
 }

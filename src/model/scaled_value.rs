@@ -17,8 +17,8 @@ impl ScaledValue {
 
 impl PartialEq for ScaledValue {
     fn eq(&self, other: &Self) -> bool {
-        let left = i128::from(self.value) * i128::from(other.scale.as_u64());
-        let right = i128::from(other.value) * i128::from(self.scale.as_u64());
+        let left = i128::from(self.value) * i128::from(u64::from(other.scale));
+        let right = i128::from(other.value) * i128::from(u64::from(self.scale));
         left == right
     }
 }
@@ -39,21 +39,30 @@ impl TryFrom<u64> for Scale {
     }
 }
 
-impl Scale {
-    pub fn as_u64(self) -> u64 {
-        self.0
+impl From<Scale> for u64 {
+    fn from(scale: Scale) -> Self {
+        scale.0
     }
+}
 
+impl Scale {
     pub fn as_f64(self) -> f64 {
         self.0 as f64
     }
 
+    /// Returns whether this is the default scale.
+    /// See [default](Scale::default) for more information.
     pub fn is_default(&self) -> bool {
-        self.0 == 1
+        self == &Scale::default()
     }
 }
 
 impl Default for Scale {
+    /// The default scale is 1 because 1 is the multiplicative identity.
+    /// (multiplying or dividing by 1 is a no-op.)
+    ///
+    /// This is also the default value for the HESP Manifest JSON specification `ScaledValue` scale
+    /// and therefore can be omitted from the JSON.
     fn default() -> Self {
         Self(1)
     }

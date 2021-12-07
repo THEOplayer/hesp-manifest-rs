@@ -2,10 +2,10 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use url::Url;
 
-use crate::util::{Entity, RelativeUrl};
+use crate::util::{Entity, RelativeUrl, UInt};
 use crate::{
-    normalize_tracks, AudioMimeType, AudioSwitchingSet, AudioTrack, Language, Number,
-    SamplesPerFrame, ScaledDuration, ScaledValue, SegmentId, Segments, SwitchingSetProtection,
+    normalize_tracks, AudioMimeType, AudioSwitchingSet, AudioTrack, Language, SamplesPerFrame,
+    ScaledDuration, ScaledValue, SegmentId, Segments, SwitchingSetProtection,
     TransferObjectIdentifierLimits,
 };
 
@@ -19,7 +19,7 @@ pub struct AudioSwitchingSetData {
     pub align_id: Option<String>,
     #[serde(skip_serializing_if = "RelativeUrl::is_none")]
     pub base_url: RelativeUrl,
-    pub channels: Option<u64>,
+    pub channels: Option<UInt>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
     pub samples_per_frame: Option<SamplesPerFrame>,
@@ -28,7 +28,7 @@ pub struct AudioSwitchingSetData {
     pub media_time_offset: Option<ScaledValue>,
     pub mime_type: Option<AudioMimeType>,
     pub protection: Option<SwitchingSetProtection>,
-    pub sample_rate: Option<u64>,
+    pub sample_rate: Option<UInt>,
 }
 
 impl AudioSwitchingSetData {
@@ -43,7 +43,7 @@ impl AudioSwitchingSetData {
                 .collect(),
             align_id: input.align_id,
             base_url: RelativeUrl::None,
-            channels: input.channels,
+            channels: input.channels.map(UInt::from),
             codecs: None,
             continuation_pattern: None,
             samples_per_frame: None,
@@ -74,22 +74,22 @@ impl AudioSwitchingSetData {
 #[serde(rename_all = "camelCase")]
 pub struct AudioTrackData {
     pub id: String,
-    pub bandwidth: Number,
+    pub bandwidth: UInt,
     pub segments: Segments,
     #[serde(rename = "activeSegment")]
     pub active_segment_id: Option<SegmentId>,
-    pub active_sequence_number: Option<u64>,
-    pub average_bandwidth: Option<Number>,
+    pub active_sequence_number: Option<UInt>,
+    pub average_bandwidth: Option<UInt>,
     #[serde(skip_serializing_if = "RelativeUrl::is_none")]
     pub base_url: RelativeUrl,
-    pub channels: Option<u64>,
+    pub channels: Option<UInt>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
     pub samples_per_frame: Option<SamplesPerFrame>,
     pub label: Option<String>,
     pub initialization_pattern: Option<String>,
     pub media_time_offset: Option<ScaledValue>,
-    pub sample_rate: Option<u64>,
+    pub sample_rate: Option<UInt>,
     pub segment_duration: Option<ScaledDuration>,
     pub toi_limits: Option<TransferObjectIdentifierLimits>,
 }
@@ -99,20 +99,20 @@ impl AudioTrackData {
         let id = input.id().to_owned();
         Self {
             id,
-            bandwidth: input.bandwidth,
+            bandwidth: input.bandwidth.into(),
             segments: input.segments,
             active_segment_id: input.active_segment_id,
-            active_sequence_number: input.active_sequence_number,
-            average_bandwidth: input.average_bandwidth,
+            active_sequence_number: input.active_sequence_number.map(UInt::from),
+            average_bandwidth: input.average_bandwidth.map(UInt::from),
             base_url: RelativeUrl::None,
-            channels: input.channels,
+            channels: input.channels.map(UInt::from),
             codecs: Some(input.codecs),
             continuation_pattern: Some(input.continuation_pattern.make_relative(location)),
             samples_per_frame: Some(input.samples_per_frame),
             label: input.label,
             initialization_pattern: Some(input.initialization_pattern.make_relative(location)),
             media_time_offset: Some(input.media_time_offset),
-            sample_rate: Some(input.sample_rate),
+            sample_rate: Some(input.sample_rate.into()),
             segment_duration: input.segment_duration,
             toi_limits: input.transmission.into(),
         }
@@ -167,7 +167,7 @@ impl AudioTrackData {
         self
     }
 
-    pub const fn with_default_sample_rate(mut self, sample_rate: Option<u64>) -> Self {
+    pub const fn with_default_sample_rate(mut self, sample_rate: Option<UInt>) -> Self {
         if self.sample_rate.is_none() {
             self.sample_rate = sample_rate;
         }

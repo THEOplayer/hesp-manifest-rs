@@ -2,10 +2,12 @@ use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
 
+use crate::util::UInt;
 use crate::Scale;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, Default)]
 pub struct ScaledDuration {
+    #[serde(deserialize_with = "UInt::deserialize_u64")]
     pub value: u64, // seconds * scale
     #[serde(default, skip_serializing_if = "Scale::is_default")]
     pub scale: Scale,

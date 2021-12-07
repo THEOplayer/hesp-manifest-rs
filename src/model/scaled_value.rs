@@ -1,16 +1,18 @@
 use serde::{Deserialize, Serialize};
 
+use crate::util::{check_js_safety_unsigned, Int};
 use crate::{Error, Result};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, Default)]
 pub struct ScaledValue {
+    #[serde(deserialize_with = "Int::deserialize_i64")]
     pub value: i64,
     #[serde(default, skip_serializing_if = "Scale::is_default")]
     pub scale: Scale,
 }
 
 impl ScaledValue {
-    pub fn is_none(&self) -> bool {
+    pub fn is_zero(&self) -> bool {
         self.value == 0
     }
 }
@@ -34,6 +36,7 @@ impl TryFrom<u64> for Scale {
         if value == 0 {
             Err(Error::NullScale())
         } else {
+            check_js_safety_unsigned(value);
             Ok(Scale(value))
         }
     }

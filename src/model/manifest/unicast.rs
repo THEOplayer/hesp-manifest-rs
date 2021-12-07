@@ -4,14 +4,14 @@ use url::Url;
 use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
     AudioTrack, DateTime, Error, LiveStream, Manifest, ManifestData, ManifestDeserialize,
-    ManifestSerialize, MetadataTrack, Number, Presentation, Result, StreamType, VideoTrack,
+    ManifestSerialize, MetadataTrack, Presentation, Result, StreamType, VideoTrack,
 };
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(into = "ManifestSerialize")]
 pub struct UnicastManifest {
     pub(super) creation_date: DateTime,
-    pub(super) fallback_poll_rate: Number,
+    pub(super) fallback_poll_rate: u64,
     pub(super) presentations: EntityMap<Presentation>,
     pub(super) stream_type: StreamType,
     pub(super) location: Url,
@@ -56,7 +56,7 @@ impl Manifest for UnicastManifest {
         validate_active(&data.stream_type, &presentations)?;
         let manifest = Self {
             creation_date: data.creation_date,
-            fallback_poll_rate: data.fallback_poll_rate,
+            fallback_poll_rate: data.fallback_poll_rate.into(),
             presentations,
             stream_type: data.stream_type,
             location,

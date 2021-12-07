@@ -1,9 +1,9 @@
 use serde::Deserialize;
 
-use crate::util::RelativeUrl;
+use crate::util::{RelativeUrl, UInt};
 use crate::{
-    AudioMimeType, Language, SamplesPerFrame, ScaledDuration, ScaledValue, SegmentId,
-    Segments, SwitchingSetProtection,
+    AudioMimeType, Language, SamplesPerFrame, ScaledDuration, ScaledValue, SegmentId, Segments,
+    SwitchingSetProtection,
 };
 
 #[derive(Clone, Deserialize, Debug)]
@@ -38,7 +38,7 @@ impl From<AudioSwitchingSetData> for crate::AudioSwitchingSetData {
                 .collect(),
             align_id: input.align_id,
             base_url: input.base_url,
-            channels: input.channels,
+            channels: input.channels.map(UInt::from),
             codecs: input.codecs,
             continuation_pattern: input.continuation_pattern,
             samples_per_frame: input.frame_rate,
@@ -47,7 +47,7 @@ impl From<AudioSwitchingSetData> for crate::AudioSwitchingSetData {
             media_time_offset: input.media_time_offset,
             mime_type: input.mime_type,
             protection: input.protection,
-            sample_rate: input.sample_rate,
+            sample_rate: input.sample_rate.map(UInt::from),
         }
     }
 }
@@ -56,20 +56,20 @@ impl From<AudioSwitchingSetData> for crate::AudioSwitchingSetData {
 #[serde(rename_all = "camelCase")]
 pub struct AudioTrackData {
     pub id: String,
-    pub bandwidth: Number,
+    pub bandwidth: UInt,
     pub segments: Segments,
     pub active_segment: Option<SegmentId>,
-    pub active_sequence_number: Option<u64>,
-    pub average_bandwidth: Option<Number>,
+    pub active_sequence_number: Option<UInt>,
+    pub average_bandwidth: Option<UInt>,
     pub base_url: RelativeUrl,
-    pub channels: Option<u64>,
+    pub channels: Option<UInt>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
     pub frame_rate: Option<SamplesPerFrame>,
     pub label: Option<String>,
     pub initialization_pattern: Option<String>,
     pub media_time_offset: Option<ScaledValue>,
-    pub sample_rate: Option<u64>,
+    pub sample_rate: Option<UInt>,
     pub segment_duration: Option<ScaledDuration>,
 }
 

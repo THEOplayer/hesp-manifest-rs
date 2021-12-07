@@ -1,13 +1,13 @@
 use serde::Deserialize;
 
-use crate::util::RelativeUrl;
+use crate::util::{RelativeUrl, UInt};
 use crate::{DateTime, StreamType};
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ManifestData {
     pub creation_date: DateTime,
-    pub fallback_poll_rate: Number,
+    pub fallback_poll_rate: UInt,
     pub presentations: Vec<super::PresentationData>,
     #[serde(flatten)]
     pub stream_type: StreamType,

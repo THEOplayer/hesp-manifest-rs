@@ -1,8 +1,11 @@
-use crate::{SegmentId, TransmissionType};
 use thiserror::Error;
+
+use crate::{ManifestVersion, SegmentId, TransmissionType};
 
 #[derive(Error, Debug)]
 pub enum Error {
+    #[error("Scale must be strictly positive")]
+    NullScale(),
     #[error("activePresentation references unknown id {0}")]
     InvalidActivePresentationId(String),
     #[error("'{0}' is not a valid audio MIME Type")]
@@ -33,14 +36,16 @@ pub enum Error {
     MissingSampleRate(String),
     #[error("Track {0} must have an initialization pattern")]
     MissingInitializationPattern(String),
-    #[error("Ids must be unique (duplicates: {0})")]
-    DuplicateIds(String),
-    #[error("ContinuationPattern '{0}' must contain {{segmentId}}")]
-    InvalidContinuationPattern(String),
-    #[error("InitializationPattern '{0}' must contain {{initId}}")]
-    InvalidInitializationPattern(String),
+    #[error("Ids must be unique (found duplicate: {0})")]
+    DuplicateId(String),
+    #[error("Pattern '{0}' must contain {1}")]
+    InvalidPattern(String, &'static str),
     #[error("Presentation '{0}' must not contain multicast data")]
     InvalidUnicastPresentation(String),
+    #[error("'{0:?}' is not a valid version for a unicast manifest")]
+    InvalidUnicastVersion(ManifestVersion),
+    #[error("'{0:?}' is not a valid version for a multicast manifest")]
+    InvalidMulticastVersion(ManifestVersion),
     #[error("Presentation '{presentation}' is {transmission:?} therefore Track '{track}' must be {transmission:?}")]
     InvalidTrackTransmission {
         presentation: String,
@@ -55,6 +60,8 @@ pub enum Error {
     InvalidMediaType(String),
     #[error(transparent)]
     UrlParseError(#[from] url::ParseError),
+    #[error(transparent)]
+    InvalidJson(#[from] serde_path_to_error::Error<serde_json::Error>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

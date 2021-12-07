@@ -1,51 +1,52 @@
-use serde::{self, Deserialize, Serialize};
-use serde_with::skip_serializing_none;
+use url::Url;
 
-use crate::model::track::validate_segments;
-use crate::*;
+use crate::util::Entity;
+use crate::{
+    ContinuationPattern, Error, MediaType, MetadataTrackData, Number, Result, ScaledDuration,
+    ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission, TrackUid,
+};
 
-#[skip_serializing_none]
-#[derive(Debug, Serialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone)]
 pub struct MetadataTrack {
-    id: String,
-    segments: Segments,
-    #[serde(rename = "activeSegment")]
-    active_segment_id: Option<SegmentId>,
-    average_bandwidth: Option<Number>,
-    bandwidth: Option<Number>,
-    base_url: Option<RelativeBaseUrl>,
-    continuation_pattern: ContinuationPattern,
-    label: Option<String>,
-    media_time_offset: ScaledValue,
-    segment_duration: Option<ScaledValue>,
+    uid: TrackUid,
+    pub(super) segments: Segments,
+    pub(super) active_segment_id: Option<SegmentId>,
+    pub(super) average_bandwidth: Option<Number>,
+    pub(super) bandwidth: Option<Number>,
+    pub(super) continuation_pattern: ContinuationPattern,
+    pub(super) label: Option<String>,
+    pub(super) media_time_offset: ScaledValue,
+    pub(super) segment_duration: Option<ScaledDuration>,
 }
 
 impl Entity for MetadataTrack {
-    type Id = str;
     fn id(&self) -> &str {
-        &self.id
+        self.uid.track_id()
     }
 }
 
 impl Track for MetadataTrack {
+    const TRACK_TYPE: MediaType = MediaType::Metadata;
+
+    fn uid(&self) -> &TrackUid {
+        &self.uid
+    }
+
+    fn bandwidth(&self) -> Option<f64> {
+        self.bandwidth.as_ref().and_then(Number::as_f64)
+    }
+
     fn active_segment(&self) -> Option<&Segment> {
         match self.active_segment_id {
             Some(id) => self.segment(id),
             None => None,
         }
     }
-    fn segment_duration(&self) -> Option<ScaledValue> {
+    fn segment_duration(&self) -> Option<ScaledDuration> {
         self.segment_duration
     }
     fn segments(&self) -> &[Segment] {
         &self.segments
-    }
-    fn base_url(&self) -> &Option<RelativeBaseUrl> {
-        &self.base_url
-    }
-    fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
-        &mut self.base_url
     }
     fn continuation_pattern(&self) -> &ContinuationPattern {
         &self.continuation_pattern
@@ -56,67 +57,40 @@ impl Track for MetadataTrack {
     fn average_bandwidth(&self) -> Option<f64> {
         self.average_bandwidth.as_ref().and_then(Number::as_f64)
     }
-}
 
-impl MetadataTrack {
-    pub(super) fn new(
-        def: MetadataTrackDef,
-        default_continuation_pattern: Option<&ContinuationPattern>,
-        default_media_time_offset: ScaledValue,
-    ) -> Result<Self> {
-        let MetadataTrackDef {
-            bandwidth,
-            id,
-            segments,
-            active_segment_id,
-            average_bandwidth,
-            base_url,
-            continuation_pattern,
-            label,
-            media_time_offset,
-            segment_duration,
-        } = def;
-        validate_segments(&id, segment_duration, &segments)?;
-        default!(
-            id,
-            continuation_pattern,
-            default_continuation_pattern,
-            Error::MissingContinuationPattern
-        );
-        Ok(MetadataTrack {
-            bandwidth,
-            id,
-            segments,
-            active_segment_id,
-            average_bandwidth,
-            base_url,
-            continuation_pattern,
-            label,
-            media_time_offset: media_time_offset.unwrap_or(default_media_time_offset),
-            segment_duration,
-        })
+    fn transmission(&self) -> &TrackTransmission {
+        &TrackTransmission::Unicast
+    }
+
+    fn validate_active(&self) -> Result<()> {
+        Ok(())
     }
 }
 
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub(super) struct MetadataTrackDef {
-    id: String,
-    segments: Segments,
-    #[serde(rename = "activeSegment")]
-    active_segment_id: Option<SegmentId>,
-    average_bandwidth: Option<Number>,
-    bandwidth: Option<Number>,
-    base_url: Option<RelativeBaseUrl>,
-    continuation_pattern: Option<ContinuationPattern>,
-    label: Option<String>,
-    media_time_offset: Option<ScaledValue>,
-    segment_duration: Option<ScaledValue>,
-}
-
-impl Entity for MetadataTrackDef {
-    type Id = str;
-    fn id(&self) -> &str {
-        &self.id
+impl MetadataTrack {
+    pub fn new(
+        presentation_id: String,
+        switching_set_id: String,
+        switching_set_url: &Url,
+        data: MetadataTrackData,
+    ) -> Result<Self> {
+        let id = data.id;
+        let base_url = data.base_url.resolve(switching_set_url)?;
+        let continuation_pattern = if let Some(continuation_pattern) = data.continuation_pattern {
+            continuation_pattern
+        } else {
+            return Err(Error::MissingContinuationPattern(id));
+        };
+        Ok(Self {
+            bandwidth: data.bandwidth,
+            uid: TrackUid::new(presentation_id, Self::TRACK_TYPE, switching_set_id, id),
+            segments: data.segments,
+            active_segment_id: data.active_segment_id,
+            average_bandwidth: data.average_bandwidth,
+            continuation_pattern: ContinuationPattern::new(&base_url, continuation_pattern)?,
+            label: data.label,
+            media_time_offset: data.media_time_offset.unwrap_or_default(),
+            segment_duration: data.segment_duration,
+        })
     }
 }

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use uuid::Uuid;
 
-use crate::*;
+use crate::{Error, Result};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SwitchingSetProtection {
@@ -26,25 +26,18 @@ struct SwitchingSetProtectionSystem {
     scheme_id: Uuid,
 }
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(try_from = "Vec<SwitchingSetProtectionSystem>")]
 struct SwitchingSetProtectionSystemVec(Vec<SwitchingSetProtectionSystem>);
 
-impl SwitchingSetProtectionSystemVec {
-    fn new(vec: Vec<SwitchingSetProtectionSystem>) -> Result<Self> {
+impl TryFrom<Vec<SwitchingSetProtectionSystem>> for SwitchingSetProtectionSystemVec {
+    type Error = Error;
+
+    fn try_from(vec: Vec<SwitchingSetProtectionSystem>) -> Result<Self> {
         if vec.is_empty() {
             Err(Error::EmptySwitchingSetProtectionSystems)
         } else {
             Ok(Self(vec))
         }
-    }
-}
-
-impl<'de> Deserialize<'de> for SwitchingSetProtectionSystemVec {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let vec = Vec::deserialize(deserializer)?;
-        SwitchingSetProtectionSystemVec::new(vec).map_err(serde::de::Error::custom)
     }
 }

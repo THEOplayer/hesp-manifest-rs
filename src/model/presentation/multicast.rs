@@ -1,6 +1,6 @@
 use serde::{self, Deserialize, Serialize};
 
-use crate::*;
+use crate::TransmissionType;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -11,7 +11,7 @@ pub struct PresentationMulticastMetadata {
 }
 
 impl PresentationMulticastMetadata {
-    pub fn new(fec: FecMetadata, transport_session_id: u32, address: String) -> Self {
+    pub const fn new(fec: FecMetadata, transport_session_id: u32, address: String) -> Self {
         Self {
             fec,
             transport_session_id,
@@ -19,7 +19,7 @@ impl PresentationMulticastMetadata {
         }
     }
 
-    pub fn transport_session_id(&self) -> u32 {
+    pub const fn transport_session_id(&self) -> u32 {
         self.transport_session_id
     }
 }
@@ -32,12 +32,7 @@ pub struct FecMetadata {
     pub maximum_source_block_length: u32,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(
-    from = "Option<PresentationMulticastMetadata>",
-    into = "Option<PresentationMulticastMetadata>"
-)]
-#[serde(rename = "multicast_metadata", rename_all = "camelCase")]
+#[derive(Clone, Debug)]
 pub enum PresentationTransmission {
     Unicast,
     Multicast(PresentationMulticastMetadata),
@@ -46,8 +41,8 @@ pub enum PresentationTransmission {
 impl From<Option<PresentationMulticastMetadata>> for PresentationTransmission {
     fn from(input: Option<PresentationMulticastMetadata>) -> Self {
         match input {
-            None => PresentationTransmission::Unicast,
-            Some(data) => PresentationTransmission::Multicast(data),
+            None => Self::Unicast,
+            Some(data) => Self::Multicast(data),
         }
     }
 }
@@ -62,7 +57,7 @@ impl From<PresentationTransmission> for Option<PresentationMulticastMetadata> {
 }
 
 impl PresentationTransmission {
-    pub fn get_type(&self) -> TransmissionType {
+    pub const fn get_type(&self) -> TransmissionType {
         match self {
             PresentationTransmission::Unicast => TransmissionType::Unicast,
             PresentationTransmission::Multicast { .. } => TransmissionType::Multicast,

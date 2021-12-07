@@ -1,5 +1,5 @@
 image:
-  name: registry.theoplayer.com/rust:1.55
+  name: registry.theoplayer.com/rust:1.57
   username: $THEO_DOCKER_USERNAME
   password: $THEO_DOCKER_PASSWORD
   email: docker@theoplayer.com

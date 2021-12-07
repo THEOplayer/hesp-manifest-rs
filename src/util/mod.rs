@@ -1,6 +1,9 @@
-pub use entity::{Entity, EntityVec};
-pub(crate) use validate::Validate;
+pub use data::*;
+pub use entity::*;
+
+pub use self::url::RelativeUrl;
 
 mod entity;
+mod url;
 #[macro_use]
-mod validate;
+mod data;

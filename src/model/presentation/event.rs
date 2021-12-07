@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-use crate::Entity;
-
-use super::*;
+use crate::util::Entity;
+use crate::Scale;
 
 #[derive(Deserialize, Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -15,7 +14,6 @@ pub struct PresentationEvent {
 }
 
 impl Entity for PresentationEvent {
-    type Id = str;
     fn id(&self) -> &str {
         &self.id
     }
@@ -28,8 +26,8 @@ pub struct PresentationEventTimeBounds {
     start_time_offset: u64,
     #[serde(default)]
     duration: u64,
-    #[serde(default = "TimeBounds::default_scale")]
-    scale: u64,
+    #[serde(default)]
+    scale: Scale,
 }
 
 #[derive(Deserialize, Debug, Serialize, Copy, Clone, Eq, PartialEq, Hash)]

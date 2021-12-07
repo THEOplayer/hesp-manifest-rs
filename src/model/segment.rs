@@ -3,14 +3,17 @@ use std::ops::{Add, AddAssign, Deref, Sub, SubAssign};
 
 use derive_more::{Display, From, Into};
 use itertools::Itertools;
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::*;
+use crate::{Error, Result, ScaledDuration, TimeBounds};
 
 #[derive(
     Serialize,
     Deserialize,
+    From,
+    Into,
+    Display,
     Debug,
     Clone,
     Copy,
@@ -19,9 +22,6 @@ use crate::*;
     Ord,
     PartialOrd,
     Hash,
-    From,
-    Into,
-    Display,
 )]
 pub struct SegmentId(u32);
 
@@ -33,7 +33,8 @@ pub struct Segment {
     time_bounds: Option<TimeBounds>,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(try_from = "Vec<Segment>")]
 pub struct Segments(Vec<Segment>);
 
 impl SegmentId {
@@ -42,8 +43,10 @@ impl SegmentId {
     }
 }
 
-impl Segments {
-    fn new(vec: Vec<Segment>) -> Result<Self> {
+impl TryFrom<Vec<Segment>> for Segments {
+    type Error = Error;
+
+    fn try_from(vec: Vec<Segment>) -> Result<Self> {
         let jump = vec
             .iter()
             .map(Segment::id)
@@ -54,13 +57,6 @@ impl Segments {
         } else {
             Ok(Self(vec))
         }
-    }
-}
-
-impl<'de> Deserialize<'de> for Segments {
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> std::result::Result<Self, D::Error> {
-        let vec = Vec::deserialize(deserializer)?;
-        Self::new(vec).map_err(serde::de::Error::custom)
     }
 }
 
@@ -77,46 +73,62 @@ impl Borrow<[Segment]> for Segments {
     }
 }
 
-impl Default for Segments {
-    fn default() -> Self {
-        Self(Vec::new())
-    }
-}
-
 impl Segment {
-    pub fn id(&self) -> SegmentId {
+    pub const fn id(&self) -> SegmentId {
         self.id
     }
-    pub fn duration(&self) -> Option<ScaledValue> {
+    pub fn duration(&self) -> Option<ScaledDuration> {
         self.time_bounds?.duration()
     }
-    pub fn has_time_bounds(&self) -> bool {
+    pub const fn has_time_bounds(&self) -> bool {
         self.time_bounds.is_some()
     }
 }
 
 impl Add<u32> for SegmentId {
-    type Output = SegmentId;
+    type Output = Self;
     fn add(self, rhs: u32) -> Self {
-        SegmentId(self.0 + rhs)
+        Self(self.0 + rhs)
     }
 }
 
 impl Sub<u32> for SegmentId {
-    type Output = SegmentId;
+    type Output = Self;
     fn sub(self, rhs: u32) -> Self {
-        SegmentId(self.0 - rhs)
+        Self(self.0 - rhs)
     }
 }
 
 impl AddAssign<u32> for SegmentId {
     fn add_assign(&mut self, rhs: u32) {
-        self.0 += rhs
+        self.0 += rhs;
     }
 }
 
 impl SubAssign<u32> for SegmentId {
     fn sub_assign(&mut self, rhs: u32) {
-        self.0 -= rhs
+        self.0 -= rhs;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserialize_checks_sequential_ids() {
+        let data = r#"
+        [
+           {"id": 10},
+           {"id": 11},
+           {"id": 13}
+        ]"#;
+        let result = serde_json::from_str::<Segments>(data);
+
+        assert!(result.is_err());
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("13 must not follow 11"));
     }
 }

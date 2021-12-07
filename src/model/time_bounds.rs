@@ -1,49 +1,64 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::*;
+use crate::{Error, Result, Scale, ScaledDuration};
 
-validate_on_deserialize!(TimeBounds);
 #[skip_serializing_none]
 #[derive(Deserialize, Debug, Serialize, Clone, Copy)]
-#[serde(rename_all = "camelCase", remote = "Self")]
+#[serde(rename_all = "camelCase", try_from = "TimeBoundsData")]
 pub struct TimeBounds {
     start_time: Option<u64>,
     end_time: Option<u64>,
-    #[serde(default = "TimeBounds::default_scale")]
-    scale: u64,
+    scale: Scale,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct TimeBoundsData {
+    start_time: Option<u64>,
+    end_time: Option<u64>,
+    #[serde(default)]
+    scale: Scale,
 }
 
 impl TimeBounds {
-    const DEFAULT_SCALE: u64 = 1;
-    pub fn default_scale() -> u64 {
-        Self::DEFAULT_SCALE
+    pub const fn new(start_time: Option<u64>, end_time: Option<u64>, scale: Scale) -> Result<Self> {
+        match (start_time, end_time) {
+            (None, None) => Err(Error::EmptyTimeBounds),
+            (Some(start), Some(end)) if start > end => Err(Error::ReverseTimeBounds { start, end }),
+            _ => Ok(Self {
+                start_time,
+                end_time,
+                scale,
+            }),
+        }
     }
 
-    pub fn duration(self) -> Option<ScaledValue> {
-        Some(ScaledValue {
-            value: (self.end_time? - self.start_time?) as i64,
+    pub fn duration(self) -> Option<ScaledDuration> {
+        Some(ScaledDuration {
+            value: self.end_time? - self.start_time?,
             scale: self.scale,
         })
     }
+
+    pub fn start_time(&self) -> Option<u64> {
+        self.start_time
+    }
+
+    pub fn end_time(&self) -> Option<u64> {
+        self.end_time
+    }
+
+    pub fn scale(&self) -> Scale {
+        self.scale
+    }
 }
 
-impl Validate for TimeBounds {
-    fn validate(&self) -> Result<()> {
-        if self.start_time.is_none() && self.end_time.is_none() {
-            return Err(Error::EmptyTimeBounds);
-        }
-        if let TimeBounds {
-            start_time: Some(start),
-            end_time: Some(end),
-            ..
-        } = *self
-        {
-            if start >= end {
-                return Err(Error::ReverseTimeBounds { start, end });
-            }
-        }
-        Ok(())
+impl TryFrom<TimeBoundsData> for TimeBounds {
+    type Error = Error;
+
+    fn try_from(value: TimeBoundsData) -> Result<Self> {
+        Self::new(value.start_time, value.end_time, value.scale)
     }
 }
 

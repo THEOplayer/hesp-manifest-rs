@@ -1,4 +1,5 @@
-use std::collections::{btree_map, BTreeMap};
+use std::collections::{hash_map, HashMap};
+use std::vec;
 
 use crate::{Error, Result};
 
@@ -8,7 +9,8 @@ pub trait Entity {
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct EntityMap<E: Entity> {
-    inner: BTreeMap<String, E>,
+    inner: HashMap<String, E>,
+    keys: Vec<String>,
 }
 
 impl<E: Entity> EntityMap<E> {
@@ -36,13 +38,33 @@ impl<E: Entity> EntityMap<E> {
     }
 }
 
+pub struct OrderedEntityIter<E: Entity> {
+    map: HashMap<String, E>,
+    key_iter: vec::IntoIter<String>,
+}
+
+impl<E: Entity> Iterator for OrderedEntityIter<E> {
+    type Item = E;
+
+    #[inline]
+    fn next(&mut self) -> Option<E> {
+        self.key_iter
+            .next()
+            .map(|key| self.map.remove_entry(&key).unwrap())
+            .map(|(_, entity)| entity)
+    }
+}
+
 impl<E: Entity> IntoIterator for EntityMap<E> {
     type Item = E;
-    type IntoIter = btree_map::IntoValues<String, E>;
+    type IntoIter = OrderedEntityIter<E>;
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
-        self.inner.into_values()
+        OrderedEntityIter {
+            map: self.inner,
+            key_iter: self.keys.into_iter(),
+        }
     }
 }
 
@@ -67,7 +89,7 @@ impl<'a, E: Entity> IntoIterator for &'a mut EntityMap<E> {
 }
 
 pub struct EntityIter<'a, E: Entity> {
-    inner: btree_map::Values<'a, String, E>,
+    inner: hash_map::Values<'a, String, E>,
 }
 
 impl<'a, E: Entity> Iterator for EntityIter<'a, E> {
@@ -92,7 +114,7 @@ impl<'a, E: Entity> ExactSizeIterator for EntityIter<'a, E> {
 }
 
 pub struct EntityIterMut<'a, E: Entity> {
-    inner: btree_map::ValuesMut<'a, String, E>,
+    inner: hash_map::ValuesMut<'a, String, E>,
 }
 
 impl<'a, E: Entity> Iterator for EntityIterMut<'a, E> {
@@ -125,14 +147,17 @@ pub trait FromEntities<E: Entity> {
 impl<E: Entity, I: IntoIterator<Item = Result<E>>> FromEntities<E> for I {
     fn into_entities(self) -> Result<EntityMap<E>> {
         let iter = self.into_iter();
-        let mut map = BTreeMap::new();
+        let size_hint = iter.size_hint().0;
+        let mut inner = HashMap::with_capacity(size_hint);
+        let mut keys = Vec::with_capacity(size_hint);
         for entity in iter {
             let entity = entity?;
-            if let Some(duplicate) = map.insert(entity.id().to_owned(), entity) {
+            keys.push(entity.id().to_owned());
+            if let Some(duplicate) = inner.insert(entity.id().to_owned(), entity) {
                 return Err(Error::DuplicateId(duplicate.id().to_string()));
             }
         }
-        Ok(EntityMap { inner: map })
+        Ok(EntityMap { inner, keys })
     }
 }
 
@@ -143,13 +168,21 @@ mod tests {
 
     #[test]
     fn entity_map_retains_order() -> Result<()> {
-        let vec = vec![DummyEntity("h"), DummyEntity("o"), DummyEntity("i")];
+        let vec = vec!["t", "h", "e", "o", " ", "r", "u", "l", "z"]
+            .into_iter()
+            .map(DummyEntity);
         let map: EntityMap<DummyEntity> = vec.into_iter().map(Result::Ok).into_entities()?;
 
-        let mut iter = map.iter().map(DummyEntity::id);
+        let mut iter = map.into_iter().map(|e| e.0);
+        assert_eq!(iter.next(), Some("t"));
         assert_eq!(iter.next(), Some("h"));
+        assert_eq!(iter.next(), Some("e"));
         assert_eq!(iter.next(), Some("o"));
-        assert_eq!(iter.next(), Some("i"));
+        assert_eq!(iter.next(), Some(" "));
+        assert_eq!(iter.next(), Some("r"));
+        assert_eq!(iter.next(), Some("u"));
+        assert_eq!(iter.next(), Some("l"));
+        assert_eq!(iter.next(), Some("z"));
         assert_eq!(iter.next(), None);
         Ok(())
     }

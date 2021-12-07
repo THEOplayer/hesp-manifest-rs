@@ -168,13 +168,21 @@ mod tests {
 
     #[test]
     fn entity_map_retains_order() -> Result<()> {
-        let vec = vec![DummyEntity("h"), DummyEntity("o"), DummyEntity("i")];
+        let vec = vec!["t", "h", "e", "o", " ", "r", "u", "l", "z"]
+            .into_iter()
+            .map(DummyEntity);
         let map: EntityMap<DummyEntity> = vec.into_iter().map(Result::Ok).into_entities()?;
 
         let mut iter = map.into_iter().map(|e| e.0);
+        assert_eq!(iter.next(), Some("t"));
         assert_eq!(iter.next(), Some("h"));
+        assert_eq!(iter.next(), Some("e"));
         assert_eq!(iter.next(), Some("o"));
-        assert_eq!(iter.next(), Some("i"));
+        assert_eq!(iter.next(), Some(" "));
+        assert_eq!(iter.next(), Some("r"));
+        assert_eq!(iter.next(), Some("u"));
+        assert_eq!(iter.next(), Some("l"));
+        assert_eq!(iter.next(), Some("z"));
         assert_eq!(iter.next(), None);
         Ok(())
     }

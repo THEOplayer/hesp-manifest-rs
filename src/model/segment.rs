@@ -1,29 +1,23 @@
 use std::borrow::Borrow;
+use std::fmt;
+use std::fmt::Debug;
 use std::ops::{Add, AddAssign, Deref, Sub, SubAssign};
 
-use derive_more::{Display, From, Into};
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
+use crate::util::UInt;
 use crate::{Error, Result, ScaledDuration, TimeBounds};
 
-#[derive(
-    Serialize,
-    Deserialize,
-    From,
-    Into,
-    Display,
-    Debug,
-    Clone,
-    Copy,
-    Eq,
-    PartialEq,
-    Ord,
-    PartialOrd,
-    Hash,
-)]
-pub struct SegmentId(u32);
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub struct SegmentId(#[serde(deserialize_with = "UInt::deserialize_u64")] u64);
+
+impl fmt::Display for SegmentId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(&self.0, f)
+    }
+}
 
 #[skip_serializing_none]
 #[derive(Deserialize, Debug, Serialize, Clone)]
@@ -85,28 +79,28 @@ impl Segment {
     }
 }
 
-impl Add<u32> for SegmentId {
+impl Add<u64> for SegmentId {
     type Output = Self;
-    fn add(self, rhs: u32) -> Self {
+    fn add(self, rhs: u64) -> Self {
         Self(self.0 + rhs)
     }
 }
 
-impl Sub<u32> for SegmentId {
+impl Sub<u64> for SegmentId {
     type Output = Self;
-    fn sub(self, rhs: u32) -> Self {
+    fn sub(self, rhs: u64) -> Self {
         Self(self.0 - rhs)
     }
 }
 
-impl AddAssign<u32> for SegmentId {
-    fn add_assign(&mut self, rhs: u32) {
+impl AddAssign<u64> for SegmentId {
+    fn add_assign(&mut self, rhs: u64) {
         self.0 += rhs;
     }
 }
 
-impl SubAssign<u32> for SegmentId {
-    fn sub_assign(&mut self, rhs: u32) {
+impl SubAssign<u64> for SegmentId {
+    fn sub_assign(&mut self, rhs: u64) {
         self.0 -= rhs;
     }
 }

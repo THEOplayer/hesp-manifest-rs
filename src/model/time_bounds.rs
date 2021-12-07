@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
+use crate::util::UInt;
 use crate::{Error, Result, Scale, ScaledDuration};
 
 #[skip_serializing_none]
@@ -15,8 +16,8 @@ pub struct TimeBounds {
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct TimeBoundsData {
-    start_time: Option<u64>,
-    end_time: Option<u64>,
+    start_time: Option<UInt>,
+    end_time: Option<UInt>,
     #[serde(default)]
     scale: Scale,
 }
@@ -41,15 +42,15 @@ impl TimeBounds {
         })
     }
 
-    pub fn start_time(&self) -> Option<u64> {
+    pub const fn start_time(&self) -> Option<u64> {
         self.start_time
     }
 
-    pub fn end_time(&self) -> Option<u64> {
+    pub const fn end_time(&self) -> Option<u64> {
         self.end_time
     }
 
-    pub fn scale(&self) -> Scale {
+    pub const fn scale(&self) -> Scale {
         self.scale
     }
 }
@@ -58,7 +59,11 @@ impl TryFrom<TimeBoundsData> for TimeBounds {
     type Error = Error;
 
     fn try_from(value: TimeBoundsData) -> Result<Self> {
-        Self::new(value.start_time, value.end_time, value.scale)
+        Self::new(
+            value.start_time.map(u64::from),
+            value.end_time.map(u64::from),
+            value.scale,
+        )
     }
 }
 

@@ -14,13 +14,13 @@ mod uid;
 pub trait Track: Entity {
     const TRACK_TYPE: MediaType;
     fn uid(&self) -> &TrackUid;
-    fn bandwidth(&self) -> Option<f64>;
+    fn bandwidth(&self) -> Option<u64>;
     fn active_segment(&self) -> Option<&Segment>;
     fn segment_duration(&self) -> Option<ScaledDuration>;
     fn segments(&self) -> &[Segment];
     fn continuation_pattern(&self) -> &ContinuationPattern;
     fn set_continuation_pattern(&mut self, pattern: ContinuationPattern);
-    fn average_bandwidth(&self) -> Option<f64>;
+    fn average_bandwidth(&self) -> Option<u64>;
     fn segment(&self, segment_id: SegmentId) -> Option<&Segment> {
         self.segments()
             .iter()

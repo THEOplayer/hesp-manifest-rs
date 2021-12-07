@@ -20,7 +20,7 @@ impl RelativeUrl {
         })
     }
 
-    pub fn is_none(&self) -> bool {
+    pub const fn is_none(&self) -> bool {
         matches!(self, Self::None)
     }
 }

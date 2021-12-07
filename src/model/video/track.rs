@@ -2,20 +2,20 @@ use url::Url;
 
 use crate::util::Entity;
 use crate::{
-    ContinuationPattern, Error, Initialization, InitializationPattern, MediaType, Number,
-    Resolution, Result, ScaledDuration, ScaledValue, Segment, SegmentId, Segments, Track,
-    TrackTransmission, TrackUid, VideoTrackData,
+    ContinuationPattern, Error, Initialization, InitializationPattern, MediaType, Resolution,
+    Result, ScaledDuration, ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission,
+    TrackUid, VideoTrackData,
 };
 
 #[derive(Debug, Clone)]
 pub struct VideoTrack {
     uid: TrackUid,
-    pub(super) bandwidth: Number,
+    pub(super) bandwidth: u64,
     pub(super) resolution: Resolution,
     pub(super) segments: Segments,
     pub(super) active_segment_id: Option<SegmentId>,
     pub(super) active_sequence_number: Option<u64>,
-    pub(super) average_bandwidth: Option<Number>,
+    pub(super) average_bandwidth: Option<u64>,
     pub(super) codecs: String,
     pub(super) continuation_pattern: ContinuationPattern,
     pub(super) frame_rate: ScaledValue,
@@ -39,8 +39,8 @@ impl Track for VideoTrack {
         &self.uid
     }
 
-    fn bandwidth(&self) -> Option<f64> {
-        self.bandwidth.as_f64()
+    fn bandwidth(&self) -> Option<u64> {
+        Some(self.bandwidth)
     }
 
     fn active_segment(&self) -> Option<&Segment> {
@@ -66,8 +66,8 @@ impl Track for VideoTrack {
         self.continuation_pattern = pattern;
     }
 
-    fn average_bandwidth(&self) -> Option<f64> {
-        self.average_bandwidth.as_ref().and_then(Number::as_f64)
+    fn average_bandwidth(&self) -> Option<u64> {
+        self.average_bandwidth
     }
 
     fn transmission(&self) -> &TrackTransmission {
@@ -124,13 +124,13 @@ impl VideoTrack {
             return Err(Error::MissingFrameRate(id));
         };
         Ok(Self {
-            bandwidth: data.bandwidth,
+            bandwidth: data.bandwidth.into(),
             uid: TrackUid::new(presentation_id, Self::TRACK_TYPE, switching_set_id, id),
             resolution: data.resolution,
             segments: data.segments,
             active_segment_id: data.active_segment_id,
-            active_sequence_number: data.active_sequence_number,
-            average_bandwidth: data.average_bandwidth,
+            active_sequence_number: data.active_sequence_number.map(u64::from),
+            average_bandwidth: data.average_bandwidth.map(u64::from),
             codecs,
             continuation_pattern: ContinuationPattern::new(&base_url, continuation_pattern)?,
             frame_rate,

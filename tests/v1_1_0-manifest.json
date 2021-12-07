@@ -1,0 +1,206 @@
+{
+  "activePresentation": "1",
+  "availabilityDuration": {
+    "value": 1500
+  },
+  "creationDate": "2021-03-31T08:00:00.000Z",
+  "fallbackPollRate": 300,
+  "manifestVersion": "1.1.0",
+  "streamType": "live",
+  "presentations": [
+    {
+      "id": "0",
+      "timeBounds": {
+        "startTime": 0,
+        "endTime": 972000000,
+        "scale": 90000
+      },
+      "audio": [
+        {
+          "id": "main-audio",
+          "language": "eng",
+          "baseUrl": "audio/",
+          "channels": 2,
+          "codecs": "mp4a.40.2",
+          "continuationPattern": "content-{segmentId}.mp4",
+          "initializationPattern": "init-{initId}.mp4",
+          "sampleRate": 48000,
+          "tracks": [
+            {
+              "id": "96kbps",
+              "activeSegment": 1799,
+              "activeSequenceNumber": 506249,
+              "averageBandwidth": 96000,
+              "bandwidth": 96000,
+              "baseUrl": "96k/",
+              "segmentDuration": {
+                "value": 540000,
+                "scale": 90000
+              },
+              "segments": [
+                {
+                  "id": 1799,
+                  "timeBounds": {
+                    "startTime": 971460000,
+                    "scale": 90000
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "video": [
+        {
+          "id": "main-video",
+          "baseUrl": "video/",
+          "frameRate": {
+            "value": 25
+          },
+          "continuationPattern": "content-{segmentId}.mp4",
+          "initializationPattern": "init-{initId}.mp4",
+          "tracks": [
+            {
+              "id": "720p",
+              "activeSegment": 1799,
+              "activeSequenceNumber": 269999,
+              "bandwidth": 3000000,
+              "baseUrl": "720p/",
+              "codecs": "avc1.4d001f",
+              "resolution": {
+                "width": 1280,
+                "height": 720
+              },
+              "segmentDuration": {
+                "value": 540000,
+                "scale": 90000
+              },
+              "segments": [
+                {
+                  "id": 1799,
+                  "timeBounds": {
+                    "startTime": 971460000,
+                    "scale": 90000
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1",
+      "timeBounds": {
+        "startTime": 972000000,
+        "scale": 90000
+      },
+      "currentTime": {
+        "value": 1080000000,
+        "scale": 90000
+      },
+      "baseUrl": "https://otherexample.com/s2/",
+      "audio": [
+        {
+          "id": "main-audio",
+          "language": "eng",
+          "baseUrl": "audio/",
+          "channels": 2,
+          "codecs": "mp4a.40.2",
+          "sampleRate": 48000,
+          "mediaTimeOffset": {
+            "value": -972000000,
+            "scale": 90000
+          },
+          "tracks": [
+            {
+              "id": "128kbps",
+              "activeSegment": 200,
+              "activeSequenceNumber": 56250,
+              "averageBandwidth": 128000,
+              "bandwidth": 128000,
+              "continuationPattern": "128k-content-{segmentId}.mp4",
+              "initializationPattern": "128k-init-{initId}.mp4",
+              "segmentDuration": {
+                "value": 540000,
+                "scale": 90000
+              },
+              "segments": [
+                {
+                  "id": 200,
+                  "timeBounds": {
+                    "startTime": 1080000000,
+                    "scale": 90000
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "video": [
+        {
+          "id": "main-video",
+          "baseUrl": "video/",
+          "frameRate": {
+            "value": 25
+          },
+          "tracks": [
+            {
+              "id": "720p",
+              "activeSegment": 200,
+              "activeSequenceNumber": 29999,
+              "bandwidth": 3000000,
+              "codecs": "avc1.4d001f",
+              "continuationPattern": "720p-content-{segmentId}.mp4",
+              "initializationPattern": "720p-init-{initId}.mp4",
+              "resolution": {
+                "width": 1280,
+                "height": 720
+              },
+              "segmentDuration": {
+                "value": 540000,
+                "scale": 90000
+              },
+              "segments": [
+                {
+                  "id": 200,
+                  "timeBounds": {
+                    "startTime": 1080000000,
+                    "scale": 90000
+                  }
+                }
+              ]
+            },
+            {
+              "id": "1080p",
+              "activeSegment": 200,
+              "activeSequenceNumber": 29999,
+              "bandwidth": 5000000,
+              "codecs": "avc1.4d001f",
+              "continuationPattern": "1080p-content-{segmentId}.mp4",
+              "initializationPattern": "1080p-init-{initId}.mp4",
+              "resolution": {
+                "width": 1920,
+                "height": 1080
+              },
+              "segmentDuration": {
+                "value": 540000,
+                "scale": 90000
+              },
+              "segments": [
+                {
+                  "id": 200,
+                  "timeBounds": {
+                    "startTime": 1080000000,
+                    "scale": 90000
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

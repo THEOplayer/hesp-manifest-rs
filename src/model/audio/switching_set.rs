@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
+use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, UInt};
 use crate::{
     AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, Result, SwitchingSet,
     SwitchingSetProtection,
@@ -43,7 +43,7 @@ impl SwitchingSet for AudioSwitchingSet {
 }
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Deserialize, Serialize, Copy)]
-pub struct SamplesPerFrame(u64);
+pub struct SamplesPerFrame(#[serde(deserialize_with = "UInt::deserialize_u64")] u64);
 
 impl Default for SamplesPerFrame {
     fn default() -> Self {
@@ -69,7 +69,7 @@ impl AudioSwitchingSet {
                     track
                         .with_default_sample_rate(data.sample_rate)
                         .with_default_codecs(&data.codecs)
-                        .with_default_frame_rate(data.frame_rate)
+                        .with_default_samples_per_frame(data.samples_per_frame)
                         .with_default_media_time_offset(data.media_time_offset)
                         .with_default_continuation_pattern(&data.continuation_pattern)
                         .with_default_initialization_pattern(&data.initialization_pattern),
@@ -81,7 +81,7 @@ impl AudioSwitchingSet {
             language: data.language,
             tracks,
             align_id: data.align_id,
-            channels: data.channels,
+            channels: data.channels.map(u64::from),
             label: data.label,
             mime_type: data.mime_type.unwrap_or_default(),
             protection: data.protection,

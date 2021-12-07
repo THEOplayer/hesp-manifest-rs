@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{Number, Scale};
+use crate::Scale;
 
 #[derive(Deserialize, Debug, Serialize, Clone, Eq, PartialEq)]
 pub struct Resolution {
-    width: Number,
-    height: Number,
+    width: u64,
+    height: u64,
     #[serde(default, skip_serializing_if = "Scale::is_default")]
     sar_width: Scale,
     #[serde(default, skip_serializing_if = "Scale::is_default")]

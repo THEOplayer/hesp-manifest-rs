@@ -3,9 +3,18 @@ use std::fs;
 use url::Url;
 
 #[test]
-fn deserialize_example_manifest() -> anyhow::Result<()> {
+fn deserialize_v1_0_0_manifest() -> anyhow::Result<()> {
     let location = Url::parse("https://www.theoplayer.com/")?;
-    let input = fs::read_to_string("tests/example-manifest.json")?;
+    let input = fs::read_to_string("tests/v1_0_0-manifest.json")?;
+    UnicastManifest::from_json(location, &input)?;
+
+    Ok(())
+}
+
+#[test]
+fn deserialize_v1_1_0_manifest() -> anyhow::Result<()> {
+    let location = Url::parse("https://www.theoplayer.com/")?;
+    let input = fs::read_to_string("tests/v1_1_0-manifest.json")?;
     UnicastManifest::from_json(location, &input)?;
 
     Ok(())

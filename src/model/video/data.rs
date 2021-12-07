@@ -2,9 +2,9 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use url::Url;
 
-use crate::util::{Entity, RelativeUrl};
+use crate::util::{Entity, RelativeUrl, UInt};
 use crate::{
-    normalize_tracks, Number, Resolution, ScaledDuration, ScaledValue, SegmentId, Segments,
+    normalize_tracks, Resolution, ScaledDuration, ScaledValue, SegmentId, Segments,
     SwitchingSetProtection, TransferObjectIdentifierLimits, VideoMimeType, VideoSwitchingSet,
     VideoTrack,
 };
@@ -67,13 +67,13 @@ impl VideoSwitchingSetData {
 #[serde(rename_all = "camelCase")]
 pub struct VideoTrackData {
     pub id: String,
-    pub bandwidth: Number,
+    pub bandwidth: UInt,
     pub resolution: Resolution,
     pub segments: Segments,
     #[serde(rename = "activeSegment")]
     pub active_segment_id: Option<SegmentId>,
-    pub active_sequence_number: Option<u64>,
-    pub average_bandwidth: Option<Number>,
+    pub active_sequence_number: Option<UInt>,
+    pub average_bandwidth: Option<UInt>,
     #[serde(skip_serializing_if = "RelativeUrl::is_none")]
     pub base_url: RelativeUrl,
     pub codecs: Option<String>,
@@ -91,12 +91,12 @@ impl VideoTrackData {
         let id = input.id().to_owned();
         Self {
             id,
-            bandwidth: input.bandwidth,
+            bandwidth: input.bandwidth.into(),
             resolution: input.resolution,
             segments: input.segments,
             active_segment_id: input.active_segment_id,
-            active_sequence_number: input.active_sequence_number,
-            average_bandwidth: input.average_bandwidth,
+            active_sequence_number: input.active_sequence_number.map(UInt::from),
+            average_bandwidth: input.average_bandwidth.map(UInt::from),
             base_url: RelativeUrl::None,
             codecs: Some(input.codecs),
             continuation_pattern: Some(input.continuation_pattern.make_relative(location)),

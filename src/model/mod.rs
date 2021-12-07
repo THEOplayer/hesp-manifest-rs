@@ -33,5 +33,3 @@ mod time_source;
 mod track;
 mod transmission;
 mod video;
-
-pub type Number = serde_json::Number;

@@ -171,7 +171,7 @@ mod tests {
         let vec = vec![DummyEntity("h"), DummyEntity("o"), DummyEntity("i")];
         let map: EntityMap<DummyEntity> = vec.into_iter().map(Result::Ok).into_entities()?;
 
-        let mut iter = map.iter().map(DummyEntity::id);
+        let mut iter = map.into_iter().map(|e| e.0);
         assert_eq!(iter.next(), Some("h"));
         assert_eq!(iter.next(), Some("o"));
         assert_eq!(iter.next(), Some("i"));

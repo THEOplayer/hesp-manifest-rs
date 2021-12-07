@@ -94,7 +94,11 @@ pub fn try_convert_i64_to_float(number: i64) -> Result<f64> {
     }
 }
 
-#[allow(clippy::cast_precision_loss,clippy::cast_possible_truncation,clippy::cast_sign_loss)]
+#[allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
 pub fn try_convert_u64_to_float(number: u64) -> Result<f64> {
     let result = number as f64;
     if result as u64 == number {

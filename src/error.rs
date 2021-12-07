@@ -58,6 +58,8 @@ pub enum Error {
     InvalidTrackPath(String),
     #[error("'{0}' is not a valid MediaType")]
     InvalidMediaType(String),
+    #[error("'{0}' cannot be converted to a float (f64's mantissa is only 52 bits wide)")]
+    FloatOverflow(String),
     #[error(transparent)]
     UrlParseError(#[from] url::ParseError),
     #[error(transparent)]

@@ -14,7 +14,7 @@ pub struct ScaledDuration {
 }
 
 impl ScaledDuration {
-    pub fn is_zero(&self) -> bool {
+    pub const fn is_zero(&self) -> bool {
         self.value == 0
     }
 }

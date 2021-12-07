@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use crate::util::{check_js_safety_unsigned, Int};
+use crate::util::{
+    check_js_safety_unsigned, try_convert_i64_to_float, try_convert_u64_to_float, Int,
+};
 use crate::{Error, Result};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, Default)]
@@ -12,7 +14,7 @@ pub struct ScaledValue {
 }
 
 impl ScaledValue {
-    pub fn is_zero(&self) -> bool {
+    pub const fn is_zero(&self) -> bool {
         self.value == 0
     }
 }
@@ -37,7 +39,7 @@ impl TryFrom<u64> for Scale {
             Err(Error::NullScale())
         } else {
             check_js_safety_unsigned(value);
-            Ok(Scale(value))
+            Ok(Self(value))
         }
     }
 }
@@ -49,14 +51,10 @@ impl From<Scale> for u64 {
 }
 
 impl Scale {
-    pub fn as_f64(self) -> f64 {
-        self.0 as f64
-    }
-
     /// Returns whether this is the default scale.
     /// See [default](Scale::default) for more information.
     pub fn is_default(&self) -> bool {
-        self == &Scale::default()
+        self == &Self::default()
     }
 }
 
@@ -80,8 +78,12 @@ impl ScaledValue {
     }
 }
 
-impl From<ScaledValue> for f64 {
-    fn from(input: ScaledValue) -> Self {
-        input.value as f64 / input.scale.as_f64()
+impl TryFrom<ScaledValue> for f64 {
+    type Error = Error;
+
+    fn try_from(input: ScaledValue) -> Result<Self> {
+        let value = try_convert_i64_to_float(input.value)?;
+        let scale = try_convert_u64_to_float(input.scale.into())?;
+        Ok(value / scale)
     }
 }

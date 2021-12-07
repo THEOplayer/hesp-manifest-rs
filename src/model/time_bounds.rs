@@ -42,15 +42,15 @@ impl TimeBounds {
         })
     }
 
-    pub fn start_time(&self) -> Option<u64> {
+    pub const fn start_time(&self) -> Option<u64> {
         self.start_time
     }
 
-    pub fn end_time(&self) -> Option<u64> {
+    pub const fn end_time(&self) -> Option<u64> {
         self.end_time
     }
 
-    pub fn scale(&self) -> Scale {
+    pub const fn scale(&self) -> Scale {
         self.scale
     }
 }

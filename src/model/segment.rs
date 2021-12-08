@@ -19,6 +19,12 @@ impl SegmentId {
     }
 }
 
+impl From<u64> for SegmentId {
+    fn from(segment_id: u64) -> Self {
+        SegmentId(segment_id)
+    }
+}
+
 impl Add<u64> for SegmentId {
     type Output = Self;
     fn add(self, rhs: u64) -> Self {

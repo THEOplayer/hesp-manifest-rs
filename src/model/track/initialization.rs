@@ -26,6 +26,12 @@ pub enum InitId {
     Numbered(u64),
 }
 
+impl From<u64> for InitId {
+    fn from(id: u64) -> Self {
+        InitId::Numbered(id)
+    }
+}
+
 impl FromStr for InitId {
     type Err = ParseIntError;
 

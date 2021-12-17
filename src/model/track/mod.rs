@@ -35,3 +35,6 @@ pub trait Track: Entity {
     fn transmission(&self) -> &TrackTransmission;
     fn validate_active(&self) -> Result<()>;
 }
+
+pub trait InitializableTrack: Track + Initialization {}
+impl<T: Track + Initialization> InitializableTrack for T {}

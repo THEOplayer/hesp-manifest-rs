@@ -12,7 +12,7 @@ mod pattern;
 mod uid;
 
 pub trait Track: Entity {
-    const TRACK_TYPE: MediaType;
+    fn media_type(&self) -> MediaType;
     fn uid(&self) -> &TrackUid;
     fn bandwidth(&self) -> Option<u64>;
     fn active_segment(&self) -> Option<&Segment>;

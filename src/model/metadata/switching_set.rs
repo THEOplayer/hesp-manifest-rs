@@ -1,7 +1,7 @@
 use url::Url;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
-use crate::{Language, MetadataSwitchingSetData, MetadataTrack, Result, SwitchingSet};
+use crate::{Language, MediaType, MetadataSwitchingSetData, MetadataTrack, Result, SwitchingSet};
 
 #[derive(Clone, Debug)]
 pub struct MetadataSwitchingSet {
@@ -14,6 +14,10 @@ pub struct MetadataSwitchingSet {
     pub(super) mime_type: String,
 }
 
+impl MetadataSwitchingSet {
+    const MEDIA_TYPE: MediaType = MediaType::Metadata;
+}
+
 impl Entity for MetadataSwitchingSet {
     fn id(&self) -> &str {
         &self.id
@@ -22,6 +26,10 @@ impl Entity for MetadataSwitchingSet {
 
 impl SwitchingSet for MetadataSwitchingSet {
     type Track = MetadataTrack;
+
+    fn media_type(&self) -> MediaType {
+        Self::MEDIA_TYPE
+    }
 
     fn tracks(&self) -> EntityIter<MetadataTrack> {
         self.tracks.iter()

@@ -26,6 +26,10 @@ pub struct VideoTrack {
     pub(crate) transmission: TrackTransmission,
 }
 
+impl VideoTrack {
+    const MEDIA_TYPE: MediaType = MediaType::Video;
+}
+
 impl Entity for VideoTrack {
     fn id(&self) -> &str {
         self.uid.track_id()
@@ -33,7 +37,9 @@ impl Entity for VideoTrack {
 }
 
 impl Track for VideoTrack {
-    const TRACK_TYPE: MediaType = MediaType::Video;
+    fn media_type(&self) -> MediaType {
+        Self::MEDIA_TYPE
+    }
 
     fn uid(&self) -> &TrackUid {
         &self.uid
@@ -125,7 +131,7 @@ impl VideoTrack {
         };
         Ok(Self {
             bandwidth: data.bandwidth.into(),
-            uid: TrackUid::new(presentation_id, Self::TRACK_TYPE, switching_set_id, id),
+            uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),
             resolution: data.resolution,
             segments: data.segments,
             active_segment_id: data.active_segment_id,

@@ -1,13 +1,14 @@
 pub use protection::SwitchingSetProtection;
 
 use crate::util::{Entity, EntityIter, EntityIterMut};
-use crate::{Result, Track};
+use crate::{MediaType, Result, Track};
 
 mod protection;
 
 pub trait SwitchingSet: Entity {
     type Track: Track;
 
+    fn media_type(&self) -> MediaType;
     fn tracks(&self) -> EntityIter<Self::Track>;
     fn track(&self, id: &str) -> Option<&Self::Track>;
     fn tracks_mut(&mut self) -> EntityIterMut<Self::Track>;

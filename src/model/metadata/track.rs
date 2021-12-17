@@ -20,6 +20,10 @@ pub struct MetadataTrack {
     pub(super) segment_duration: Option<ScaledDuration>,
 }
 
+impl MetadataTrack {
+    const MEDIA_TYPE: MediaType = MediaType::Metadata;
+}
+
 impl Entity for MetadataTrack {
     fn id(&self) -> &str {
         self.uid.track_id()
@@ -27,7 +31,9 @@ impl Entity for MetadataTrack {
 }
 
 impl Track for MetadataTrack {
-    const TRACK_TYPE: MediaType = MediaType::Metadata;
+    fn media_type(&self) -> MediaType {
+        Self::MEDIA_TYPE
+    }
 
     fn uid(&self) -> &TrackUid {
         &self.uid
@@ -84,7 +90,7 @@ impl MetadataTrack {
         };
         Ok(Self {
             bandwidth: data.bandwidth.map(u64::from),
-            uid: TrackUid::new(presentation_id, Self::TRACK_TYPE, switching_set_id, id),
+            uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),
             segments: data.segments,
             active_segment_id: data.active_segment_id,
             average_bandwidth: data.average_bandwidth.map(u64::from),

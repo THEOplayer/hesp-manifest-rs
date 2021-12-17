@@ -2,7 +2,8 @@ use url::Url;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    Result, SwitchingSet, SwitchingSetProtection, VideoMimeType, VideoSwitchingSetData, VideoTrack,
+    MediaType, Result, SwitchingSet, SwitchingSetProtection, VideoMimeType, VideoSwitchingSetData,
+    VideoTrack,
 };
 
 #[derive(Debug, Clone)]
@@ -15,6 +16,10 @@ pub struct VideoSwitchingSet {
     pub(super) protection: Option<SwitchingSetProtection>,
 }
 
+impl VideoSwitchingSet {
+    const MEDIA_TYPE: MediaType = MediaType::Video;
+}
+
 impl Entity for VideoSwitchingSet {
     fn id(&self) -> &str {
         &self.id
@@ -23,6 +28,11 @@ impl Entity for VideoSwitchingSet {
 
 impl SwitchingSet for VideoSwitchingSet {
     type Track = VideoTrack;
+
+    fn media_type(&self) -> MediaType {
+        Self::MEDIA_TYPE
+    }
+
     fn tracks(&self) -> EntityIter<VideoTrack> {
         self.tracks.iter()
     }

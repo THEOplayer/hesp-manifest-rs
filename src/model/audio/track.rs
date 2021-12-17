@@ -27,6 +27,10 @@ pub struct AudioTrack {
     pub(crate) transmission: TrackTransmission,
 }
 
+impl AudioTrack {
+    const MEDIA_TYPE: MediaType = MediaType::Audio;
+}
+
 impl Entity for AudioTrack {
     fn id(&self) -> &str {
         self.uid.track_id()
@@ -34,7 +38,9 @@ impl Entity for AudioTrack {
 }
 
 impl Track for AudioTrack {
-    const TRACK_TYPE: MediaType = MediaType::Audio;
+    fn media_type(&self) -> MediaType {
+        Self::MEDIA_TYPE
+    }
 
     fn uid(&self) -> &TrackUid {
         &self.uid
@@ -126,7 +132,7 @@ impl AudioTrack {
         };
         Ok(Self {
             bandwidth: data.bandwidth.into(),
-            uid: TrackUid::new(presentation_id, Self::TRACK_TYPE, switching_set_id, id),
+            uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),
             segments: data.segments,
             active_segment_id: data.active_segment_id,
             active_sequence_number: data.active_sequence_number.map(u64::from),

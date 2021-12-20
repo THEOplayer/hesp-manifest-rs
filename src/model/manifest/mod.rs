@@ -6,7 +6,7 @@ pub use stream::*;
 pub use unicast::*;
 
 use crate::util::{EntityIter, EntityIterMut};
-use crate::{Presentation, Result, Track, TrackUid};
+use crate::{InitializableTrack, Presentation, Result, Track, TrackUid};
 
 mod data;
 mod multicast;
@@ -34,6 +34,23 @@ pub trait Manifest: Sized {
         match self.presentation_mut(track_uid.presentation_id()) {
             None => None,
             Some(presentation) => presentation.track_mut_by_uid(track_uid),
+        }
+    }
+
+    fn initializable_track_by_uid(&self, track_uid: &TrackUid) -> Option<&dyn InitializableTrack> {
+        match self.presentation(track_uid.presentation_id()) {
+            None => None,
+            Some(presentation) => presentation.initializable_track_by_uid(track_uid),
+        }
+    }
+
+    fn initializable_track_mut_by_uid(
+        &mut self,
+        track_uid: &TrackUid,
+    ) -> Option<&mut dyn InitializableTrack> {
+        match self.presentation_mut(track_uid.presentation_id()) {
+            None => None,
+            Some(presentation) => presentation.initializable_track_mut_by_uid(track_uid),
         }
     }
 

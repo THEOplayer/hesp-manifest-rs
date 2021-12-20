@@ -3,7 +3,7 @@ use url::Url;
 use crate::util::Entity;
 use crate::{
     ContinuationPattern, Error, MediaType, MetadataTrackData, Result, ScaledDuration, ScaledValue,
-    Segment, SegmentId, Segments, Track, TrackTransmission, TrackUid,
+    Segment, SegmentId, Segments, Track, TrackTransmission, TrackUid, ValidateTrack,
 };
 
 #[derive(Debug, Clone)]
@@ -68,7 +68,9 @@ impl Track for MetadataTrack {
     fn transmission(&self) -> &TrackTransmission {
         &TrackTransmission::Unicast
     }
+}
 
+impl ValidateTrack for MetadataTrack {
     fn validate_active(&self) -> Result<()> {
         Ok(())
     }

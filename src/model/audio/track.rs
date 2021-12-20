@@ -4,7 +4,7 @@ use crate::util::Entity;
 use crate::{
     AudioTrackData, ContinuationPattern, Error, Initialization, InitializationPattern, MediaType,
     Result, SamplesPerFrame, ScaledDuration, ScaledValue, Segment, SegmentId, Segments, Track,
-    TrackTransmission, TrackUid,
+    TrackTransmission, TrackUid, ValidateTrack,
 };
 
 #[derive(Debug, Clone)]
@@ -80,7 +80,9 @@ impl Track for AudioTrack {
     fn transmission(&self) -> &TrackTransmission {
         &self.transmission
     }
+}
 
+impl ValidateTrack for AudioTrack {
     fn validate_active(&self) -> Result<()> {
         Initialization::validate_active(self)
     }

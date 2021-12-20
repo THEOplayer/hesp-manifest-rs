@@ -8,7 +8,7 @@ use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
     AudioSwitchingSet, AudioTrack, Error, MetadataSwitchingSet, MetadataTrack, Result, ScaledValue,
     SwitchingSet, TimeBounds, Track, TrackTransmission, TrackUid, TransferObjectIdentifierLimits,
-    TransmissionType, VideoSwitchingSet, VideoTrack,
+    TransmissionType, ValidateSwitchingSet, VideoSwitchingSet, VideoTrack,
 };
 
 mod data;

@@ -1,7 +1,10 @@
 use url::Url;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
-use crate::{Language, MediaType, MetadataSwitchingSetData, MetadataTrack, Result, SwitchingSet};
+use crate::{
+    Language, MediaType, MetadataSwitchingSetData, MetadataTrack, Result, SwitchingSet,
+    ValidateSwitchingSet,
+};
 
 #[derive(Clone, Debug)]
 pub struct MetadataSwitchingSet {
@@ -47,6 +50,8 @@ impl SwitchingSet for MetadataSwitchingSet {
         &self.mime_type
     }
 }
+
+impl ValidateSwitchingSet<MetadataTrack> for MetadataSwitchingSet {}
 
 impl MetadataSwitchingSet {
     pub fn new(

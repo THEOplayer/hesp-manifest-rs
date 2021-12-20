@@ -4,7 +4,7 @@ use crate::util::Entity;
 use crate::{
     ContinuationPattern, Error, Initialization, InitializationPattern, MediaType, Resolution,
     Result, ScaledDuration, ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission,
-    TrackUid, VideoTrackData,
+    TrackUid, ValidateTrack, VideoTrackData,
 };
 
 #[derive(Debug, Clone)]
@@ -79,7 +79,9 @@ impl Track for VideoTrack {
     fn transmission(&self) -> &TrackTransmission {
         &self.transmission
     }
+}
 
+impl ValidateTrack for VideoTrack {
     fn validate_active(&self) -> Result<()> {
         Initialization::validate_active(self)
     }

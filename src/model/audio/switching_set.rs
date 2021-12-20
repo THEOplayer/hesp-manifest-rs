@@ -4,7 +4,7 @@ use url::Url;
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, UInt};
 use crate::{
     AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, MediaType, Result, SwitchingSet,
-    SwitchingSetProtection,
+    SwitchingSetProtection, ValidateSwitchingSet,
 };
 
 #[derive(Debug, Clone)]
@@ -48,6 +48,8 @@ impl SwitchingSet for AudioSwitchingSet {
         self.mime_type.as_ref()
     }
 }
+
+impl ValidateSwitchingSet<AudioTrack> for AudioSwitchingSet {}
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Deserialize, Serialize, Copy)]
 pub struct SamplesPerFrame(#[serde(deserialize_with = "UInt::deserialize_u64")] u64);

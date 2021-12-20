@@ -87,9 +87,37 @@ impl Presentation {
     pub fn is_multicast(&self) -> bool {
         return self.transmission().get_type() == TransmissionType::Multicast;
     }
-}
 
-impl Presentation {
+    pub fn tracks(&self) -> impl Iterator<Item = &dyn Track> {
+        self.audio_tracks()
+            .map(|track| track as &dyn Track)
+            .chain(self.video_tracks().map(|track| track as &dyn Track))
+            .chain(self.metadata_tracks().map(|track| track as &dyn Track))
+    }
+
+    pub fn track_by_uid(&self, track_uid: &TrackUid) -> Option<&dyn Track> {
+        match track_uid.media_type() {
+            crate::MediaType::Audio => match self.audio.get(track_uid.switching_set_id()) {
+                Some(switching_set) => switching_set
+                    .track(track_uid.track_id())
+                    .map(|track| track as &dyn Track),
+                None => None,
+            },
+            crate::MediaType::Video => match self.video.get(track_uid.switching_set_id()) {
+                Some(switching_set) => switching_set
+                    .track(track_uid.track_id())
+                    .map(|track| track as &dyn Track),
+                None => None,
+            },
+            crate::MediaType::Metadata => match self.metadata.get(track_uid.switching_set_id()) {
+                Some(switching_set) => switching_set
+                    .track(track_uid.track_id())
+                    .map(|track| track as &dyn Track),
+                None => None,
+            },
+        }
+    }
+
     pub(super) fn validate_active(&self) -> Result<()> {
         if self.current_time.is_none() {
             return Err(Error::MissingCurrentTime(self.id.clone()));

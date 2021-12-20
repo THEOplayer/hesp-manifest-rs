@@ -56,6 +56,7 @@ impl VideoSwitchingSet {
         data: VideoSwitchingSetData,
     ) -> Result<Self> {
         let base_url = data.base_url.resolve(presentation_url)?;
+        let mime_type = data.mime_type.unwrap_or_default();
         let tracks = data
             .tracks
             .into_iter()
@@ -64,6 +65,7 @@ impl VideoSwitchingSet {
                     presentation_id.to_owned(),
                     data.id.clone(),
                     &base_url,
+                    mime_type.clone(),
                     track
                         .with_default_codecs(&data.codecs)
                         .with_default_frame_rate(data.frame_rate)
@@ -78,7 +80,7 @@ impl VideoSwitchingSet {
             tracks,
             align_id: data.align_id,
             label: data.label,
-            mime_type: data.mime_type.unwrap_or_default(),
+            mime_type,
             protection: data.protection,
         })
     }

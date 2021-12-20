@@ -36,6 +36,7 @@ pub trait Track: Entity {
     fn set_continuation_pattern(&mut self, pattern: ContinuationPattern);
 
     fn media_type(&self) -> MediaType;
+    fn mime_type(&self) -> &str;
     fn transmission(&self) -> &TrackTransmission;
 }
 

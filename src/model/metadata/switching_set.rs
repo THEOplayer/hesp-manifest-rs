@@ -68,6 +68,7 @@ impl MetadataSwitchingSet {
                     presentation_id.to_owned(),
                     data.id.clone(),
                     &base_url,
+                    data.mime_type.clone(),
                     track
                         .with_default_codecs(&data.codecs)
                         .with_default_continuation_pattern(&data.continuation_pattern)

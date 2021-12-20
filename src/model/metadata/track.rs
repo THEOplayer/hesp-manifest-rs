@@ -17,6 +17,7 @@ pub struct MetadataTrack {
     pub(super) continuation_pattern: ContinuationPattern,
     pub(super) label: Option<String>,
     pub(super) media_time_offset: ScaledValue,
+    pub(super) mime_type: String,
     pub(super) segment_duration: Option<ScaledDuration>,
 }
 
@@ -31,10 +32,6 @@ impl Entity for MetadataTrack {
 }
 
 impl Track for MetadataTrack {
-    fn media_type(&self) -> MediaType {
-        Self::MEDIA_TYPE
-    }
-
     fn uid(&self) -> &TrackUid {
         &self.uid
     }
@@ -65,6 +62,14 @@ impl Track for MetadataTrack {
         self.average_bandwidth
     }
 
+    fn media_type(&self) -> MediaType {
+        Self::MEDIA_TYPE
+    }
+
+    fn mime_type(&self) -> &str {
+        self.mime_type.as_ref()
+    }
+
     fn transmission(&self) -> &TrackTransmission {
         &TrackTransmission::Unicast
     }
@@ -81,6 +86,7 @@ impl MetadataTrack {
         presentation_id: String,
         switching_set_id: String,
         switching_set_url: &Url,
+        mime_type: String,
         data: MetadataTrackData,
     ) -> Result<Self> {
         let id = data.id;
@@ -99,6 +105,7 @@ impl MetadataTrack {
             continuation_pattern: ContinuationPattern::new(&base_url, continuation_pattern)?,
             label: data.label,
             media_time_offset: data.media_time_offset.unwrap_or_default(),
+            mime_type,
             segment_duration: data.segment_duration,
             codecs: data.codecs,
         })

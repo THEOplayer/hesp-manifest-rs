@@ -2,9 +2,9 @@ use url::Url;
 
 use crate::util::Entity;
 use crate::{
-    AudioTrackData, ContinuationPattern, Error, Initialization, InitializationPattern, MediaType,
-    Result, SamplesPerFrame, ScaledDuration, ScaledValue, Segment, SegmentId, Segments, Track,
-    TrackTransmission, TrackUid, ValidateTrack,
+    AudioMimeType, AudioTrackData, ContinuationPattern, Error, Initialization,
+    InitializationPattern, MediaType, Result, SamplesPerFrame, ScaledDuration, ScaledValue,
+    Segment, SegmentId, Segments, Track, TrackTransmission, TrackUid, ValidateTrack,
 };
 
 #[derive(Debug, Clone)]
@@ -22,6 +22,7 @@ pub struct AudioTrack {
     pub(super) label: Option<String>,
     pub(super) initialization_pattern: InitializationPattern,
     pub(super) media_time_offset: ScaledValue,
+    pub(super) mime_type: AudioMimeType,
     pub(super) sample_rate: u64,
     pub(super) segment_duration: Option<ScaledDuration>,
     pub(crate) transmission: TrackTransmission,
@@ -38,10 +39,6 @@ impl Entity for AudioTrack {
 }
 
 impl Track for AudioTrack {
-    fn media_type(&self) -> MediaType {
-        Self::MEDIA_TYPE
-    }
-
     fn uid(&self) -> &TrackUid {
         &self.uid
     }
@@ -77,6 +74,14 @@ impl Track for AudioTrack {
         self.average_bandwidth
     }
 
+    fn media_type(&self) -> MediaType {
+        Self::MEDIA_TYPE
+    }
+
+    fn mime_type(&self) -> &str {
+        self.mime_type.as_ref()
+    }
+
     fn transmission(&self) -> &TrackTransmission {
         &self.transmission
     }
@@ -107,6 +112,7 @@ impl AudioTrack {
         presentation_id: String,
         switching_set_id: String,
         switching_set_url: &Url,
+        mime_type: AudioMimeType,
         data: AudioTrackData,
     ) -> Result<Self> {
         let id = data.id;
@@ -146,6 +152,7 @@ impl AudioTrack {
             label: data.label,
             initialization_pattern: InitializationPattern::new(&base_url, initialization_pattern)?,
             media_time_offset: data.media_time_offset.unwrap_or_default(),
+            mime_type,
             sample_rate,
             segment_duration: data.segment_duration,
             transmission: data.toi_limits.into(),

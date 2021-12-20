@@ -4,7 +4,7 @@ use crate::util::Entity;
 use crate::{
     ContinuationPattern, Error, Initialization, InitializationPattern, MediaType, Resolution,
     Result, ScaledDuration, ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission,
-    TrackUid, ValidateTrack, VideoTrackData,
+    TrackUid, ValidateTrack, VideoMimeType, VideoTrackData,
 };
 
 #[derive(Debug, Clone)]
@@ -22,6 +22,7 @@ pub struct VideoTrack {
     pub(super) label: Option<String>,
     pub(super) initialization_pattern: InitializationPattern,
     pub(super) media_time_offset: ScaledValue,
+    pub(super) mime_type: VideoMimeType,
     pub(super) segment_duration: Option<ScaledDuration>,
     pub(crate) transmission: TrackTransmission,
 }
@@ -37,10 +38,6 @@ impl Entity for VideoTrack {
 }
 
 impl Track for VideoTrack {
-    fn media_type(&self) -> MediaType {
-        Self::MEDIA_TYPE
-    }
-
     fn uid(&self) -> &TrackUid {
         &self.uid
     }
@@ -76,6 +73,14 @@ impl Track for VideoTrack {
         self.average_bandwidth
     }
 
+    fn media_type(&self) -> MediaType {
+        Self::MEDIA_TYPE
+    }
+
+    fn mime_type(&self) -> &str {
+        self.mime_type.as_ref()
+    }
+
     fn transmission(&self) -> &TrackTransmission {
         &self.transmission
     }
@@ -106,6 +111,7 @@ impl VideoTrack {
         presentation_id: String,
         switching_set_id: String,
         switching_set_url: &Url,
+        mime_type: VideoMimeType,
         data: VideoTrackData,
     ) -> Result<Self> {
         let id = data.id;
@@ -145,6 +151,7 @@ impl VideoTrack {
             label: data.label,
             initialization_pattern: InitializationPattern::new(&base_url, initialization_pattern)?,
             media_time_offset: data.media_time_offset.unwrap_or_default(),
+            mime_type,
             segment_duration: data.segment_duration,
             transmission: data.toi_limits.into(),
         })

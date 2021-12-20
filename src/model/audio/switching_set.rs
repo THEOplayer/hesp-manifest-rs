@@ -35,15 +35,23 @@ impl SwitchingSet for AudioSwitchingSet {
     fn media_type(&self) -> MediaType {
         Self::MEDIA_TYPE
     }
+
     fn tracks(&self) -> EntityIter<AudioTrack> {
         self.tracks.iter()
     }
-    fn track(&self, id: &str) -> Option<&AudioTrack> {
-        self.tracks.get(id)
-    }
+
     fn tracks_mut(&mut self) -> EntityIterMut<AudioTrack> {
         self.tracks.iter_mut()
     }
+
+    fn track(&self, id: &str) -> Option<&AudioTrack> {
+        self.tracks.get(id)
+    }
+
+    fn track_mut(&mut self, id: &str) -> Option<&mut AudioTrack> {
+        self.tracks.get_mut(id)
+    }
+
     fn mime_type(&self) -> &str {
         self.mime_type.as_ref()
     }

@@ -30,5 +30,12 @@ pub trait Manifest: Sized {
         }
     }
 
+    fn track_mut_by_uid(&mut self, track_uid: &TrackUid) -> Option<&mut dyn Track> {
+        match self.presentation_mut(track_uid.presentation_id()) {
+            None => None,
+            Some(presentation) => presentation.track_mut_by_uid(track_uid),
+        }
+    }
+
     fn from_json(location: Url, json: &str) -> Result<Self>;
 }

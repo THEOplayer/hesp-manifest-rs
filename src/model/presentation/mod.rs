@@ -6,9 +6,10 @@ pub use multicast::*;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    AudioSwitchingSet, AudioTrack, Error, MetadataSwitchingSet, MetadataTrack, Result, ScaledValue,
-    SwitchingSet, TimeBounds, Track, TrackTransmission, TrackUid, TransferObjectIdentifierLimits,
-    TransmissionType, ValidateSwitchingSet, VideoSwitchingSet, VideoTrack,
+    AudioSwitchingSet, AudioTrack, Error, InitializableTrack, MetadataSwitchingSet, MetadataTrack,
+    Result, ScaledValue, SwitchingSet, TimeBounds, Track, TrackTransmission, TrackUid,
+    TransferObjectIdentifierLimits, TransmissionType, ValidateSwitchingSet, VideoSwitchingSet,
+    VideoTrack,
 };
 
 mod data;
@@ -88,36 +89,6 @@ impl Presentation {
         return self.transmission().get_type() == TransmissionType::Multicast;
     }
 
-    pub fn tracks(&self) -> impl Iterator<Item = &dyn Track> {
-        self.audio_tracks()
-            .map(|track| track as &dyn Track)
-            .chain(self.video_tracks().map(|track| track as &dyn Track))
-            .chain(self.metadata_tracks().map(|track| track as &dyn Track))
-    }
-
-    pub fn track_by_uid(&self, track_uid: &TrackUid) -> Option<&dyn Track> {
-        match track_uid.media_type() {
-            crate::MediaType::Audio => match self.audio.get(track_uid.switching_set_id()) {
-                Some(switching_set) => switching_set
-                    .track(track_uid.track_id())
-                    .map(|track| track as &dyn Track),
-                None => None,
-            },
-            crate::MediaType::Video => match self.video.get(track_uid.switching_set_id()) {
-                Some(switching_set) => switching_set
-                    .track(track_uid.track_id())
-                    .map(|track| track as &dyn Track),
-                None => None,
-            },
-            crate::MediaType::Metadata => match self.metadata.get(track_uid.switching_set_id()) {
-                Some(switching_set) => switching_set
-                    .track(track_uid.track_id())
-                    .map(|track| track as &dyn Track),
-                None => None,
-            },
-        }
-    }
-
     pub(super) fn validate_active(&self) -> Result<()> {
         if self.current_time.is_none() {
             return Err(Error::MissingCurrentTime(self.id.clone()));
@@ -161,6 +132,118 @@ impl Presentation {
         self.audio
             .iter_mut()
             .flat_map(AudioSwitchingSet::tracks_mut)
+    }
+
+    pub fn metadata_tracks_mut(&mut self) -> impl Iterator<Item = &mut MetadataTrack> {
+        self.metadata
+            .iter_mut()
+            .flat_map(MetadataSwitchingSet::tracks_mut)
+    }
+
+    pub fn tracks(&self) -> impl Iterator<Item = &dyn Track> {
+        self.audio_tracks()
+            .map(|track| track as &dyn Track)
+            .chain(self.video_tracks().map(|track| track as &dyn Track))
+            .chain(self.metadata_tracks().map(|track| track as &dyn Track))
+    }
+
+    pub fn tracks_mut(&mut self) -> impl Iterator<Item = &mut dyn Track> {
+        // Unfortunately, we have to copy over implementations here from `audio_tracks_mut` etc, as
+        // the borrow checker does not allow us to mutably borrow self multiple times.
+
+        let audio_iter = self
+            .audio
+            .iter_mut()
+            .flat_map(AudioSwitchingSet::tracks_mut)
+            .map(|track| track as &mut dyn Track);
+        let video_iter = self
+            .video
+            .iter_mut()
+            .flat_map(VideoSwitchingSet::tracks_mut)
+            .map(|track| track as &mut dyn Track);
+        let metadata_iter = self
+            .metadata
+            .iter_mut()
+            .flat_map(MetadataSwitchingSet::tracks_mut)
+            .map(|track| track as &mut dyn Track);
+
+        audio_iter.chain(video_iter).chain(metadata_iter)
+    }
+
+    pub fn initializable_tracks(&self) -> impl Iterator<Item = &dyn InitializableTrack> {
+        self.audio_tracks()
+            .map(|track| track as &dyn InitializableTrack)
+            .chain(
+                self.video_tracks()
+                    .map(|track| track as &dyn InitializableTrack),
+            )
+    }
+
+    pub fn initializable_tracks_mut(
+        &mut self,
+    ) -> impl Iterator<Item = &mut dyn InitializableTrack> {
+        // Unfortunately, we have to copy over implementations here from `audio_tracks_mut` etc, as
+        // the borrow checker does not allow us to mutably borrow self multiple times.
+
+        let audio_iter = self
+            .audio
+            .iter_mut()
+            .flat_map(AudioSwitchingSet::tracks_mut)
+            .map(|track| track as &mut dyn InitializableTrack);
+        let video_iter = self
+            .video
+            .iter_mut()
+            .flat_map(VideoSwitchingSet::tracks_mut)
+            .map(|track| track as &mut dyn InitializableTrack);
+
+        audio_iter.chain(video_iter)
+    }
+
+    pub fn track_by_uid(&self, track_uid: &TrackUid) -> Option<&dyn Track> {
+        match track_uid.media_type() {
+            crate::MediaType::Audio => match self.audio.get(track_uid.switching_set_id()) {
+                Some(switching_set) => switching_set
+                    .track(track_uid.track_id())
+                    .map(|track| track as &dyn Track),
+                None => None,
+            },
+            crate::MediaType::Video => match self.video.get(track_uid.switching_set_id()) {
+                Some(switching_set) => switching_set
+                    .track(track_uid.track_id())
+                    .map(|track| track as &dyn Track),
+                None => None,
+            },
+            crate::MediaType::Metadata => match self.metadata.get(track_uid.switching_set_id()) {
+                Some(switching_set) => switching_set
+                    .track(track_uid.track_id())
+                    .map(|track| track as &dyn Track),
+                None => None,
+            },
+        }
+    }
+
+    pub fn track_mut_by_uid(&mut self, track_uid: &TrackUid) -> Option<&mut dyn Track> {
+        match track_uid.media_type() {
+            crate::MediaType::Audio => match self.audio.get_mut(track_uid.switching_set_id()) {
+                Some(switching_set) => switching_set
+                    .track_mut(track_uid.track_id())
+                    .map(|track| track as &mut dyn Track),
+                None => None,
+            },
+            crate::MediaType::Video => match self.video.get_mut(track_uid.switching_set_id()) {
+                Some(switching_set) => switching_set
+                    .track_mut(track_uid.track_id())
+                    .map(|track| track as &mut dyn Track),
+                None => None,
+            },
+            crate::MediaType::Metadata => match self.metadata.get_mut(track_uid.switching_set_id())
+            {
+                Some(switching_set) => switching_set
+                    .track_mut(track_uid.track_id())
+                    .map(|track| track as &mut dyn Track),
+                None => None,
+            },
+        }
     }
 
     fn validate_tracks(&self) -> Result<()> {

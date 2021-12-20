@@ -36,12 +36,19 @@ impl SwitchingSet for VideoSwitchingSet {
     fn tracks(&self) -> EntityIter<VideoTrack> {
         self.tracks.iter()
     }
-    fn track(&self, id: &str) -> Option<&VideoTrack> {
-        self.tracks.get(id)
-    }
+
     fn tracks_mut(&mut self) -> EntityIterMut<VideoTrack> {
         self.tracks.iter_mut()
     }
+
+    fn track(&self, id: &str) -> Option<&VideoTrack> {
+        self.tracks.get(id)
+    }
+
+    fn track_mut(&mut self, id: &str) -> Option<&mut VideoTrack> {
+        self.tracks.get_mut(id)
+    }
+
     fn mime_type(&self) -> &str {
         self.mime_type.as_ref()
     }

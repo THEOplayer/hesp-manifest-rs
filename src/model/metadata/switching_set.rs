@@ -38,12 +38,16 @@ impl SwitchingSet for MetadataSwitchingSet {
         self.tracks.iter()
     }
 
+    fn tracks_mut(&mut self) -> EntityIterMut<MetadataTrack> {
+        self.tracks.iter_mut()
+    }
+
     fn track(&self, id: &str) -> Option<&MetadataTrack> {
         self.tracks.get(id)
     }
 
-    fn tracks_mut(&mut self) -> EntityIterMut<MetadataTrack> {
-        self.tracks.iter_mut()
+    fn track_mut(&mut self, id: &str) -> Option<&mut MetadataTrack> {
+        self.tracks.get_mut(id)
     }
 
     fn mime_type(&self) -> &str {

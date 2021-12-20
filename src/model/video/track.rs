@@ -116,27 +116,19 @@ impl VideoTrack {
     ) -> Result<Self> {
         let id = data.id;
         let base_url = data.base_url.resolve(switching_set_url)?;
-        let codecs = if let Some(codecs) = data.codecs {
-            codecs
-        } else {
-            return Err(Error::MissingCodecs(id));
-        };
-        let continuation_pattern = if let Some(continuation_pattern) = data.continuation_pattern {
-            continuation_pattern
-        } else {
-            return Err(Error::MissingContinuationPattern(id));
-        };
-        let initialization_pattern =
-            if let Some(initialization_pattern) = data.initialization_pattern {
-                initialization_pattern
-            } else {
-                return Err(Error::MissingInitializationPattern(id));
-            };
-        let frame_rate = if let Some(frame_rate) = data.frame_rate {
-            frame_rate
-        } else {
-            return Err(Error::MissingFrameRate(id));
-        };
+        let codecs = data
+            .codecs
+            .ok_or_else(|| Error::MissingCodecs(id.clone()))?;
+        let continuation_pattern = data
+            .continuation_pattern
+            .ok_or_else(|| Error::MissingContinuationPattern(id.clone()))?;
+        let initialization_pattern = data
+            .initialization_pattern
+            .ok_or_else(|| Error::MissingInitializationPattern(id.clone()))?;
+        let frame_rate = data
+            .frame_rate
+            .ok_or_else(|| Error::MissingFrameRate(id.clone()))?;
+
         Ok(Self {
             bandwidth: data.bandwidth.into(),
             uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),

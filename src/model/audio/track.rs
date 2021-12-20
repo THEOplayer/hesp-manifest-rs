@@ -117,27 +117,20 @@ impl AudioTrack {
     ) -> Result<Self> {
         let id = data.id;
         let base_url = data.base_url.resolve(switching_set_url)?;
-        let codecs = if let Some(codecs) = data.codecs {
-            codecs
-        } else {
-            return Err(Error::MissingCodecs(id));
-        };
-        let continuation_pattern = if let Some(continuation_pattern) = data.continuation_pattern {
-            continuation_pattern
-        } else {
-            return Err(Error::MissingContinuationPattern(id));
-        };
-        let initialization_pattern =
-            if let Some(initialization_pattern) = data.initialization_pattern {
-                initialization_pattern
-            } else {
-                return Err(Error::MissingInitializationPattern(id));
-            };
-        let sample_rate = if let Some(sample_rate) = data.sample_rate {
-            sample_rate.into()
-        } else {
-            return Err(Error::MissingSampleRate(id));
-        };
+        let codecs = data
+            .codecs
+            .ok_or_else(|| Error::MissingCodecs(id.clone()))?;
+        let continuation_pattern = data
+            .continuation_pattern
+            .ok_or_else(|| Error::MissingContinuationPattern(id.clone()))?;
+        let initialization_pattern = data
+            .initialization_pattern
+            .ok_or_else(|| Error::MissingInitializationPattern(id.clone()))?;
+        let sample_rate = data
+            .sample_rate
+            .ok_or_else(|| Error::MissingSampleRate(id.clone()))?
+            .into();
+
         Ok(Self {
             bandwidth: data.bandwidth.into(),
             uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),

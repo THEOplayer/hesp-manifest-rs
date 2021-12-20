@@ -91,11 +91,10 @@ impl MetadataTrack {
     ) -> Result<Self> {
         let id = data.id;
         let base_url = data.base_url.resolve(switching_set_url)?;
-        let continuation_pattern = if let Some(continuation_pattern) = data.continuation_pattern {
-            continuation_pattern
-        } else {
-            return Err(Error::MissingContinuationPattern(id));
-        };
+        let continuation_pattern = data
+            .continuation_pattern
+            .ok_or_else(|| Error::MissingContinuationPattern(id.clone()))?;
+
         Ok(Self {
             bandwidth: data.bandwidth.map(u64::from),
             uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),

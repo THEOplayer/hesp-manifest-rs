@@ -195,7 +195,7 @@ impl Presentation {
 
     pub fn track(
         &self,
-        media_type: &MediaType,
+        media_type: MediaType,
         switching_set_id: &str,
         track_id: &str,
     ) -> Option<&dyn Track> {
@@ -220,7 +220,7 @@ impl Presentation {
 
     pub fn track_mut(
         &mut self,
-        media_type: &MediaType,
+        media_type: MediaType,
         switching_set_id: &str,
         track_id: &str,
     ) -> Option<&mut dyn Track> {
@@ -245,7 +245,7 @@ impl Presentation {
 
     pub fn initializable_track(
         &self,
-        media_type: &MediaType,
+        media_type: MediaType,
         switching_set_id: &str,
         track_id: &str,
     ) -> Option<&dyn InitializableTrack> {
@@ -266,7 +266,7 @@ impl Presentation {
 
     pub fn initializable_track_mut(
         &mut self,
-        media_type: &MediaType,
+        media_type: MediaType,
         switching_set_id: &str,
         track_id: &str,
     ) -> Option<&mut dyn InitializableTrack> {

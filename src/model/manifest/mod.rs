@@ -23,34 +23,34 @@ pub trait Manifest: Sized {
     fn presentation_mut(&mut self, id: &str) -> Option<&mut Presentation>;
     fn stream_type(&self) -> &StreamType;
 
-    fn track_by_uid(&self, track_uid: &TrackUid) -> Option<&dyn Track> {
+    fn track(&self, track_uid: &TrackUid) -> Option<&dyn Track> {
         match self.presentation(track_uid.presentation_id()) {
             None => None,
-            Some(presentation) => presentation.track_by_uid(track_uid),
+            Some(presentation) => presentation.track(track_uid),
         }
     }
 
-    fn track_mut_by_uid(&mut self, track_uid: &TrackUid) -> Option<&mut dyn Track> {
+    fn track_mut(&mut self, track_uid: &TrackUid) -> Option<&mut dyn Track> {
         match self.presentation_mut(track_uid.presentation_id()) {
             None => None,
-            Some(presentation) => presentation.track_mut_by_uid(track_uid),
+            Some(presentation) => presentation.track_mut(track_uid),
         }
     }
 
-    fn initializable_track_by_uid(&self, track_uid: &TrackUid) -> Option<&dyn InitializableTrack> {
+    fn initializable_track(&self, track_uid: &TrackUid) -> Option<&dyn InitializableTrack> {
         match self.presentation(track_uid.presentation_id()) {
             None => None,
-            Some(presentation) => presentation.initializable_track_by_uid(track_uid),
+            Some(presentation) => presentation.initializable_track(track_uid),
         }
     }
 
-    fn initializable_track_mut_by_uid(
+    fn initializable_track_mut(
         &mut self,
         track_uid: &TrackUid,
     ) -> Option<&mut dyn InitializableTrack> {
         match self.presentation_mut(track_uid.presentation_id()) {
             None => None,
-            Some(presentation) => presentation.initializable_track_mut_by_uid(track_uid),
+            Some(presentation) => presentation.initializable_track_mut(track_uid),
         }
     }
 

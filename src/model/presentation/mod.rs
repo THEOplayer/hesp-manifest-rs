@@ -199,7 +199,7 @@ impl Presentation {
         audio_iter.chain(video_iter)
     }
 
-    pub fn track_by_uid(&self, track_uid: &TrackUid) -> Option<&dyn Track> {
+    pub fn track(&self, track_uid: &TrackUid) -> Option<&dyn Track> {
         match track_uid.media_type() {
             MediaType::Audio => match self.audio.get(track_uid.switching_set_id()) {
                 Some(switching_set) => switching_set
@@ -222,7 +222,7 @@ impl Presentation {
         }
     }
 
-    pub fn track_mut_by_uid(&mut self, track_uid: &TrackUid) -> Option<&mut dyn Track> {
+    pub fn track_mut(&mut self, track_uid: &TrackUid) -> Option<&mut dyn Track> {
         match track_uid.media_type() {
             MediaType::Audio => match self.audio.get_mut(track_uid.switching_set_id()) {
                 Some(switching_set) => switching_set
@@ -245,10 +245,7 @@ impl Presentation {
         }
     }
 
-    pub fn initializable_track_by_uid(
-        &self,
-        track_uid: &TrackUid,
-    ) -> Option<&dyn InitializableTrack> {
+    pub fn initializable_track(&self, track_uid: &TrackUid) -> Option<&dyn InitializableTrack> {
         match track_uid.media_type() {
             MediaType::Audio => match self.audio.get(track_uid.switching_set_id()) {
                 Some(switching_set) => switching_set
@@ -266,7 +263,7 @@ impl Presentation {
         }
     }
 
-    pub fn initializable_track_mut_by_uid(
+    pub fn initializable_track_mut(
         &mut self,
         track_uid: &TrackUid,
     ) -> Option<&mut dyn InitializableTrack> {

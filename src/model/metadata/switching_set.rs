@@ -1,7 +1,10 @@
 use url::Url;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
-use crate::{Language, MetadataSwitchingSetData, MetadataTrack, Result, SwitchingSet};
+use crate::{
+    Language, MediaType, MetadataSwitchingSetData, MetadataTrack, Result, SwitchingSet,
+    ValidateSwitchingSet,
+};
 
 #[derive(Clone, Debug)]
 pub struct MetadataSwitchingSet {
@@ -14,6 +17,10 @@ pub struct MetadataSwitchingSet {
     pub(super) mime_type: String,
 }
 
+impl MetadataSwitchingSet {
+    const MEDIA_TYPE: MediaType = MediaType::Metadata;
+}
+
 impl Entity for MetadataSwitchingSet {
     fn id(&self) -> &str {
         &self.id
@@ -23,22 +30,32 @@ impl Entity for MetadataSwitchingSet {
 impl SwitchingSet for MetadataSwitchingSet {
     type Track = MetadataTrack;
 
-    fn tracks(&self) -> EntityIter<MetadataTrack> {
-        self.tracks.iter()
+    fn media_type(&self) -> MediaType {
+        Self::MEDIA_TYPE
     }
 
-    fn track(&self, id: &str) -> Option<&MetadataTrack> {
-        self.tracks.get(id)
+    fn tracks(&self) -> EntityIter<MetadataTrack> {
+        self.tracks.iter()
     }
 
     fn tracks_mut(&mut self) -> EntityIterMut<MetadataTrack> {
         self.tracks.iter_mut()
     }
 
+    fn track(&self, id: &str) -> Option<&MetadataTrack> {
+        self.tracks.get(id)
+    }
+
+    fn track_mut(&mut self, id: &str) -> Option<&mut MetadataTrack> {
+        self.tracks.get_mut(id)
+    }
+
     fn mime_type(&self) -> &str {
         &self.mime_type
     }
 }
+
+impl ValidateSwitchingSet<MetadataTrack> for MetadataSwitchingSet {}
 
 impl MetadataSwitchingSet {
     pub fn new(
@@ -55,6 +72,7 @@ impl MetadataSwitchingSet {
                     presentation_id.to_owned(),
                     data.id.clone(),
                     &base_url,
+                    data.mime_type.clone(),
                     track
                         .with_default_codecs(&data.codecs)
                         .with_default_continuation_pattern(&data.continuation_pattern)

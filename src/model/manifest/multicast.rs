@@ -51,7 +51,7 @@ impl MulticastManifest {
 
     pub fn track_transmission(&self, track: &TrackUid) -> Option<TrackTransmission> {
         let presentation = self.presentation(track.presentation_id())?;
-        Some(*match track.track_type() {
+        Some(*match track.media_type() {
             MediaType::Video => presentation
                 .video_switching_set(track.switching_set_id())?
                 .track(track.track_id())?

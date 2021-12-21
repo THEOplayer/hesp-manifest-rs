@@ -6,9 +6,10 @@ pub use multicast::*;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    AudioSwitchingSet, AudioTrack, Error, MetadataSwitchingSet, MetadataTrack, Result, ScaledValue,
-    SwitchingSet, TimeBounds, Track, TrackTransmission, TrackUid, TransferObjectIdentifierLimits,
-    TransmissionType, VideoSwitchingSet, VideoTrack,
+    AudioSwitchingSet, AudioTrack, Error, InitializableTrack, MediaType, MetadataSwitchingSet,
+    MetadataTrack, Result, ScaledValue, SwitchingSet, TimeBounds, Track, TrackTransmission,
+    TrackUid, TransferObjectIdentifierLimits, TransmissionType, ValidateSwitchingSet,
+    VideoSwitchingSet, VideoTrack,
 };
 
 mod data;
@@ -87,9 +88,7 @@ impl Presentation {
     pub fn is_multicast(&self) -> bool {
         return self.transmission().get_type() == TransmissionType::Multicast;
     }
-}
 
-impl Presentation {
     pub(super) fn validate_active(&self) -> Result<()> {
         if self.current_time.is_none() {
             return Err(Error::MissingCurrentTime(self.id.clone()));
@@ -133,6 +132,157 @@ impl Presentation {
         self.audio
             .iter_mut()
             .flat_map(AudioSwitchingSet::tracks_mut)
+    }
+
+    pub fn metadata_tracks_mut(&mut self) -> impl Iterator<Item = &mut MetadataTrack> {
+        self.metadata
+            .iter_mut()
+            .flat_map(MetadataSwitchingSet::tracks_mut)
+    }
+
+    pub fn tracks(&self) -> impl Iterator<Item = &dyn Track> {
+        self.audio_tracks()
+            .map(|track| track as &dyn Track)
+            .chain(self.video_tracks().map(|track| track as &dyn Track))
+            .chain(self.metadata_tracks().map(|track| track as &dyn Track))
+    }
+
+    pub fn tracks_mut(&mut self) -> impl Iterator<Item = &mut dyn Track> {
+        let audio_iter = Self::as_track_mut_iterator(&mut self.audio);
+        let video_iter = Self::as_track_mut_iterator(&mut self.video);
+        let metadata_iter = Self::as_track_mut_iterator(&mut self.metadata);
+
+        audio_iter.chain(video_iter).chain(metadata_iter)
+    }
+
+    fn as_track_mut_iterator<T: SwitchingSet>(
+        map: &mut EntityMap<T>,
+    ) -> impl Iterator<Item = &mut dyn Track> {
+        map.iter_mut()
+            .flat_map(SwitchingSet::tracks_mut)
+            .map(|track| track as &mut dyn Track)
+    }
+
+    pub fn initializable_tracks(&self) -> impl Iterator<Item = &dyn InitializableTrack> {
+        self.audio_tracks()
+            .map(|track| track as &dyn InitializableTrack)
+            .chain(
+                self.video_tracks()
+                    .map(|track| track as &dyn InitializableTrack),
+            )
+    }
+
+    pub fn initializable_tracks_mut(
+        &mut self,
+    ) -> impl Iterator<Item = &mut dyn InitializableTrack> {
+        let audio_iter = Self::as_initializable_track_mut_iterator(&mut self.audio);
+        let video_iter = Self::as_initializable_track_mut_iterator(&mut self.video);
+
+        audio_iter.chain(video_iter)
+    }
+
+    fn as_initializable_track_mut_iterator<'a, T, U>(
+        map: &'a mut EntityMap<T>,
+    ) -> impl Iterator<Item = &mut dyn InitializableTrack>
+    where
+        T: SwitchingSet<Track = U>,
+        U: InitializableTrack + 'a,
+    {
+        map.iter_mut()
+            .flat_map(SwitchingSet::tracks_mut)
+            .map(|track| track as &mut dyn InitializableTrack)
+    }
+
+    pub fn track(
+        &self,
+        media_type: MediaType,
+        switching_set_id: &str,
+        track_id: &str,
+    ) -> Option<&dyn Track> {
+        match media_type {
+            MediaType::Audio => self
+                .audio
+                .get(switching_set_id)?
+                .track(track_id)
+                .map(|track| track as &dyn Track),
+            MediaType::Video => self
+                .video
+                .get(switching_set_id)?
+                .track(track_id)
+                .map(|track| track as &dyn Track),
+            MediaType::Metadata => self
+                .metadata
+                .get(switching_set_id)?
+                .track(track_id)
+                .map(|track| track as &dyn Track),
+        }
+    }
+
+    pub fn track_mut(
+        &mut self,
+        media_type: MediaType,
+        switching_set_id: &str,
+        track_id: &str,
+    ) -> Option<&mut dyn Track> {
+        match media_type {
+            MediaType::Audio => self
+                .audio
+                .get_mut(switching_set_id)?
+                .track_mut(track_id)
+                .map(|track| track as &mut dyn Track),
+            MediaType::Video => self
+                .video
+                .get_mut(switching_set_id)?
+                .track_mut(track_id)
+                .map(|track| track as &mut dyn Track),
+            MediaType::Metadata => self
+                .metadata
+                .get_mut(switching_set_id)?
+                .track_mut(track_id)
+                .map(|track| track as &mut dyn Track),
+        }
+    }
+
+    pub fn initializable_track(
+        &self,
+        media_type: MediaType,
+        switching_set_id: &str,
+        track_id: &str,
+    ) -> Option<&dyn InitializableTrack> {
+        match media_type {
+            MediaType::Audio => self
+                .audio
+                .get(switching_set_id)?
+                .track(track_id)
+                .map(|track| track as &dyn InitializableTrack),
+            MediaType::Video => self
+                .video
+                .get(switching_set_id)?
+                .track(track_id)
+                .map(|track| track as &dyn InitializableTrack),
+            _ => None,
+        }
+    }
+
+    pub fn initializable_track_mut(
+        &mut self,
+        media_type: MediaType,
+        switching_set_id: &str,
+        track_id: &str,
+    ) -> Option<&mut dyn InitializableTrack> {
+        match media_type {
+            MediaType::Audio => self
+                .audio
+                .get_mut(switching_set_id)?
+                .track_mut(track_id)
+                .map(|track| track as &mut dyn InitializableTrack),
+            MediaType::Video => self
+                .video
+                .get_mut(switching_set_id)?
+                .track_mut(track_id)
+                .map(|track| track as &mut dyn InitializableTrack),
+            _ => None,
+        }
     }
 
     fn validate_tracks(&self) -> Result<()> {

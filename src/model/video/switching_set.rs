@@ -2,7 +2,8 @@ use url::Url;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    Result, SwitchingSet, SwitchingSetProtection, VideoMimeType, VideoSwitchingSetData, VideoTrack,
+    MediaType, Result, SwitchingSet, SwitchingSetProtection, ValidateSwitchingSet, VideoMimeType,
+    VideoSwitchingSetData, VideoTrack,
 };
 
 #[derive(Debug, Clone)]
@@ -15,6 +16,10 @@ pub struct VideoSwitchingSet {
     pub(super) protection: Option<SwitchingSetProtection>,
 }
 
+impl VideoSwitchingSet {
+    const MEDIA_TYPE: MediaType = MediaType::Video;
+}
+
 impl Entity for VideoSwitchingSet {
     fn id(&self) -> &str {
         &self.id
@@ -23,19 +28,33 @@ impl Entity for VideoSwitchingSet {
 
 impl SwitchingSet for VideoSwitchingSet {
     type Track = VideoTrack;
+
+    fn media_type(&self) -> MediaType {
+        Self::MEDIA_TYPE
+    }
+
     fn tracks(&self) -> EntityIter<VideoTrack> {
         self.tracks.iter()
     }
-    fn track(&self, id: &str) -> Option<&VideoTrack> {
-        self.tracks.get(id)
-    }
+
     fn tracks_mut(&mut self) -> EntityIterMut<VideoTrack> {
         self.tracks.iter_mut()
     }
+
+    fn track(&self, id: &str) -> Option<&VideoTrack> {
+        self.tracks.get(id)
+    }
+
+    fn track_mut(&mut self, id: &str) -> Option<&mut VideoTrack> {
+        self.tracks.get_mut(id)
+    }
+
     fn mime_type(&self) -> &str {
         self.mime_type.as_ref()
     }
 }
+
+impl ValidateSwitchingSet<VideoTrack> for VideoSwitchingSet {}
 
 impl VideoSwitchingSet {
     pub fn new(
@@ -44,6 +63,7 @@ impl VideoSwitchingSet {
         data: VideoSwitchingSetData,
     ) -> Result<Self> {
         let base_url = data.base_url.resolve(presentation_url)?;
+        let mime_type = data.mime_type.unwrap_or_default();
         let tracks = data
             .tracks
             .into_iter()
@@ -52,6 +72,7 @@ impl VideoSwitchingSet {
                     presentation_id.to_owned(),
                     data.id.clone(),
                     &base_url,
+                    mime_type.clone(),
                     track
                         .with_default_codecs(&data.codecs)
                         .with_default_frame_rate(data.frame_rate)
@@ -66,7 +87,7 @@ impl VideoSwitchingSet {
             tracks,
             align_id: data.align_id,
             label: data.label,
-            mime_type: data.mime_type.unwrap_or_default(),
+            mime_type,
             protection: data.protection,
         })
     }

@@ -3,8 +3,8 @@ use url::Url;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, UInt};
 use crate::{
-    AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, Result, SwitchingSet,
-    SwitchingSetProtection,
+    AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, MediaType, Result, SwitchingSet,
+    SwitchingSetProtection, ValidateSwitchingSet,
 };
 
 #[derive(Debug, Clone)]
@@ -19,6 +19,10 @@ pub struct AudioSwitchingSet {
     pub(super) protection: Option<SwitchingSetProtection>,
 }
 
+impl AudioSwitchingSet {
+    const MEDIA_TYPE: MediaType = MediaType::Audio;
+}
+
 impl Entity for AudioSwitchingSet {
     fn id(&self) -> &str {
         &self.id
@@ -28,19 +32,32 @@ impl Entity for AudioSwitchingSet {
 impl SwitchingSet for AudioSwitchingSet {
     type Track = AudioTrack;
 
+    fn media_type(&self) -> MediaType {
+        Self::MEDIA_TYPE
+    }
+
     fn tracks(&self) -> EntityIter<AudioTrack> {
         self.tracks.iter()
     }
-    fn track(&self, id: &str) -> Option<&AudioTrack> {
-        self.tracks.get(id)
-    }
+
     fn tracks_mut(&mut self) -> EntityIterMut<AudioTrack> {
         self.tracks.iter_mut()
     }
+
+    fn track(&self, id: &str) -> Option<&AudioTrack> {
+        self.tracks.get(id)
+    }
+
+    fn track_mut(&mut self, id: &str) -> Option<&mut AudioTrack> {
+        self.tracks.get_mut(id)
+    }
+
     fn mime_type(&self) -> &str {
         self.mime_type.as_ref()
     }
 }
+
+impl ValidateSwitchingSet<AudioTrack> for AudioSwitchingSet {}
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Deserialize, Serialize, Copy)]
 pub struct SamplesPerFrame(#[serde(deserialize_with = "UInt::deserialize_u64")] u64);
@@ -58,6 +75,7 @@ impl AudioSwitchingSet {
         data: AudioSwitchingSetData,
     ) -> Result<Self> {
         let base_url = data.base_url.resolve(presentation_url)?;
+        let mime_type = data.mime_type.unwrap_or_default();
         let tracks = data
             .tracks
             .into_iter()
@@ -66,6 +84,7 @@ impl AudioSwitchingSet {
                     presentation_id.to_owned(),
                     data.id.clone(),
                     &base_url,
+                    mime_type.clone(),
                     track
                         .with_default_sample_rate(data.sample_rate)
                         .with_default_codecs(&data.codecs)
@@ -83,7 +102,7 @@ impl AudioSwitchingSet {
             align_id: data.align_id,
             channels: data.channels.map(u64::from),
             label: data.label,
-            mime_type: data.mime_type.unwrap_or_default(),
+            mime_type,
             protection: data.protection,
         })
     }

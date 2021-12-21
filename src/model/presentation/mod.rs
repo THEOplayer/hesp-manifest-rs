@@ -175,9 +175,6 @@ impl Presentation {
     pub fn initializable_tracks_mut(
         &mut self,
     ) -> impl Iterator<Item = &mut dyn InitializableTrack> {
-        // Unfortunately, we have to copy over implementations here from `audio_tracks_mut` etc, as
-        // the borrow checker does not allow us to mutably borrow self multiple times.
-
         let audio_iter = Self::as_initializable_track_mut_iterator(&mut self.audio);
         let video_iter = Self::as_initializable_track_mut_iterator(&mut self.video);
 

@@ -148,26 +148,19 @@ impl Presentation {
     }
 
     pub fn tracks_mut(&mut self) -> impl Iterator<Item = &mut dyn Track> {
-        // Unfortunately, we have to copy over implementations here from `audio_tracks_mut` etc, as
-        // the borrow checker does not allow us to mutably borrow self multiple times.
-
-        let audio_iter = self
-            .audio
-            .iter_mut()
-            .flat_map(AudioSwitchingSet::tracks_mut)
-            .map(|track| track as &mut dyn Track);
-        let video_iter = self
-            .video
-            .iter_mut()
-            .flat_map(VideoSwitchingSet::tracks_mut)
-            .map(|track| track as &mut dyn Track);
-        let metadata_iter = self
-            .metadata
-            .iter_mut()
-            .flat_map(MetadataSwitchingSet::tracks_mut)
-            .map(|track| track as &mut dyn Track);
+        let audio_iter = Self::as_track_mut_iterator(&mut self.audio);
+        let video_iter = Self::as_track_mut_iterator(&mut self.video);
+        let metadata_iter = Self::as_track_mut_iterator(&mut self.metadata);
 
         audio_iter.chain(video_iter).chain(metadata_iter)
+    }
+
+    fn as_track_mut_iterator<T: SwitchingSet>(
+        map: &mut EntityMap<T>,
+    ) -> impl Iterator<Item = &mut dyn Track> {
+        map.iter_mut()
+            .flat_map(SwitchingSet::tracks_mut)
+            .map(|track| track as &mut dyn Track)
     }
 
     pub fn initializable_tracks(&self) -> impl Iterator<Item = &dyn InitializableTrack> {
@@ -185,18 +178,22 @@ impl Presentation {
         // Unfortunately, we have to copy over implementations here from `audio_tracks_mut` etc, as
         // the borrow checker does not allow us to mutably borrow self multiple times.
 
-        let audio_iter = self
-            .audio
-            .iter_mut()
-            .flat_map(AudioSwitchingSet::tracks_mut)
-            .map(|track| track as &mut dyn InitializableTrack);
-        let video_iter = self
-            .video
-            .iter_mut()
-            .flat_map(VideoSwitchingSet::tracks_mut)
-            .map(|track| track as &mut dyn InitializableTrack);
+        let audio_iter = Self::as_initializable_track_mut_iterator(&mut self.audio);
+        let video_iter = Self::as_initializable_track_mut_iterator(&mut self.video);
 
         audio_iter.chain(video_iter)
+    }
+
+    fn as_initializable_track_mut_iterator<'a, T, U>(
+        map: &'a mut EntityMap<T>,
+    ) -> impl Iterator<Item = &mut dyn InitializableTrack>
+    where
+        T: SwitchingSet<Track = U>,
+        U: InitializableTrack + 'a,
+    {
+        map.iter_mut()
+            .flat_map(SwitchingSet::tracks_mut)
+            .map(|track| track as &mut dyn InitializableTrack)
     }
 
     pub fn track(&self, track_uid: &TrackUid) -> Option<&dyn Track> {

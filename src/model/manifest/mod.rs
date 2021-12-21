@@ -24,34 +24,26 @@ pub trait Manifest: Sized {
     fn stream_type(&self) -> &StreamType;
 
     fn track(&self, track_uid: &TrackUid) -> Option<&dyn Track> {
-        match self.presentation(track_uid.presentation_id()) {
-            None => None,
-            Some(presentation) => presentation.track(track_uid),
-        }
+        self.presentation(track_uid.presentation_id())?
+            .track(track_uid)
     }
 
     fn track_mut(&mut self, track_uid: &TrackUid) -> Option<&mut dyn Track> {
-        match self.presentation_mut(track_uid.presentation_id()) {
-            None => None,
-            Some(presentation) => presentation.track_mut(track_uid),
-        }
+        self.presentation_mut(track_uid.presentation_id())?
+            .track_mut(track_uid)
     }
 
     fn initializable_track(&self, track_uid: &TrackUid) -> Option<&dyn InitializableTrack> {
-        match self.presentation(track_uid.presentation_id()) {
-            None => None,
-            Some(presentation) => presentation.initializable_track(track_uid),
-        }
+        self.presentation(track_uid.presentation_id())?
+            .initializable_track(track_uid)
     }
 
     fn initializable_track_mut(
         &mut self,
         track_uid: &TrackUid,
     ) -> Option<&mut dyn InitializableTrack> {
-        match self.presentation_mut(track_uid.presentation_id()) {
-            None => None,
-            Some(presentation) => presentation.initializable_track_mut(track_uid),
-        }
+        self.presentation_mut(track_uid.presentation_id())?
+            .initializable_track_mut(track_uid)
     }
 
     fn from_json(location: Url, json: &str) -> Result<Self>;

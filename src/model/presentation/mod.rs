@@ -201,64 +201,56 @@ impl Presentation {
 
     pub fn track(&self, track_uid: &TrackUid) -> Option<&dyn Track> {
         match track_uid.media_type() {
-            MediaType::Audio => match self.audio.get(track_uid.switching_set_id()) {
-                Some(switching_set) => switching_set
-                    .track(track_uid.track_id())
-                    .map(|track| track as &dyn Track),
-                None => None,
-            },
-            MediaType::Video => match self.video.get(track_uid.switching_set_id()) {
-                Some(switching_set) => switching_set
-                    .track(track_uid.track_id())
-                    .map(|track| track as &dyn Track),
-                None => None,
-            },
-            MediaType::Metadata => match self.metadata.get(track_uid.switching_set_id()) {
-                Some(switching_set) => switching_set
-                    .track(track_uid.track_id())
-                    .map(|track| track as &dyn Track),
-                None => None,
-            },
+            MediaType::Audio => self
+                .audio
+                .get(track_uid.switching_set_id())?
+                .track(track_uid.track_id())
+                .map(|track| track as &dyn Track),
+            MediaType::Video => self
+                .video
+                .get(track_uid.switching_set_id())?
+                .track(track_uid.track_id())
+                .map(|track| track as &dyn Track),
+            MediaType::Metadata => self
+                .metadata
+                .get(track_uid.switching_set_id())?
+                .track(track_uid.track_id())
+                .map(|track| track as &dyn Track),
         }
     }
 
     pub fn track_mut(&mut self, track_uid: &TrackUid) -> Option<&mut dyn Track> {
         match track_uid.media_type() {
-            MediaType::Audio => match self.audio.get_mut(track_uid.switching_set_id()) {
-                Some(switching_set) => switching_set
-                    .track_mut(track_uid.track_id())
-                    .map(|track| track as &mut dyn Track),
-                None => None,
-            },
-            MediaType::Video => match self.video.get_mut(track_uid.switching_set_id()) {
-                Some(switching_set) => switching_set
-                    .track_mut(track_uid.track_id())
-                    .map(|track| track as &mut dyn Track),
-                None => None,
-            },
-            MediaType::Metadata => match self.metadata.get_mut(track_uid.switching_set_id()) {
-                Some(switching_set) => switching_set
-                    .track_mut(track_uid.track_id())
-                    .map(|track| track as &mut dyn Track),
-                None => None,
-            },
+            MediaType::Audio => self
+                .audio
+                .get_mut(track_uid.switching_set_id())?
+                .track_mut(track_uid.track_id())
+                .map(|track| track as &mut dyn Track),
+            MediaType::Video => self
+                .video
+                .get_mut(track_uid.switching_set_id())?
+                .track_mut(track_uid.track_id())
+                .map(|track| track as &mut dyn Track),
+            MediaType::Metadata => self
+                .metadata
+                .get_mut(track_uid.switching_set_id())?
+                .track_mut(track_uid.track_id())
+                .map(|track| track as &mut dyn Track),
         }
     }
 
     pub fn initializable_track(&self, track_uid: &TrackUid) -> Option<&dyn InitializableTrack> {
         match track_uid.media_type() {
-            MediaType::Audio => match self.audio.get(track_uid.switching_set_id()) {
-                Some(switching_set) => switching_set
-                    .track(track_uid.track_id())
-                    .map(|track| track as &dyn InitializableTrack),
-                None => None,
-            },
-            MediaType::Video => match self.video.get(track_uid.switching_set_id()) {
-                Some(switching_set) => switching_set
-                    .track(track_uid.track_id())
-                    .map(|track| track as &dyn InitializableTrack),
-                None => None,
-            },
+            MediaType::Audio => self
+                .audio
+                .get(track_uid.switching_set_id())?
+                .track(track_uid.track_id())
+                .map(|track| track as &dyn InitializableTrack),
+            MediaType::Video => self
+                .video
+                .get(track_uid.switching_set_id())?
+                .track(track_uid.track_id())
+                .map(|track| track as &dyn InitializableTrack),
             _ => None,
         }
     }
@@ -268,18 +260,16 @@ impl Presentation {
         track_uid: &TrackUid,
     ) -> Option<&mut dyn InitializableTrack> {
         match track_uid.media_type() {
-            MediaType::Audio => match self.audio.get_mut(track_uid.switching_set_id()) {
-                Some(switching_set) => switching_set
-                    .track_mut(track_uid.track_id())
-                    .map(|track| track as &mut dyn InitializableTrack),
-                None => None,
-            },
-            MediaType::Video => match self.video.get_mut(track_uid.switching_set_id()) {
-                Some(switching_set) => switching_set
-                    .track_mut(track_uid.track_id())
-                    .map(|track| track as &mut dyn InitializableTrack),
-                None => None,
-            },
+            MediaType::Audio => self
+                .audio
+                .get_mut(track_uid.switching_set_id())?
+                .track_mut(track_uid.track_id())
+                .map(|track| track as &mut dyn InitializableTrack),
+            MediaType::Video => self
+                .video
+                .get_mut(track_uid.switching_set_id())?
+                .track_mut(track_uid.track_id())
+                .map(|track| track as &mut dyn InitializableTrack),
             _ => None,
         }
     }

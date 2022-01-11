@@ -65,7 +65,7 @@ impl From<UnicastManifest> for ManifestData {
             presentations: input
                 .presentations
                 .into_iter()
-                .map(|p| PresentationData::new(p, &input.location))
+                .map(PresentationData::from)
                 .collect(),
             stream_type: input.stream_type,
             content_base_url: RelativeUrl::None,

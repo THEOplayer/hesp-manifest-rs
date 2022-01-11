@@ -1,10 +1,9 @@
 use serde::{Deserialize, Serialize};
-use url::Url;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, UInt};
 use crate::{
-    AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, MediaType, Result, SwitchingSet,
-    SwitchingSetProtection, ValidateSwitchingSet,
+    Address, AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, MediaType, Result,
+    SwitchingSet, SwitchingSetProtection, ValidateSwitchingSet,
 };
 
 #[derive(Debug, Clone)]
@@ -71,10 +70,10 @@ impl Default for SamplesPerFrame {
 impl AudioSwitchingSet {
     pub fn new(
         presentation_id: &str,
-        presentation_url: &Url,
+        presentation_address: &Address,
         data: AudioSwitchingSetData,
     ) -> Result<Self> {
-        let base_url = data.base_url.resolve(presentation_url)?;
+        let address = presentation_address.join(data.base_url)?;
         let mime_type = data.mime_type.unwrap_or_default();
         let tracks = data
             .tracks
@@ -83,7 +82,7 @@ impl AudioSwitchingSet {
                 AudioTrack::new(
                     presentation_id.to_owned(),
                     data.id.clone(),
-                    &base_url,
+                    &address,
                     mime_type.clone(),
                     track
                         .with_default_sample_rate(data.sample_rate)
@@ -111,9 +110,11 @@ impl AudioSwitchingSet {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::util::RelativeUrl;
+    use url::Url;
 
     #[test]
-    fn codecs_in_set() {
+    fn codecs_in_set() -> anyhow::Result<()> {
         let data = r#"
             {
                 "id": "0",
@@ -126,9 +127,12 @@ mod tests {
                     }
                 ]
             }"#;
-        let url = Url::parse("https://www.theoplayer.com").unwrap();
+        let address = Address::new(
+            Url::parse("https://www.theoplayer.com").unwrap(),
+            RelativeUrl::None,
+        )?;
         let data = serde_json::from_str::<AudioSwitchingSetData>(data).unwrap();
-        let result = AudioSwitchingSet::new("p1", &url, data);
+        let result = AudioSwitchingSet::new("p1", &address, data);
 
         assert!(result.is_err());
         let error = result.unwrap_err().to_string();
@@ -137,5 +141,7 @@ mod tests {
             "Error did not indicate missing codecs `{}`",
             error
         );
+
+        Ok(())
     }
 }

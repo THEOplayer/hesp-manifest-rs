@@ -1,9 +1,7 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::Result;
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(from = "Option<String>", into = "Option<String>")]
 pub enum RelativeUrl {
     Absolute(Url),
@@ -12,14 +10,6 @@ pub enum RelativeUrl {
 }
 
 impl RelativeUrl {
-    pub fn resolve(&self, url: &Url) -> Result<Url> {
-        Ok(match self {
-            Self::Absolute(url) => url.clone(),
-            Self::Path(path) => url.join(path)?,
-            Self::None => url.clone(),
-        })
-    }
-
     pub const fn is_none(&self) -> bool {
         matches!(self, Self::None)
     }

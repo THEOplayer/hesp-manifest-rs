@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use url::Url;
 
 use crate::util::RelativeUrl;
 use crate::{
@@ -28,15 +27,15 @@ pub struct PresentationData {
     pub multicast_metadata: Option<PresentationMulticastMetadata>,
 }
 
-impl PresentationData {
-    pub fn new(input: Presentation, location: &Url) -> Self {
+impl From<Presentation> for PresentationData {
+    fn from(input: Presentation) -> Self {
         Self {
             id: input.id,
             time_bounds: input.time_bounds,
             audio: input
                 .audio
                 .into_iter()
-                .map(|a| AudioSwitchingSetData::new(a, location))
+                .map(AudioSwitchingSetData::from)
                 .collect(),
             base_url: RelativeUrl::None,
             current_time: input.current_time,
@@ -48,17 +47,19 @@ impl PresentationData {
             metadata: input
                 .metadata
                 .into_iter()
-                .map(|m| MetadataSwitchingSetData::new(m, location))
+                .map(MetadataSwitchingSetData::from)
                 .collect(),
             video: input
                 .video
                 .into_iter()
-                .map(|v| VideoSwitchingSetData::new(v, location))
+                .map(VideoSwitchingSetData::from)
                 .collect(),
             multicast_metadata: input.transmission.into(),
         }
     }
+}
 
+impl PresentationData {
     pub fn normalize(&mut self) {
         for audio in &mut self.audio {
             audio.normalize();

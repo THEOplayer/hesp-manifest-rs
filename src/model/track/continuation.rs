@@ -1,6 +1,7 @@
 use url::Url;
 
-use crate::{Result, SegmentId, UrlPattern};
+use crate::util::RelativeUrl;
+use crate::{Address, Result, SegmentId, UrlPattern};
 
 #[derive(Debug, Clone)]
 pub struct ContinuationPattern(UrlPattern);
@@ -8,15 +9,23 @@ pub struct ContinuationPattern(UrlPattern);
 impl ContinuationPattern {
     const SEGMENT_ID_PATTERN: &'static str = "{segmentId}";
 
-    pub fn new(base: &Url, pattern: String) -> Result<Self> {
-        UrlPattern::new(base, pattern, Self::SEGMENT_ID_PATTERN).map(Self)
+    pub fn new(address: Address, pattern: String) -> Result<Self> {
+        UrlPattern::new(address, pattern, Self::SEGMENT_ID_PATTERN).map(Self)
     }
 
     pub fn segment(&self, id: SegmentId) -> Url {
         self.0.resolve(&id.to_string()).unwrap()
     }
 
-    pub fn make_relative(&self, url: &Url) -> String {
-        self.0.make_relative(url)
+    pub fn base_url(&self) -> &RelativeUrl {
+        self.0.base_url()
+    }
+
+    pub fn into_pattern(self) -> String {
+        self.0.into_pattern()
+    }
+
+    pub fn into_full_pattern(self) -> String {
+        self.0.into_full_pattern()
     }
 }

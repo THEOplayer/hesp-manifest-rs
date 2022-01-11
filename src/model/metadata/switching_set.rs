@@ -1,8 +1,6 @@
-use url::Url;
-
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    Language, MediaType, MetadataSwitchingSetData, MetadataTrack, Result, SwitchingSet,
+    Address, Language, MediaType, MetadataSwitchingSetData, MetadataTrack, Result, SwitchingSet,
     ValidateSwitchingSet,
 };
 
@@ -38,16 +36,16 @@ impl SwitchingSet for MetadataSwitchingSet {
         self.tracks.iter()
     }
 
-    fn tracks_mut(&mut self) -> EntityIterMut<MetadataTrack> {
-        self.tracks.iter_mut()
-    }
-
     fn track(&self, id: &str) -> Option<&MetadataTrack> {
         self.tracks.get(id)
     }
 
     fn track_mut(&mut self, id: &str) -> Option<&mut MetadataTrack> {
         self.tracks.get_mut(id)
+    }
+
+    fn tracks_mut(&mut self) -> EntityIterMut<MetadataTrack> {
+        self.tracks.iter_mut()
     }
 
     fn mime_type(&self) -> &str {
@@ -60,10 +58,10 @@ impl ValidateSwitchingSet<MetadataTrack> for MetadataSwitchingSet {}
 impl MetadataSwitchingSet {
     pub fn new(
         presentation_id: &str,
-        presentation_url: &Url,
+        presentation_address: &Address,
         data: MetadataSwitchingSetData,
     ) -> Result<Self> {
-        let base_url = data.base_url.resolve(presentation_url)?;
+        let address = presentation_address.join(data.base_url)?;
         let tracks = data
             .tracks
             .into_iter()
@@ -71,7 +69,7 @@ impl MetadataSwitchingSet {
                 MetadataTrack::new(
                     presentation_id.to_owned(),
                     data.id.clone(),
-                    &base_url,
+                    &address,
                     data.mime_type.clone(),
                     track
                         .with_default_codecs(&data.codecs)

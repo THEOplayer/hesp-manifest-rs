@@ -1,15 +1,13 @@
-use url::Url;
-
 pub use data::PresentationData;
 pub use event::*;
 pub use multicast::*;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    AudioSwitchingSet, AudioTrack, Error, InitializableTrack, MediaType, MetadataSwitchingSet,
-    MetadataTrack, Result, ScaledValue, SwitchingSet, TimeBounds, Track, TrackTransmission,
-    TrackUid, TransferObjectIdentifierLimits, TransmissionType, ValidateSwitchingSet,
-    VideoSwitchingSet, VideoTrack,
+    Address, AudioSwitchingSet, AudioTrack, Error, InitializableTrack, MediaType,
+    MetadataSwitchingSet, MetadataTrack, Result, ScaledValue, SwitchingSet, TimeBounds, Track,
+    TrackTransmission, TrackUid, TransferObjectIdentifierLimits, TransmissionType,
+    ValidateSwitchingSet, VideoSwitchingSet, VideoTrack,
 };
 
 mod data;
@@ -29,23 +27,23 @@ pub struct Presentation {
 }
 
 impl Presentation {
-    pub fn new(manifest_url: &Url, data: PresentationData) -> Result<Self> {
+    pub fn new(manifest_address: &Address, data: PresentationData) -> Result<Self> {
         let id = data.id;
-        let base_url = data.base_url.resolve(manifest_url)?;
+        let address = manifest_address.join(data.base_url)?;
         let audio = data
             .audio
             .into_iter()
-            .map(|a| AudioSwitchingSet::new(&id, &base_url, a))
+            .map(|a| AudioSwitchingSet::new(&id, &address, a))
             .into_entities()?;
         let metadata = data
             .metadata
             .into_iter()
-            .map(|m| MetadataSwitchingSet::new(&id, &base_url, m))
+            .map(|m| MetadataSwitchingSet::new(&id, &address, m))
             .into_entities()?;
         let video = data
             .video
             .into_iter()
-            .map(|v| VideoSwitchingSet::new(&id, &base_url, v))
+            .map(|v| VideoSwitchingSet::new(&id, &address, v))
             .into_entities()?;
         let result = Self {
             id,
@@ -260,7 +258,7 @@ impl Presentation {
                 .get(switching_set_id)?
                 .track(track_id)
                 .map(|track| track as &dyn InitializableTrack),
-            _ => None,
+            MediaType::Metadata => None,
         }
     }
 
@@ -281,7 +279,7 @@ impl Presentation {
                 .get_mut(switching_set_id)?
                 .track_mut(track_id)
                 .map(|track| track as &mut dyn InitializableTrack),
-            _ => None,
+            MediaType::Metadata => None,
         }
     }
 

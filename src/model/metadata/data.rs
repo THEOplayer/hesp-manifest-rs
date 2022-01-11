@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use url::Url;
 
 use crate::util::{Entity, RelativeUrl, UInt};
 use crate::{
@@ -26,15 +25,15 @@ pub struct MetadataSwitchingSetData {
     pub media_time_offset: Option<ScaledValue>,
 }
 
-impl MetadataSwitchingSetData {
-    pub fn new(input: MetadataSwitchingSet, location: &Url) -> Self {
+impl From<MetadataSwitchingSet> for MetadataSwitchingSetData {
+    fn from(input: MetadataSwitchingSet) -> Self {
         Self {
             id: input.id,
             mime_type: input.mime_type,
             tracks: input
                 .tracks
                 .into_iter()
-                .map(|track| MetadataTrackData::new(track, location))
+                .map(MetadataTrackData::from)
                 .collect(),
             scheme_id: input.scheme_id,
             align_id: input.align_id,
@@ -46,7 +45,9 @@ impl MetadataSwitchingSetData {
             media_time_offset: None,
         }
     }
+}
 
+impl MetadataSwitchingSetData {
     pub fn normalize(&mut self) {
         normalize_tracks!(self, codecs, continuation_pattern, media_time_offset);
     }
@@ -71,17 +72,17 @@ pub struct MetadataTrackData {
     pub segment_duration: Option<ScaledDuration>,
 }
 
-impl MetadataTrackData {
-    pub fn new(input: MetadataTrack, location: &Url) -> Self {
+impl From<MetadataTrack> for MetadataTrackData {
+    fn from(input: MetadataTrack) -> Self {
         Self {
             id: input.id().to_owned(),
             segments: input.segments,
             active_segment_id: input.active_segment_id,
             average_bandwidth: input.average_bandwidth.map(UInt::from),
             bandwidth: input.bandwidth.map(UInt::from),
-            base_url: RelativeUrl::None,
+            base_url: input.continuation_pattern.base_url().clone(),
             codecs: input.codecs,
-            continuation_pattern: Some(input.continuation_pattern.make_relative(location)),
+            continuation_pattern: Some(input.continuation_pattern.into_pattern()),
             label: input.label,
             media_time_offset: Some(input.media_time_offset),
             segment_duration: input.segment_duration,

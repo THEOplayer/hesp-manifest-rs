@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use url::Url;
 
 use crate::util::{Entity, RelativeUrl, UInt};
 use crate::{
@@ -28,15 +27,11 @@ pub struct VideoSwitchingSetData {
     pub protection: Option<SwitchingSetProtection>,
 }
 
-impl VideoSwitchingSetData {
-    pub fn new(input: VideoSwitchingSet, location: &Url) -> Self {
+impl From<VideoSwitchingSet> for VideoSwitchingSetData {
+    fn from(input: VideoSwitchingSet) -> Self {
         Self {
             id: input.id,
-            tracks: input
-                .tracks
-                .into_iter()
-                .map(|track| VideoTrackData::new(track, location))
-                .collect(),
+            tracks: input.tracks.into_iter().map(VideoTrackData::from).collect(),
             align_id: input.align_id,
             base_url: RelativeUrl::None,
             codecs: None,
@@ -49,7 +44,9 @@ impl VideoSwitchingSetData {
             protection: input.protection,
         }
     }
+}
 
+impl VideoSwitchingSetData {
     pub fn normalize(&mut self) {
         normalize_tracks!(
             self,
@@ -86,9 +83,23 @@ pub struct VideoTrackData {
     pub toi_limits: Option<TransferObjectIdentifierLimits>,
 }
 
-impl VideoTrackData {
-    pub fn new(input: VideoTrack, location: &Url) -> Self {
+impl From<VideoTrack> for VideoTrackData {
+    fn from(input: VideoTrack) -> Self {
         let id = input.id().to_owned();
+        let (base_url, continuation_pattern, initialization_pattern) =
+            if input.continuation_pattern.base_url() == input.initialization_pattern.base_url() {
+                (
+                    input.continuation_pattern.base_url().clone(),
+                    input.continuation_pattern.into_pattern(),
+                    input.initialization_pattern.into_pattern(),
+                )
+            } else {
+                (
+                    RelativeUrl::None,
+                    input.continuation_pattern.into_full_pattern(),
+                    input.initialization_pattern.into_full_pattern(),
+                )
+            };
         Self {
             id,
             bandwidth: input.bandwidth.into(),
@@ -97,12 +108,12 @@ impl VideoTrackData {
             active_segment_id: input.active_segment_id,
             active_sequence_number: input.active_sequence_number.map(UInt::from),
             average_bandwidth: input.average_bandwidth.map(UInt::from),
-            base_url: RelativeUrl::None,
+            base_url,
             codecs: Some(input.codecs),
-            continuation_pattern: Some(input.continuation_pattern.make_relative(location)),
+            continuation_pattern: Some(continuation_pattern),
             frame_rate: Some(input.frame_rate),
             label: input.label,
-            initialization_pattern: Some(input.initialization_pattern.make_relative(location)),
+            initialization_pattern: Some(initialization_pattern),
             media_time_offset: Some(input.media_time_offset),
             segment_duration: input.segment_duration,
             toi_limits: input.transmission.into(),

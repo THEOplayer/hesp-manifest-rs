@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq, Hash)]
-#[serde(from = "Option<String>", into = "Option<String>")]
+#[serde(try_from = "Option<String>", into = "Option<String>")]
 pub enum RelativeUrl {
     Absolute(Url),
     Path(String),
@@ -15,13 +15,16 @@ impl RelativeUrl {
     }
 }
 
-impl From<Option<String>> for RelativeUrl {
-    fn from(input: Option<String>) -> Self {
-        match input {
-            None => Self::None,
+impl TryFrom<Option<String>> for RelativeUrl {
+    type Error = url::ParseError;
+
+    fn try_from(value: Option<String>) -> Result<Self, Self::Error> {
+        match value {
+            None => Ok(Self::None),
             Some(input) => match Url::parse(&input) {
-                Ok(url) => Self::Absolute(url),
-                Err(_) => Self::Path(input),
+                Ok(url) => Ok(Self::Absolute(url)),
+                Err(url::ParseError::RelativeUrlWithoutBase) => Ok(Self::Path(input)),
+                Err(e) => Err(e),
             },
         }
     }

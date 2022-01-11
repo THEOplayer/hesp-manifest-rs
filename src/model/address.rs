@@ -9,28 +9,31 @@ use crate::Result;
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Address {
     manifest_location: Url,
-    base_url: Option<Uri>,
+    uri: Option<Uri>,
 }
 
 impl Address {
     pub fn new(manifest_location: Url, base_url: Option<Uri>) -> Result<Address> {
+        if manifest_location.cannot_be_a_base() {
+            return Err(url::ParseError::RelativeUrlWithCannotBeABaseBase.into());
+        }
         if let Some(Uri::Relative(path)) = &base_url {
             manifest_location.join(path)?;
         };
         Ok(Address {
             manifest_location,
-            base_url,
+            uri: base_url,
         })
     }
 
     pub fn join(&self, uri: Option<Uri>) -> Result<Address> {
         Ok(Address {
             manifest_location: self.manifest_location.clone(),
-            base_url: match (&self.base_url, &uri) {
+            uri: match (&self.uri, &uri) {
                 (_, Some(Uri::Absolute(_))) => uri,
-                (_, None) => self.base_url.clone(),
-                (Some(Uri::Absolute(absolute)), Some(Uri::Relative(path))) => {
-                    Some(Uri::Absolute(absolute.join(path)?))
+                (_, None) => self.uri.clone(),
+                (Some(Uri::Absolute(absolute_url)), Some(Uri::Relative(path))) => {
+                    Some(Uri::Absolute(absolute_url.join(path)?))
                 }
                 (Some(Uri::Relative(first)), Some(Uri::Relative(second))) => Some(Uri::Relative(
                     self.manifest_location
@@ -46,7 +49,7 @@ impl Address {
     }
 
     pub fn url(&self) -> Cow<Url> {
-        match &self.base_url {
+        match &self.uri {
             Some(Uri::Absolute(url)) => Cow::Borrowed(url),
             Some(Uri::Relative(path)) => Cow::Owned(self.manifest_location.join(path).unwrap()),
             None => Cow::Borrowed(&self.manifest_location),
@@ -57,22 +60,22 @@ impl Address {
         &self.manifest_location
     }
 
-    pub fn base_url(&self) -> Option<&Uri> {
-        self.base_url.as_ref()
+    pub fn uri(&self) -> Option<&Uri> {
+        self.uri.as_ref()
     }
 
-    pub fn set_base_url(&mut self, base_url: Option<Uri>) -> Result<()> {
-        if let Some(Uri::Relative(path)) = &base_url {
+    pub fn set_uri(&mut self, uri: Option<Uri>) -> Result<()> {
+        if let Some(Uri::Relative(path)) = &uri {
             self.manifest_location.join(path)?;
         };
-        self.base_url = base_url;
+        self.uri = uri;
         Ok(())
     }
 }
 
 impl fmt::Display for Address {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match &self.base_url {
+        match &self.uri {
             Some(Uri::Absolute(url)) => fmt::Display::fmt(url, f),
             Some(Uri::Relative(path)) => {
                 fmt::Display::fmt(&self.manifest_location.join(path).unwrap(), f)
@@ -84,7 +87,7 @@ impl fmt::Display for Address {
 
 impl From<Address> for Option<Uri> {
     fn from(address: Address) -> Self {
-        address.base_url
+        address.uri
     }
 }
 

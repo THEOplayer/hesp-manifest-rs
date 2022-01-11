@@ -5,7 +5,7 @@ use crate::{Address, Error, Result};
 
 #[derive(Debug, Clone)]
 pub struct UrlPattern {
-    address: Address,
+    base_address: Address,
     pattern: String,
     placeholder: &'static str,
 }
@@ -14,7 +14,7 @@ impl UrlPattern {
     pub fn new(address: Address, pattern: String, placeholder: &'static str) -> Result<Self> {
         if pattern.contains(placeholder) {
             Ok(Self {
-                address,
+                base_address: address,
                 pattern,
                 placeholder,
             })
@@ -25,11 +25,7 @@ impl UrlPattern {
 
     pub fn resolve(&self, input: &str) -> Result<Url> {
         let path = &self.pattern.replace(self.placeholder, input);
-        Ok(self.address.url().join(path)?)
-    }
-
-    pub fn base_url(&self) -> Option<&Uri> {
-        self.address.base_url()
+        Ok(self.base_address.url().join(path)?)
     }
 
     pub fn into_pattern(self) -> String {
@@ -40,17 +36,17 @@ impl UrlPattern {
         if self.pattern.starts_with('/') || self.pattern.contains("://") {
             self.pattern
         } else {
-            let base = match self.address.base_url() {
+            let base = match self.base_address.uri() {
                 Some(Uri::Absolute(url)) => url.join(".").unwrap().to_string(),
                 Some(Uri::Relative(path)) => {
                     let absolute = self
-                        .address
+                        .base_address
                         .manifest_location()
                         .join(path)
                         .unwrap()
                         .join(".")
                         .unwrap();
-                    self.address
+                    self.base_address
                         .manifest_location()
                         .make_relative(&absolute)
                         .unwrap()
@@ -70,8 +66,12 @@ impl UrlPattern {
         }
     }
 
+    pub fn base_url(&self) -> Option<&Uri> {
+        self.base_address.uri()
+    }
+
     pub fn set_base_url(&mut self, base_url: Option<Uri>) -> Result<()> {
-        self.address.set_base_url(base_url)
+        self.base_address.set_uri(base_url)
     }
 }
 

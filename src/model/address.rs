@@ -101,10 +101,7 @@ mod tests {
             .join(RelativeUrl::Path("audio/".to_owned()))?
             .join(RelativeUrl::Path("96k/".to_owned()))?;
 
-        assert_eq!(
-            address.to_string(),
-            "http://localhost/audio/96k".to_string()
-        );
+        assert_eq!(address.to_string(), "http://localhost/audio/96k");
         Ok(())
     }
 }

@@ -36,13 +36,12 @@ impl UrlPattern {
         self.pattern
     }
 
-    pub fn into_full_pattern(self) -> String {
+    pub fn into_pattern_including_address(self) -> String {
         if self.pattern.starts_with('/') || self.pattern.contains("://") {
             self.pattern
         } else {
             let base = match self.address.base_url() {
                 RelativeUrl::Absolute(url) => url.join(".").unwrap().to_string(),
-                //TODO this needs TESTING!!
                 RelativeUrl::Path(path) => {
                     let absolute = self
                         .address
@@ -77,5 +76,29 @@ impl UrlPattern {
 
     pub fn set_relative_base_url(&mut self, path: Option<String>) -> Result<()> {
         self.address.set_relative_base_url(path)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use anyhow::Result;
+
+    use super::*;
+
+    #[test]
+    fn include_relative_url_into_pattern() -> Result<()> {
+        let manifest_location = Url::parse("http://localhost/whatever")?;
+        let base_url = RelativeUrl::Path(String::from("bar/will-be-deleted"));
+        let url_pattern = UrlPattern::new(
+            Address::new(manifest_location, base_url)?,
+            String::from("some-{xxx}.xxx"),
+            "{xxx}",
+        )?;
+
+        assert_eq!(
+            url_pattern.into_pattern_including_address(),
+            "bar/some-{xxx}.xxx"
+        );
+        Ok(())
     }
 }

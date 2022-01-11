@@ -26,7 +26,7 @@ impl ContinuationPattern {
     }
 
     pub fn into_full_pattern(self) -> String {
-        self.0.into_full_pattern()
+        self.0.into_pattern_including_address()
     }
 
     pub fn set_pattern(&mut self, pattern: String) -> Result<()> {

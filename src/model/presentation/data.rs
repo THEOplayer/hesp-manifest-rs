@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::util::RelativeUrl;
+use crate::util::Uri;
 use crate::{
     AudioSwitchingSetData, MetadataSwitchingSetData, Presentation, PresentationEvent,
     PresentationMulticastMetadata, ScaledValue, TimeBounds, VideoSwitchingSetData,
@@ -15,8 +15,7 @@ pub struct PresentationData {
     pub time_bounds: TimeBounds,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub audio: Vec<AudioSwitchingSetData>,
-    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
-    pub base_url: RelativeUrl,
+    pub base_url: Option<Uri>,
     pub current_time: Option<ScaledValue>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub events: Vec<PresentationEvent>,
@@ -37,7 +36,7 @@ impl From<Presentation> for PresentationData {
                 .into_iter()
                 .map(AudioSwitchingSetData::from)
                 .collect(),
-            base_url: RelativeUrl::None,
+            base_url: None,
             current_time: input.current_time,
             events: input
                 .events

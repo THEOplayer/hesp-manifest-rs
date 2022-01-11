@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::util::{Entity, RelativeUrl, UInt};
+use crate::util::{Entity, UInt, Uri};
 use crate::{
     normalize_tracks, AudioMimeType, AudioSwitchingSet, AudioTrack, Language, SamplesPerFrame,
     ScaledDuration, ScaledValue, SegmentId, Segments, SwitchingSetProtection,
@@ -16,8 +16,7 @@ pub struct AudioSwitchingSetData {
     pub language: Language,
     pub tracks: Vec<AudioTrackData>,
     pub align_id: Option<String>,
-    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
-    pub base_url: RelativeUrl,
+    pub base_url: Option<Uri>,
     pub channels: Option<UInt>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
@@ -37,7 +36,7 @@ impl From<AudioSwitchingSet> for AudioSwitchingSetData {
             language: input.language,
             tracks: input.tracks.into_iter().map(AudioTrackData::from).collect(),
             align_id: input.align_id,
-            base_url: RelativeUrl::None,
+            base_url: None,
             channels: input.channels.map(UInt::from),
             codecs: None,
             continuation_pattern: None,
@@ -77,8 +76,7 @@ pub struct AudioTrackData {
     pub active_segment_id: Option<SegmentId>,
     pub active_sequence_number: Option<UInt>,
     pub average_bandwidth: Option<UInt>,
-    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
-    pub base_url: RelativeUrl,
+    pub base_url: Option<Uri>,
     pub channels: Option<UInt>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
@@ -97,13 +95,13 @@ impl From<AudioTrack> for AudioTrackData {
         let (base_url, continuation_pattern, initialization_pattern) =
             if input.continuation_pattern.base_url() == input.initialization_pattern.base_url() {
                 (
-                    input.continuation_pattern.base_url().clone(),
+                    input.continuation_pattern.base_url().cloned(),
                     input.continuation_pattern.into_pattern(),
                     input.initialization_pattern.into_pattern(),
                 )
             } else {
                 (
-                    RelativeUrl::None,
+                    None,
                     input.continuation_pattern.into_full_pattern(),
                     input.initialization_pattern.into_full_pattern(),
                 )

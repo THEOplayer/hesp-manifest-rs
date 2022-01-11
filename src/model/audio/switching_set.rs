@@ -110,7 +110,6 @@ impl AudioSwitchingSet {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::util::RelativeUrl;
     use url::Url;
 
     #[test]
@@ -127,10 +126,7 @@ mod tests {
                     }
                 ]
             }"#;
-        let address = Address::new(
-            Url::parse("https://www.theoplayer.com").unwrap(),
-            RelativeUrl::None,
-        )?;
+        let address = Address::new(Url::parse("https://www.theoplayer.com").unwrap(), None)?;
         let data = serde_json::from_str::<AudioSwitchingSetData>(data).unwrap();
         let result = AudioSwitchingSet::new("p1", &address, data);
 

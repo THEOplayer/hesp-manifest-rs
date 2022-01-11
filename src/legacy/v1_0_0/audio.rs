@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::util::{RelativeUrl, UInt};
+use crate::util::{UInt, Uri};
 use crate::{
     AudioMimeType, Language, SamplesPerFrame, ScaledDuration, ScaledValue, SegmentId, Segments,
     SwitchingSetProtection,
@@ -13,7 +13,7 @@ pub struct AudioSwitchingSetData {
     pub language: Language,
     pub tracks: Vec<AudioTrackData>,
     pub align_id: Option<String>,
-    pub base_url: RelativeUrl,
+    pub base_url: Option<Uri>,
     pub channels: Option<u64>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
@@ -61,7 +61,7 @@ pub struct AudioTrackData {
     pub active_segment: Option<SegmentId>,
     pub active_sequence_number: Option<UInt>,
     pub average_bandwidth: Option<UInt>,
-    pub base_url: RelativeUrl,
+    pub base_url: Option<Uri>,
     pub channels: Option<UInt>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,

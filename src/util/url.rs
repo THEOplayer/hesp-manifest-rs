@@ -2,40 +2,29 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq, Hash)]
-#[serde(try_from = "Option<String>", into = "Option<String>")]
-pub enum RelativeUrl {
+#[serde(try_from = "String", into = "String")]
+pub enum Uri {
     Absolute(Url),
-    Path(String),
-    None,
+    Relative(String),
 }
 
-impl RelativeUrl {
-    pub const fn is_none(&self) -> bool {
-        matches!(self, Self::None)
-    }
-}
-
-impl TryFrom<Option<String>> for RelativeUrl {
+impl TryFrom<String> for Uri {
     type Error = url::ParseError;
 
-    fn try_from(value: Option<String>) -> Result<Self, Self::Error> {
-        match value {
-            None => Ok(Self::None),
-            Some(input) => match Url::parse(&input) {
-                Ok(url) => Ok(Self::Absolute(url)),
-                Err(url::ParseError::RelativeUrlWithoutBase) => Ok(Self::Path(input)),
-                Err(e) => Err(e),
-            },
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        match Url::parse(&value) {
+            Ok(url) => Ok(Self::Absolute(url)),
+            Err(url::ParseError::RelativeUrlWithoutBase) => Ok(Self::Relative(value)),
+            Err(e) => Err(e),
         }
     }
 }
 
-impl From<RelativeUrl> for Option<String> {
-    fn from(input: RelativeUrl) -> Self {
+impl From<Uri> for String {
+    fn from(input: Uri) -> Self {
         match input {
-            RelativeUrl::Absolute(url) => Some(url.to_string()),
-            RelativeUrl::Path(path) => Some(path),
-            RelativeUrl::None => None,
+            Uri::Absolute(url) => url.to_string(),
+            Uri::Relative(path) => path,
         }
     }
 }

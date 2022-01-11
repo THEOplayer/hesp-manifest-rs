@@ -3,18 +3,18 @@ use std::fmt;
 
 use url::Url;
 
-use crate::util::RelativeUrl;
+use crate::util::Uri;
 use crate::Result;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Address {
     manifest_location: Url,
-    base_url: RelativeUrl,
+    base_url: Option<Uri>,
 }
 
 impl Address {
-    pub fn new(manifest_location: Url, base_url: RelativeUrl) -> Result<Address> {
-        if let RelativeUrl::Path(path) = &base_url {
+    pub fn new(manifest_location: Url, base_url: Option<Uri>) -> Result<Address> {
+        if let Some(Uri::Relative(path)) = &base_url {
             manifest_location.join(path)?;
         };
         Ok(Address {
@@ -23,23 +23,23 @@ impl Address {
         })
     }
 
-    pub fn join(&self, url: RelativeUrl) -> Result<Address> {
+    pub fn join(&self, uri: Option<Uri>) -> Result<Address> {
         Ok(Address {
             manifest_location: self.manifest_location.clone(),
-            base_url: match (&self.base_url, &url) {
-                (_, RelativeUrl::Absolute(_)) => url,
-                (_, RelativeUrl::None) => self.base_url.clone(),
-                (RelativeUrl::Absolute(absolute), RelativeUrl::Path(path)) => {
-                    RelativeUrl::Absolute(absolute.join(path)?)
+            base_url: match (&self.base_url, &uri) {
+                (_, Some(Uri::Absolute(_))) => uri,
+                (_, None) => self.base_url.clone(),
+                (Some(Uri::Absolute(absolute)), Some(Uri::Relative(path))) => {
+                    Some(Uri::Absolute(absolute.join(path)?))
                 }
-                (RelativeUrl::Path(first), RelativeUrl::Path(second)) => RelativeUrl::Path(
+                (Some(Uri::Relative(first)), Some(Uri::Relative(second))) => Some(Uri::Relative(
                     self.manifest_location
                         .make_relative(&self.manifest_location.join(first)?.join(second)?)
                         .unwrap(),
-                ),
-                (RelativeUrl::None, RelativeUrl::Path(path)) => {
+                )),
+                (None, Some(Uri::Relative(path))) => {
                     self.manifest_location.join(path)?;
-                    url
+                    uri
                 }
             },
         })
@@ -47,9 +47,9 @@ impl Address {
 
     pub fn url(&self) -> Cow<Url> {
         match &self.base_url {
-            RelativeUrl::Absolute(url) => Cow::Borrowed(url),
-            RelativeUrl::Path(path) => Cow::Owned(self.manifest_location.join(path).unwrap()),
-            RelativeUrl::None => Cow::Borrowed(&self.manifest_location),
+            Some(Uri::Absolute(url)) => Cow::Borrowed(url),
+            Some(Uri::Relative(path)) => Cow::Owned(self.manifest_location.join(path).unwrap()),
+            None => Cow::Borrowed(&self.manifest_location),
         }
     }
 
@@ -57,16 +57,15 @@ impl Address {
         &self.manifest_location
     }
 
-    pub fn base_url(&self) -> &RelativeUrl {
-        &self.base_url
+    pub fn base_url(&self) -> Option<&Uri> {
+        self.base_url.as_ref()
     }
 
-    pub fn set_absolute_base_url(&mut self, url: Url) {
-        self.base_url = RelativeUrl::Absolute(url);
-    }
-
-    pub fn set_relative_base_url(&mut self, path: Option<String>) -> Result<()> {
-        self.base_url = path.try_into()?;
+    pub fn set_base_url(&mut self, base_url: Option<Uri>) -> Result<()> {
+        if let Some(Uri::Relative(path)) = &base_url {
+            self.manifest_location.join(path)?;
+        };
+        self.base_url = base_url;
         Ok(())
     }
 }
@@ -74,16 +73,16 @@ impl Address {
 impl fmt::Display for Address {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.base_url {
-            RelativeUrl::Absolute(url) => fmt::Display::fmt(url, f),
-            RelativeUrl::Path(path) => {
+            Some(Uri::Absolute(url)) => fmt::Display::fmt(url, f),
+            Some(Uri::Relative(path)) => {
                 fmt::Display::fmt(&self.manifest_location.join(path).unwrap(), f)
             }
-            RelativeUrl::None => fmt::Display::fmt(&self.manifest_location, f),
+            None => fmt::Display::fmt(&self.manifest_location, f),
         }
     }
 }
 
-impl From<Address> for RelativeUrl {
+impl From<Address> for Option<Uri> {
     fn from(address: Address) -> Self {
         address.base_url
     }
@@ -96,10 +95,11 @@ mod tests {
     #[test]
     fn join_relative_urls() -> anyhow::Result<()> {
         let manifest_location = Url::parse("http://localhost/")?;
-        let manifest_address = Address::new(manifest_location, RelativeUrl::None)?;
+        let manifest_address = Address::new(manifest_location, None)?;
         let address = manifest_address
-            .join(RelativeUrl::Path("audio/".to_owned()))?
-            .join(RelativeUrl::Path("96k/".to_owned()))?;
+            .join(Some(Uri::Relative("audio/".to_owned())))?
+            .join(None)?
+            .join(Some(Uri::Relative("96k/".to_owned())))?;
 
         assert_eq!(address.to_string(), "http://localhost/audio/96k");
         Ok(())

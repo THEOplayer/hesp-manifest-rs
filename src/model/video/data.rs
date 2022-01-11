@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::util::{Entity, RelativeUrl, UInt};
+use crate::util::{Entity, UInt, Uri};
 use crate::{
     normalize_tracks, Resolution, ScaledDuration, ScaledValue, SegmentId, Segments,
     SwitchingSetProtection, TransferObjectIdentifierLimits, VideoMimeType, VideoSwitchingSet,
@@ -15,8 +15,7 @@ pub struct VideoSwitchingSetData {
     pub id: String,
     pub tracks: Vec<VideoTrackData>,
     pub align_id: Option<String>,
-    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
-    pub base_url: RelativeUrl,
+    pub base_url: Option<Uri>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
     pub frame_rate: Option<ScaledValue>,
@@ -33,7 +32,7 @@ impl From<VideoSwitchingSet> for VideoSwitchingSetData {
             id: input.id,
             tracks: input.tracks.into_iter().map(VideoTrackData::from).collect(),
             align_id: input.align_id,
-            base_url: RelativeUrl::None,
+            base_url: None,
             codecs: None,
             continuation_pattern: None,
             frame_rate: None,
@@ -71,8 +70,7 @@ pub struct VideoTrackData {
     pub active_segment_id: Option<SegmentId>,
     pub active_sequence_number: Option<UInt>,
     pub average_bandwidth: Option<UInt>,
-    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
-    pub base_url: RelativeUrl,
+    pub base_url: Option<Uri>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
     pub frame_rate: Option<ScaledValue>,
@@ -89,13 +87,13 @@ impl From<VideoTrack> for VideoTrackData {
         let (base_url, continuation_pattern, initialization_pattern) =
             if input.continuation_pattern.base_url() == input.initialization_pattern.base_url() {
                 (
-                    input.continuation_pattern.base_url().clone(),
+                    input.continuation_pattern.base_url().cloned(),
                     input.continuation_pattern.into_pattern(),
                     input.initialization_pattern.into_pattern(),
                 )
             } else {
                 (
-                    RelativeUrl::None,
+                    None,
                     input.continuation_pattern.into_full_pattern(),
                     input.initialization_pattern.into_full_pattern(),
                 )

@@ -4,7 +4,7 @@ use std::str::FromStr;
 
 use url::Url;
 
-use crate::util::RelativeUrl;
+use crate::util::Uri;
 use crate::{Address, Error, Result, Track, UrlPattern};
 
 pub trait Initialization: Track {
@@ -71,7 +71,7 @@ impl InitializationPattern {
         self.0.resolve(&init_id.into().to_string()).unwrap()
     }
 
-    pub fn base_url(&self) -> &RelativeUrl {
+    pub fn base_url(&self) -> Option<&Uri> {
         self.0.base_url()
     }
 
@@ -87,12 +87,8 @@ impl InitializationPattern {
         self.0.set_pattern(pattern)
     }
 
-    pub fn set_absolute_base_url(&mut self, url: Url) {
-        self.0.set_absolute_base_url(url);
-    }
-
-    pub fn set_relative_base_url(&mut self, path: Option<String>) -> Result<()> {
-        self.0.set_relative_base_url(path)
+    pub fn set_base_url(&mut self, base_url: Option<Uri>) -> Result<()> {
+        self.0.set_base_url(base_url)
     }
 }
 

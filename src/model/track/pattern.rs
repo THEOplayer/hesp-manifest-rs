@@ -1,6 +1,6 @@
 use url::Url;
 
-use crate::util::RelativeUrl;
+use crate::util::Uri;
 use crate::{Address, Error, Result};
 
 #[derive(Debug, Clone)]
@@ -28,7 +28,7 @@ impl UrlPattern {
         Ok(self.address.url().join(path)?)
     }
 
-    pub fn base_url(&self) -> &RelativeUrl {
+    pub fn base_url(&self) -> Option<&Uri> {
         self.address.base_url()
     }
 
@@ -41,8 +41,8 @@ impl UrlPattern {
             self.pattern
         } else {
             let base = match self.address.base_url() {
-                RelativeUrl::Absolute(url) => url.join(".").unwrap().to_string(),
-                RelativeUrl::Path(path) => {
+                Some(Uri::Absolute(url)) => url.join(".").unwrap().to_string(),
+                Some(Uri::Relative(path)) => {
                     let absolute = self
                         .address
                         .manifest_location()
@@ -55,7 +55,7 @@ impl UrlPattern {
                         .make_relative(&absolute)
                         .unwrap()
                 }
-                RelativeUrl::None => return self.pattern,
+                None => return self.pattern,
             };
             format!("{}{}", base, self.pattern)
         }
@@ -70,12 +70,8 @@ impl UrlPattern {
         }
     }
 
-    pub fn set_absolute_base_url(&mut self, url: Url) {
-        self.address.set_absolute_base_url(url);
-    }
-
-    pub fn set_relative_base_url(&mut self, path: Option<String>) -> Result<()> {
-        self.address.set_relative_base_url(path)
+    pub fn set_base_url(&mut self, base_url: Option<Uri>) -> Result<()> {
+        self.address.set_base_url(base_url)
     }
 }
 
@@ -88,7 +84,7 @@ mod tests {
     #[test]
     fn include_relative_url_into_pattern() -> Result<()> {
         let manifest_location = Url::parse("http://localhost/whatever")?;
-        let base_url = RelativeUrl::Path(String::from("bar/will-be-deleted"));
+        let base_url = Some(Uri::Relative(String::from("bar/will-be-deleted")));
         let url_pattern = UrlPattern::new(
             Address::new(manifest_location, base_url)?,
             String::from("some-{xxx}.xxx"),

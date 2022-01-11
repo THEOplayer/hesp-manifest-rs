@@ -32,7 +32,7 @@ impl UrlPattern {
         self.pattern
     }
 
-    pub fn into_pattern_including_address(self) -> String {
+    pub fn into_pattern_including_base_url(self) -> String {
         if self.pattern.starts_with('/') || self.pattern.contains("://") {
             self.pattern
         } else {
@@ -92,7 +92,7 @@ mod tests {
         )?;
 
         assert_eq!(
-            url_pattern.into_pattern_including_address(),
+            url_pattern.into_pattern_including_base_url(),
             "bar/some-{xxx}.xxx"
         );
         Ok(())

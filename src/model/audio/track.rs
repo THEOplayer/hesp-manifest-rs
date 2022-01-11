@@ -64,8 +64,8 @@ impl Track for AudioTrack {
         &self.continuation_pattern
     }
 
-    fn set_continuation_pattern(&mut self, pattern: ContinuationPattern) {
-        self.continuation_pattern = pattern;
+    fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern {
+        &mut self.continuation_pattern
     }
 
     fn average_bandwidth(&self) -> Option<u64> {
@@ -96,8 +96,8 @@ impl Initialization for AudioTrack {
         &self.initialization_pattern
     }
 
-    fn set_initialization_pattern(&mut self, pattern: InitializationPattern) {
-        self.initialization_pattern = pattern;
+    fn initialization_pattern_mut(&mut self) -> &mut InitializationPattern {
+        &mut self.initialization_pattern
     }
 
     fn active_sequence_number(&self) -> Option<u64> {

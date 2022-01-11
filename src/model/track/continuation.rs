@@ -28,4 +28,16 @@ impl ContinuationPattern {
     pub fn into_full_pattern(self) -> String {
         self.0.into_full_pattern()
     }
+
+    pub fn set_pattern(&mut self, pattern: String) -> Result<()> {
+        self.0.set_pattern(pattern)
+    }
+
+    pub fn set_absolute_base_url(&mut self, url: Url) {
+        self.0.set_absolute_base_url(url);
+    }
+
+    pub fn set_relative_base_url(&mut self, path: Option<String>) -> Result<()> {
+        self.0.set_relative_base_url(path)
+    }
 }

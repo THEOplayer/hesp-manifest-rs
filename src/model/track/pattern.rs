@@ -61,4 +61,21 @@ impl UrlPattern {
             format!("{}{}", base, self.pattern)
         }
     }
+
+    pub fn set_pattern(&mut self, pattern: String) -> Result<()> {
+        if pattern.contains(self.placeholder) {
+            self.pattern = pattern;
+            Ok(())
+        } else {
+            Err(Error::InvalidPattern(pattern, self.placeholder))
+        }
+    }
+
+    pub fn set_absolute_base_url(&mut self, url: Url) {
+        self.address.set_absolute_base_url(url);
+    }
+
+    pub fn set_relative_base_url(&mut self, path: Option<String>) -> Result<()> {
+        self.address.set_relative_base_url(path)
+    }
 }

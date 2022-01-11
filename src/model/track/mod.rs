@@ -33,7 +33,7 @@ pub trait Track: Entity {
     fn bandwidth(&self) -> Option<u64>;
 
     fn continuation_pattern(&self) -> &ContinuationPattern;
-    fn set_continuation_pattern(&mut self, pattern: ContinuationPattern);
+    fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern;
 
     fn media_type(&self) -> MediaType;
     fn mime_type(&self) -> &str;

@@ -60,6 +60,15 @@ impl Address {
     pub fn base_url(&self) -> &RelativeUrl {
         &self.base_url
     }
+
+    pub fn set_absolute_base_url(&mut self, url: Url) {
+        self.base_url = RelativeUrl::Absolute(url);
+    }
+
+    pub fn set_relative_base_url(&mut self, path: Option<String>) -> Result<()> {
+        self.base_url = path.try_into()?;
+        Ok(())
+    }
 }
 
 impl fmt::Display for Address {

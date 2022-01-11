@@ -9,7 +9,7 @@ use crate::{Address, Error, Result, Track, UrlPattern};
 
 pub trait Initialization: Track {
     fn initialization_pattern(&self) -> &InitializationPattern;
-    fn set_initialization_pattern(&mut self, pattern: InitializationPattern);
+    fn initialization_pattern_mut(&mut self) -> &mut InitializationPattern;
     fn active_sequence_number(&self) -> Option<u64>;
 
     fn validate_active(&self) -> Result<()> {
@@ -81,6 +81,18 @@ impl InitializationPattern {
 
     pub fn into_full_pattern(self) -> String {
         self.0.into_full_pattern()
+    }
+
+    pub fn set_pattern(&mut self, pattern: String) -> Result<()> {
+        self.0.set_pattern(pattern)
+    }
+
+    pub fn set_absolute_base_url(&mut self, url: Url) {
+        self.0.set_absolute_base_url(url);
+    }
+
+    pub fn set_relative_base_url(&mut self, path: Option<String>) -> Result<()> {
+        self.0.set_relative_base_url(path)
     }
 }
 

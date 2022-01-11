@@ -53,8 +53,8 @@ impl Track for MetadataTrack {
     fn continuation_pattern(&self) -> &ContinuationPattern {
         &self.continuation_pattern
     }
-    fn set_continuation_pattern(&mut self, pattern: ContinuationPattern) {
-        self.continuation_pattern = pattern;
+    fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern {
+        &mut self.continuation_pattern
     }
     fn average_bandwidth(&self) -> Option<u64> {
         self.average_bandwidth

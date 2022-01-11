@@ -12,15 +12,13 @@ pub struct UrlPattern {
 
 impl UrlPattern {
     pub fn new(address: Address, pattern: String, placeholder: &'static str) -> Result<Self> {
-        if pattern.contains(placeholder) {
-            Ok(Self {
-                base_address: address,
-                pattern,
-                placeholder,
-            })
-        } else {
-            Err(Error::InvalidPattern(pattern, placeholder))
-        }
+        let result = Self {
+            base_address: address,
+            pattern,
+            placeholder,
+        };
+        result.validate()?;
+        Ok(result)
     }
 
     pub fn resolve(&self, input: &str) -> Result<Url> {
@@ -58,12 +56,8 @@ impl UrlPattern {
     }
 
     pub fn set_pattern(&mut self, pattern: String) -> Result<()> {
-        if pattern.contains(self.placeholder) {
-            self.pattern = pattern;
-            Ok(())
-        } else {
-            Err(Error::InvalidPattern(pattern, self.placeholder))
-        }
+        self.pattern = pattern;
+        self.validate()
     }
 
     pub fn base_url(&self) -> Option<&Uri> {
@@ -72,6 +66,17 @@ impl UrlPattern {
 
     pub fn set_base_url(&mut self, base_url: Option<Uri>) -> Result<()> {
         self.base_address.set_uri(base_url)
+    }
+
+    fn validate(&self) -> Result<()> {
+        if !self.pattern.contains(self.placeholder) {
+            return Err(Error::InvalidPattern(
+                self.pattern.clone(),
+                self.placeholder,
+            ));
+        }
+        self.resolve("")?;
+        Ok(())
     }
 }
 

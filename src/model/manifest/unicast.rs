@@ -3,7 +3,7 @@ use url::Url;
 
 use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    AudioTrack, DateTime, Error, LiveStream, Manifest, ManifestData, ManifestDeserialize,
+    Address, AudioTrack, DateTime, Error, LiveStream, Manifest, ManifestData, ManifestDeserialize,
     ManifestSerialize, MetadataTrack, Presentation, Result, StreamType, VideoTrack,
 };
 
@@ -14,7 +14,6 @@ pub struct UnicastManifest {
     pub(super) fallback_poll_rate: u64,
     pub(super) presentations: EntityMap<Presentation>,
     pub(super) stream_type: StreamType,
-    pub(super) location: Url,
 }
 
 impl UnicastManifest {
@@ -44,11 +43,11 @@ impl UnicastManifest {
 
 impl Manifest for UnicastManifest {
     fn new(location: Url, data: ManifestData) -> Result<Self> {
-        let url = data.content_base_url.resolve(&location)?;
+        let address = Address::new(location, data.content_base_url)?;
         let presentations = data
             .presentations
             .into_iter()
-            .map(|p| Presentation::new(&url, p))
+            .map(|p| Presentation::new(&address, p))
             .into_entities()?;
         for presentation in &presentations {
             presentation.ensure_unicast()?;
@@ -59,7 +58,6 @@ impl Manifest for UnicastManifest {
             fallback_poll_rate: data.fallback_poll_rate.into(),
             presentations,
             stream_type: data.stream_type,
-            location,
         };
 
         Ok(manifest)

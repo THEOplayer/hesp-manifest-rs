@@ -1,3 +1,4 @@
+pub use address::Address;
 pub use audio::*;
 pub use date_time::DateTime;
 pub use duration::ScaledDuration;
@@ -16,6 +17,7 @@ pub use track::*;
 pub use transmission::*;
 pub use video::*;
 
+mod address;
 mod audio;
 mod date_time;
 mod duration;

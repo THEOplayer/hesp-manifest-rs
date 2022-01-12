@@ -1,9 +1,7 @@
-use url::Url;
-
 use crate::util::Entity;
 use crate::{
-    ContinuationPattern, Error, MediaType, MetadataTrackData, Result, ScaledDuration, ScaledValue,
-    Segment, SegmentId, Segments, Track, TrackTransmission, TrackUid, ValidateTrack,
+    Address, ContinuationPattern, Error, MediaType, MetadataTrackData, Result, ScaledDuration,
+    ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission, TrackUid, ValidateTrack,
 };
 
 #[derive(Debug, Clone)]
@@ -55,8 +53,8 @@ impl Track for MetadataTrack {
     fn continuation_pattern(&self) -> &ContinuationPattern {
         &self.continuation_pattern
     }
-    fn set_continuation_pattern(&mut self, pattern: ContinuationPattern) {
-        self.continuation_pattern = pattern;
+    fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern {
+        &mut self.continuation_pattern
     }
     fn average_bandwidth(&self) -> Option<u64> {
         self.average_bandwidth
@@ -85,23 +83,22 @@ impl MetadataTrack {
     pub fn new(
         presentation_id: String,
         switching_set_id: String,
-        switching_set_url: &Url,
+        switching_set_address: &Address,
         mime_type: String,
         data: MetadataTrackData,
     ) -> Result<Self> {
         let id = data.id;
-        let base_url = data.base_url.resolve(switching_set_url)?;
+        let address = switching_set_address.join(data.base_url)?;
         let continuation_pattern = data
             .continuation_pattern
             .ok_or_else(|| Error::MissingContinuationPattern(id.clone()))?;
-
         Ok(Self {
             bandwidth: data.bandwidth.map(u64::from),
             uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),
             segments: data.segments,
             active_segment_id: data.active_segment_id,
             average_bandwidth: data.average_bandwidth.map(u64::from),
-            continuation_pattern: ContinuationPattern::new(&base_url, continuation_pattern)?,
+            continuation_pattern: ContinuationPattern::new(address, continuation_pattern)?,
             label: data.label,
             media_time_offset: data.media_time_offset.unwrap_or_default(),
             mime_type,

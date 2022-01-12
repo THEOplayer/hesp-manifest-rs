@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use url::Url;
 
-use crate::util::RelativeUrl;
+use crate::util::Uri;
 use crate::{
     AudioSwitchingSetData, MetadataSwitchingSetData, Presentation, PresentationEvent,
     PresentationMulticastMetadata, ScaledValue, TimeBounds, VideoSwitchingSetData,
@@ -16,8 +15,7 @@ pub struct PresentationData {
     pub time_bounds: TimeBounds,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub audio: Vec<AudioSwitchingSetData>,
-    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
-    pub base_url: RelativeUrl,
+    pub base_url: Option<Uri>,
     pub current_time: Option<ScaledValue>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub events: Vec<PresentationEvent>,
@@ -28,17 +26,17 @@ pub struct PresentationData {
     pub multicast_metadata: Option<PresentationMulticastMetadata>,
 }
 
-impl PresentationData {
-    pub fn new(input: Presentation, location: &Url) -> Self {
+impl From<Presentation> for PresentationData {
+    fn from(input: Presentation) -> Self {
         Self {
             id: input.id,
             time_bounds: input.time_bounds,
             audio: input
                 .audio
                 .into_iter()
-                .map(|a| AudioSwitchingSetData::new(a, location))
+                .map(AudioSwitchingSetData::from)
                 .collect(),
-            base_url: RelativeUrl::None,
+            base_url: None,
             current_time: input.current_time,
             events: input
                 .events
@@ -48,17 +46,19 @@ impl PresentationData {
             metadata: input
                 .metadata
                 .into_iter()
-                .map(|m| MetadataSwitchingSetData::new(m, location))
+                .map(MetadataSwitchingSetData::from)
                 .collect(),
             video: input
                 .video
                 .into_iter()
-                .map(|v| VideoSwitchingSetData::new(v, location))
+                .map(VideoSwitchingSetData::from)
                 .collect(),
             multicast_metadata: input.transmission.into(),
         }
     }
+}
 
+impl PresentationData {
     pub fn normalize(&mut self) {
         for audio in &mut self.audio {
             audio.normalize();

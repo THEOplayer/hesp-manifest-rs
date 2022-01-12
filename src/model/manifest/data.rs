@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::util::{RelativeUrl, UInt};
+use crate::util::{UInt, Uri};
 use crate::{legacy, DateTime, MulticastManifest, PresentationData, StreamType, UnicastManifest};
 
 #[derive(Deserialize, Debug, Clone)]
@@ -33,8 +33,7 @@ pub struct ManifestData {
     pub presentations: Vec<PresentationData>,
     #[serde(flatten)]
     pub stream_type: StreamType,
-    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
-    pub content_base_url: RelativeUrl,
+    pub content_base_url: Option<Uri>,
 }
 
 impl ManifestData {
@@ -65,10 +64,10 @@ impl From<UnicastManifest> for ManifestData {
             presentations: input
                 .presentations
                 .into_iter()
-                .map(|p| PresentationData::new(p, &input.location))
+                .map(PresentationData::from)
                 .collect(),
             stream_type: input.stream_type,
-            content_base_url: RelativeUrl::None,
+            content_base_url: None,
         };
         result.normalize();
         result

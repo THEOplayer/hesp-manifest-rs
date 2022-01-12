@@ -1,69 +1,105 @@
 use url::Url;
 
-use crate::{Error, Result};
+use crate::util::Uri;
+use crate::{Address, Error, Result};
 
 #[derive(Debug, Clone)]
 pub struct UrlPattern {
-    base: Url,
+    base_address: Address,
     pattern: String,
     placeholder: &'static str,
 }
 
 impl UrlPattern {
-    pub fn new(base: &Url, pattern: String, placeholder: &'static str) -> Result<Self> {
-        base.join(&pattern)?;
-        if pattern.contains(placeholder) {
-            Ok(Self {
-                base: base.join(".").unwrap(),
-                pattern,
-                placeholder,
-            })
-        } else {
-            Err(Error::InvalidPattern(pattern, placeholder))
-        }
+    pub fn new(address: Address, pattern: String, placeholder: &'static str) -> Result<Self> {
+        let result = Self {
+            base_address: address,
+            pattern,
+            placeholder,
+        };
+        result.validate()?;
+        Ok(result)
     }
 
     pub fn resolve(&self, input: &str) -> Result<Url> {
-        let rel = self.pattern.replace(self.placeholder, input);
-        Ok(self.base.join(&rel)?)
+        let path = &self.pattern.replace(self.placeholder, input);
+        Ok(self.base_address.url().join(path)?)
     }
 
-    pub fn make_relative(&self, url: &Url) -> String {
+    pub fn into_pattern(self) -> String {
+        self.pattern
+    }
+
+    pub fn into_pattern_including_base_url(self) -> String {
         if self.pattern.starts_with('/') || self.pattern.contains("://") {
-            self.pattern.clone()
+            self.pattern
         } else {
-            let base = url
-                .make_relative(&self.base)
-                .unwrap_or_else(|| self.base.to_string());
+            let base = match self.base_address.uri() {
+                Some(Uri::Absolute(url)) => url.join(".").unwrap().to_string(),
+                Some(Uri::Relative(path)) => {
+                    let absolute = self
+                        .base_address
+                        .manifest_location()
+                        .join(path)
+                        .unwrap()
+                        .join(".")
+                        .unwrap();
+                    self.base_address
+                        .manifest_location()
+                        .make_relative(&absolute)
+                        .unwrap()
+                }
+                None => return self.pattern,
+            };
             format!("{}{}", base, self.pattern)
         }
+    }
+
+    pub fn set_pattern(&mut self, pattern: String) -> Result<()> {
+        self.pattern = pattern;
+        self.validate()
+    }
+
+    pub fn base_url(&self) -> Option<&Uri> {
+        self.base_address.uri()
+    }
+
+    pub fn set_base_url(&mut self, base_url: Option<Uri>) -> Result<()> {
+        self.base_address.set_uri(base_url)
+    }
+
+    fn validate(&self) -> Result<()> {
+        if !self.pattern.contains(self.placeholder) {
+            return Err(Error::InvalidPattern(
+                self.pattern.clone(),
+                self.placeholder,
+            ));
+        }
+        self.resolve("")?;
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use anyhow::Result;
+
     use super::*;
 
     #[test]
-    fn relative_pattern() {
-        let base = &Url::parse("https://example.com/s2/audio/").unwrap();
-        let relative = UrlPattern::new(base, "128k-init-{initId}.mp4".to_owned(), "{initId}")
-            .unwrap()
-            .make_relative(&Url::parse("https://example.com/manifest.json").unwrap());
-
-        assert_eq!(relative, "s2/audio/128k-init-{initId}.mp4");
-    }
-
-    #[test]
-    fn pattern_relative_to_foreign_url() {
-        let base = &Url::parse("https://example.com/s2/audio/").unwrap();
-        let relative = UrlPattern::new(base, "128k-init-{initId}.mp4".to_owned(), "{initId}")
-            .unwrap()
-            .make_relative(&Url::parse("https://foreign.com/manifest.json").unwrap());
+    fn include_relative_url_into_pattern() -> Result<()> {
+        let manifest_location = Url::parse("http://localhost/whatever")?;
+        let base_url = Some(Uri::Relative(String::from("bar/will-be-deleted")));
+        let url_pattern = UrlPattern::new(
+            Address::new(manifest_location, base_url)?,
+            String::from("some-{xxx}.xxx"),
+            "{xxx}",
+        )?;
 
         assert_eq!(
-            relative,
-            "https://example.com/s2/audio/128k-init-{initId}.mp4"
+            url_pattern.into_pattern_including_base_url(),
+            "bar/some-{xxx}.xxx"
         );
+        Ok(())
     }
 }

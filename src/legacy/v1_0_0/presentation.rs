@@ -1,4 +1,4 @@
-use crate::util::RelativeUrl;
+use crate::util::Uri;
 use crate::{
     MetadataSwitchingSetData, PresentationEvent, ScaledValue, TimeBounds, VideoSwitchingSetData,
 };
@@ -11,7 +11,7 @@ pub struct PresentationData {
     pub time_bounds: TimeBounds,
     #[serde(default)]
     pub audio: Vec<super::AudioSwitchingSetData>,
-    pub base_url: RelativeUrl,
+    pub base_url: Option<Uri>,
     pub current_time: Option<ScaledValue>,
     #[serde(default)]
     pub events: Vec<PresentationEvent>,

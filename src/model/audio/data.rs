@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use url::Url;
 
-use crate::util::{Entity, RelativeUrl, UInt};
+use crate::util::{Entity, UInt, Uri};
 use crate::{
     normalize_tracks, AudioMimeType, AudioSwitchingSet, AudioTrack, Language, SamplesPerFrame,
     ScaledDuration, ScaledValue, SegmentId, Segments, SwitchingSetProtection,
@@ -17,8 +16,7 @@ pub struct AudioSwitchingSetData {
     pub language: Language,
     pub tracks: Vec<AudioTrackData>,
     pub align_id: Option<String>,
-    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
-    pub base_url: RelativeUrl,
+    pub base_url: Option<Uri>,
     pub channels: Option<UInt>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
@@ -31,18 +29,14 @@ pub struct AudioSwitchingSetData {
     pub sample_rate: Option<UInt>,
 }
 
-impl AudioSwitchingSetData {
-    pub fn new(input: AudioSwitchingSet, location: &Url) -> Self {
+impl From<AudioSwitchingSet> for AudioSwitchingSetData {
+    fn from(input: AudioSwitchingSet) -> Self {
         Self {
             id: input.id,
             language: input.language,
-            tracks: input
-                .tracks
-                .into_iter()
-                .map(|track| AudioTrackData::new(track, location))
-                .collect(),
+            tracks: input.tracks.into_iter().map(AudioTrackData::from).collect(),
             align_id: input.align_id,
-            base_url: RelativeUrl::None,
+            base_url: None,
             channels: input.channels.map(UInt::from),
             codecs: None,
             continuation_pattern: None,
@@ -55,7 +49,9 @@ impl AudioSwitchingSetData {
             sample_rate: None,
         }
     }
+}
 
+impl AudioSwitchingSetData {
     pub fn normalize(&mut self) {
         normalize_tracks!(
             self,
@@ -80,8 +76,7 @@ pub struct AudioTrackData {
     pub active_segment_id: Option<SegmentId>,
     pub active_sequence_number: Option<UInt>,
     pub average_bandwidth: Option<UInt>,
-    #[serde(skip_serializing_if = "RelativeUrl::is_none")]
-    pub base_url: RelativeUrl,
+    pub base_url: Option<Uri>,
     pub channels: Option<UInt>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
@@ -94,9 +89,23 @@ pub struct AudioTrackData {
     pub toi_limits: Option<TransferObjectIdentifierLimits>,
 }
 
-impl AudioTrackData {
-    pub fn new(input: AudioTrack, location: &Url) -> Self {
+impl From<AudioTrack> for AudioTrackData {
+    fn from(input: AudioTrack) -> Self {
         let id = input.id().to_owned();
+        let (base_url, continuation_pattern, initialization_pattern) =
+            if input.continuation_pattern.base_url() == input.initialization_pattern.base_url() {
+                (
+                    input.continuation_pattern.base_url().cloned(),
+                    input.continuation_pattern.into_pattern(),
+                    input.initialization_pattern.into_pattern(),
+                )
+            } else {
+                (
+                    None,
+                    input.continuation_pattern.into_full_pattern(),
+                    input.initialization_pattern.into_full_pattern(),
+                )
+            };
         Self {
             id,
             bandwidth: input.bandwidth.into(),
@@ -104,13 +113,13 @@ impl AudioTrackData {
             active_segment_id: input.active_segment_id,
             active_sequence_number: input.active_sequence_number.map(UInt::from),
             average_bandwidth: input.average_bandwidth.map(UInt::from),
-            base_url: RelativeUrl::None,
+            base_url,
             channels: input.channels.map(UInt::from),
             codecs: Some(input.codecs),
-            continuation_pattern: Some(input.continuation_pattern.make_relative(location)),
+            continuation_pattern: Some(continuation_pattern),
             samples_per_frame: Some(input.samples_per_frame),
             label: input.label,
-            initialization_pattern: Some(input.initialization_pattern.make_relative(location)),
+            initialization_pattern: Some(initialization_pattern),
             media_time_offset: Some(input.media_time_offset),
             sample_rate: Some(input.sample_rate.into()),
             segment_duration: input.segment_duration,

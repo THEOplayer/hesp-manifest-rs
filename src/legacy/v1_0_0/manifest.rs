@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::util::{RelativeUrl, UInt};
+use crate::util::{UInt, Uri};
 use crate::{DateTime, StreamType};
 
 #[derive(Deserialize, Debug, Clone)]
@@ -11,7 +11,7 @@ pub struct ManifestData {
     pub presentations: Vec<super::PresentationData>,
     #[serde(flatten)]
     pub stream_type: StreamType,
-    pub content_base_url: RelativeUrl,
+    pub content_base_url: Option<Uri>,
 }
 
 impl From<ManifestData> for crate::ManifestData {

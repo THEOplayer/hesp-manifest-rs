@@ -1,9 +1,7 @@
-use url::Url;
-
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    MediaType, Result, SwitchingSet, SwitchingSetProtection, ValidateSwitchingSet, VideoMimeType,
-    VideoSwitchingSetData, VideoTrack,
+    Address, MediaType, Result, SwitchingSet, SwitchingSetProtection, ValidateSwitchingSet,
+    VideoMimeType, VideoSwitchingSetData, VideoTrack,
 };
 
 #[derive(Debug, Clone)]
@@ -59,10 +57,10 @@ impl ValidateSwitchingSet<VideoTrack> for VideoSwitchingSet {}
 impl VideoSwitchingSet {
     pub fn new(
         presentation_id: &str,
-        presentation_url: &Url,
+        presentation_address: &Address,
         data: VideoSwitchingSetData,
     ) -> Result<Self> {
-        let base_url = data.base_url.resolve(presentation_url)?;
+        let address = presentation_address.join(data.base_url)?;
         let mime_type = data.mime_type.unwrap_or_default();
         let tracks = data
             .tracks
@@ -71,7 +69,7 @@ impl VideoSwitchingSet {
                 VideoTrack::new(
                     presentation_id.to_owned(),
                     data.id.clone(),
-                    &base_url,
+                    &address,
                     mime_type.clone(),
                     track
                         .with_default_codecs(&data.codecs)

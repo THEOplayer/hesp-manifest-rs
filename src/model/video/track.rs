@@ -1,10 +1,8 @@
-use url::Url;
-
 use crate::util::Entity;
 use crate::{
-    ContinuationPattern, Error, Initialization, InitializationPattern, MediaType, Resolution,
-    Result, ScaledDuration, ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission,
-    TrackUid, ValidateTrack, VideoMimeType, VideoTrackData,
+    Address, ContinuationPattern, Error, Initialization, InitializationPattern, MediaType,
+    Resolution, Result, ScaledDuration, ScaledValue, Segment, SegmentId, Segments, Track,
+    TrackTransmission, TrackUid, ValidateTrack, VideoMimeType, VideoTrackData,
 };
 
 #[derive(Debug, Clone)]
@@ -65,8 +63,8 @@ impl Track for VideoTrack {
         &self.continuation_pattern
     }
 
-    fn set_continuation_pattern(&mut self, pattern: ContinuationPattern) {
-        self.continuation_pattern = pattern;
+    fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern {
+        &mut self.continuation_pattern
     }
 
     fn average_bandwidth(&self) -> Option<u64> {
@@ -97,8 +95,8 @@ impl Initialization for VideoTrack {
         &self.initialization_pattern
     }
 
-    fn set_initialization_pattern(&mut self, pattern: InitializationPattern) {
-        self.initialization_pattern = pattern;
+    fn initialization_pattern_mut(&mut self) -> &mut InitializationPattern {
+        &mut self.initialization_pattern
     }
 
     fn active_sequence_number(&self) -> Option<u64> {
@@ -110,12 +108,12 @@ impl VideoTrack {
     pub(super) fn new(
         presentation_id: String,
         switching_set_id: String,
-        switching_set_url: &Url,
+        switching_set_address: &Address,
         mime_type: VideoMimeType,
         data: VideoTrackData,
     ) -> Result<Self> {
         let id = data.id;
-        let base_url = data.base_url.resolve(switching_set_url)?;
+        let address = switching_set_address.join(data.base_url)?;
         let codecs = data
             .codecs
             .ok_or_else(|| Error::MissingCodecs(id.clone()))?;
@@ -138,10 +136,10 @@ impl VideoTrack {
             active_sequence_number: data.active_sequence_number.map(u64::from),
             average_bandwidth: data.average_bandwidth.map(u64::from),
             codecs,
-            continuation_pattern: ContinuationPattern::new(&base_url, continuation_pattern)?,
+            continuation_pattern: ContinuationPattern::new(address.clone(), continuation_pattern)?,
             frame_rate,
             label: data.label,
-            initialization_pattern: InitializationPattern::new(&base_url, initialization_pattern)?,
+            initialization_pattern: InitializationPattern::new(address, initialization_pattern)?,
             media_time_offset: data.media_time_offset.unwrap_or_default(),
             mime_type,
             segment_duration: data.segment_duration,

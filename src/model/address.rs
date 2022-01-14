@@ -114,4 +114,19 @@ mod tests {
         assert_eq!(address.to_string(), "http://localhost/audio/96k");
         Ok(())
     }
+
+    #[test]
+    fn make_relative_url_absolute() -> Result<()> {
+        let base_url = Some(Uri::Relative("bar/abc".to_string()));
+        let mut address = Address::new("http://localhost/foo/".try_into()?, base_url)?;
+
+        address.make_absolute();
+
+        assert_eq!(
+            address.uri(),
+            Some(&Uri::Absolute("http://localhost/foo/bar/abc".try_into()?))
+        );
+
+        Ok(())
+    }
 }

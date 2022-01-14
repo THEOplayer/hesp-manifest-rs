@@ -75,6 +75,14 @@ impl InitializationPattern {
         self.0.base_url()
     }
 
+    pub fn set_base_url(&mut self, base_url: Option<Uri>) -> Result<()> {
+        self.0.set_base_url(base_url)
+    }
+
+    pub fn make_base_url_absolute(&mut self) {
+        self.0.make_base_url_absolute()
+    }
+
     pub fn into_pattern(self) -> String {
         self.0.into_pattern()
     }
@@ -85,10 +93,6 @@ impl InitializationPattern {
 
     pub fn set_pattern(&mut self, pattern: String) -> Result<()> {
         self.0.set_pattern(pattern)
-    }
-
-    pub fn set_base_url(&mut self, base_url: Option<Uri>) -> Result<()> {
-        self.0.set_base_url(base_url)
     }
 }
 

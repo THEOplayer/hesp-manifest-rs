@@ -71,6 +71,13 @@ impl Address {
         self.uri = uri;
         Ok(())
     }
+
+    pub fn make_absolute(&mut self) {
+        let new_address = self
+            .join(Some(Uri::Absolute(self.url().into_owned())))
+            .unwrap(); // Absolute URLs cannot cause an Err in Address::join
+        *self = new_address;
+    }
 }
 
 impl fmt::Display for Address {

@@ -68,6 +68,10 @@ impl UrlPattern {
         self.base_address.set_uri(base_url)
     }
 
+    pub fn make_base_url_absolute(&mut self) {
+        self.base_address.make_absolute()
+    }
+
     fn validate(&self) -> Result<()> {
         if !self.pattern.contains(self.placeholder) {
             return Err(Error::InvalidPattern(

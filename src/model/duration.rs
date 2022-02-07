@@ -25,6 +25,12 @@ impl From<ScaledDuration> for Duration {
     }
 }
 
+impl From<ScaledDuration> for UnsignedScaledValue {
+    fn from(duration: ScaledDuration) -> Self {
+        duration.0
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -18,7 +18,7 @@ impl UnsignedScaledValue {
         Self { value, scale }
     }
 
-    pub fn round_down(self) -> u64 {
+    pub fn floor(self) -> u64 {
         self.value / u64::from(self.scale)
     }
 }

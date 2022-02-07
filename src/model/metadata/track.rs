@@ -92,6 +92,9 @@ impl MetadataTrack {
         let continuation_pattern = data
             .continuation_pattern
             .ok_or_else(|| Error::MissingContinuationPattern(id.clone()))?;
+        if data.segment_duration.is_none() {
+            data.segments.ensure_time_bounds_defined(&id)?;
+        }
         Ok(Self {
             bandwidth: data.bandwidth.map(u64::from),
             uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),

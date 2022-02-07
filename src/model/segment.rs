@@ -78,8 +78,8 @@ impl Segment {
     pub fn duration(&self) -> Option<ScaledDuration> {
         self.time_bounds?.duration()
     }
-    pub const fn has_time_bounds(&self) -> bool {
-        self.time_bounds.is_some()
+    pub const fn time_bounds(&self) -> Option<TimeBounds> {
+        self.time_bounds
     }
 }
 
@@ -103,6 +103,19 @@ impl TryFrom<Vec<Segment>> for Segments {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(try_from = "Vec<Segment>")]
 pub struct Segments(Vec<Segment>);
+
+impl Segments {
+    pub(crate) fn ensure_time_bounds_defined(&self, track_id: &str) -> Result<()> {
+        for (a, b) in self.iter().tuple_windows() {
+            let end = a.time_bounds.map(|bounds| bounds.end_time());
+            let start = b.time_bounds.map(|bounds| bounds.start_time());
+            if end.is_none() || start.is_none() || end != start {
+                return Err(Error::MissingSegmentDuration(track_id.to_string()));
+            }
+        }
+        Ok(())
+    }
+}
 
 impl Deref for Segments {
     type Target = [Segment];

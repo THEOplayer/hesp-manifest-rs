@@ -130,7 +130,9 @@ impl VideoTrack {
         let frame_rate = data
             .frame_rate
             .ok_or_else(|| Error::MissingFrameRate(id.clone()))?;
-
+        if data.segment_duration.is_none() {
+            data.segments.ensure_time_bounds_defined(&id)?;
+        }
         Ok(Self {
             bandwidth: data.bandwidth.into(),
             uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),

@@ -1,6 +1,6 @@
 use gcd::Gcd;
 use serde::{Deserialize, Serialize};
-use std::ops::Mul;
+use std::ops::{Div, Mul};
 
 use crate::util::UInt;
 use crate::Scale;
@@ -44,6 +44,21 @@ impl Mul<UnsignedScaledValue> for UnsignedScaledValue {
     fn mul(self, other: Self) -> Self {
         let value = u128::from(self.value) * u128::from(other.value);
         let scale = u128::from(u64::from(self.scale)) * u128::from(u64::from(other.scale));
+        let gcd = value.gcd(scale);
+        Self::new(
+            (value / gcd) as u64,
+            ((scale / gcd) as u64).try_into().unwrap(),
+        )
+    }
+}
+
+impl Div<UnsignedScaledValue> for UnsignedScaledValue {
+    type Output = Self;
+
+    #[allow(clippy::cast_possible_truncation)]
+    fn div(self, other: Self) -> Self {
+        let value = u128::from(self.value) * u128::from(u64::from(other.scale));
+        let scale = u128::from(u64::from(self.scale)) * u128::from(other.value);
         let gcd = value.gcd(scale);
         Self::new(
             (value / gcd) as u64,

@@ -44,6 +44,18 @@ impl TryFrom<u64> for Scale {
     }
 }
 
+impl TryFrom<u32> for Scale {
+    type Error = Error;
+
+    fn try_from(value: u32) -> Result<Self> {
+        if value == 0 {
+            Err(Error::NullScale())
+        } else {
+            Ok(Self(value.into()))
+        }
+    }
+}
+
 impl From<Scale> for u64 {
     fn from(scale: Scale) -> Self {
         scale.0

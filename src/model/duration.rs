@@ -14,6 +14,11 @@ pub struct ScaledDuration {
 }
 
 impl ScaledDuration {
+
+    pub fn new(value: u64, scale: Scale) -> Self {
+        Self { value, scale }
+    }
+
     pub const fn is_zero(&self) -> bool {
         self.value == 0
     }

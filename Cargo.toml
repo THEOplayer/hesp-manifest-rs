@@ -1,6 +1,6 @@
 [package]
 name = "hesp-manifest"
-version = "0.4.0-beta.3"
+version = "0.4.0-beta.4"
 edition = "2021"
 authors = ["THEO Technologies <info@theoplayer.com>"]
 publish = ["theo"]
@@ -17,6 +17,7 @@ serde_path_to_error = "0.1"
 uuid = { version = "0.8", features = ["serde", "v4"] }
 url = { version = "2", features = ["serde"] }
 thiserror = "1.0"
+gcd = "2.1.0"
 
 [dev-dependencies]
 anyhow = "1.0"

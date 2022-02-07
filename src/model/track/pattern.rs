@@ -69,7 +69,7 @@ impl UrlPattern {
     }
 
     pub fn make_base_url_absolute(&mut self) {
-        self.base_address.make_absolute()
+        self.base_address.make_absolute();
     }
 
     fn validate(&self) -> Result<()> {

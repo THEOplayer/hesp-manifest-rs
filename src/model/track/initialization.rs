@@ -80,7 +80,7 @@ impl InitializationPattern {
     }
 
     pub fn make_base_url_absolute(&mut self) {
-        self.0.make_base_url_absolute()
+        self.0.make_base_url_absolute();
     }
 
     pub fn into_pattern(self) -> String {

@@ -14,7 +14,6 @@ pub struct ScaledDuration {
 }
 
 impl ScaledDuration {
-
     pub fn new(value: u64, scale: Scale) -> Self {
         Self { value, scale }
     }

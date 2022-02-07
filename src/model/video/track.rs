@@ -1,8 +1,8 @@
 use crate::util::Entity;
 use crate::{
-    Address, ContinuationPattern, Error, Initialization, InitializationPattern, MediaType,
-    Resolution, Result, ScaledDuration, ScaledValue, Segment, SegmentId, Segments, Track,
-    TrackTransmission, TrackUid, ValidateTrack, VideoMimeType, VideoTrackData,
+    Address, ContinuationPattern, Error, FrameRate, Initialization, InitializationPattern,
+    MediaType, Resolution, Result, ScaledDuration, ScaledValue, Segment, SegmentId, Segments,
+    Track, TrackTransmission, TrackUid, ValidateTrack, VideoMimeType, VideoTrackData,
 };
 
 #[derive(Debug, Clone)]
@@ -16,7 +16,7 @@ pub struct VideoTrack {
     pub(super) average_bandwidth: Option<u64>,
     pub(super) codecs: String,
     pub(super) continuation_pattern: ContinuationPattern,
-    pub(super) frame_rate: ScaledValue,
+    pub(super) frame_rate: FrameRate,
     pub(super) label: Option<String>,
     pub(super) initialization_pattern: InitializationPattern,
     pub(super) media_time_offset: ScaledValue,
@@ -101,6 +101,10 @@ impl Initialization for VideoTrack {
 
     fn active_sequence_number(&self) -> Option<u64> {
         self.active_sequence_number
+    }
+
+    fn frame_rate(&self) -> FrameRate {
+        self.frame_rate
     }
 }
 

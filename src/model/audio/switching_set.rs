@@ -1,8 +1,11 @@
 use serde::{Deserialize, Serialize};
+use std::ops::Deref;
 
-use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, UInt};
+use crate::util::{
+    check_js_safety_unsigned, Entity, EntityIter, EntityIterMut, EntityMap, FromEntities,
+};
 use crate::{
-    Address, AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, MediaType, Result,
+    Address, AudioMimeType, AudioSwitchingSetData, AudioTrack, Error, Language, MediaType, Result,
     SwitchingSet, SwitchingSetProtection, ValidateSwitchingSet,
 };
 
@@ -39,16 +42,16 @@ impl SwitchingSet for AudioSwitchingSet {
         self.tracks.iter()
     }
 
-    fn tracks_mut(&mut self) -> EntityIterMut<AudioTrack> {
-        self.tracks.iter_mut()
-    }
-
     fn track(&self, id: &str) -> Option<&AudioTrack> {
         self.tracks.get(id)
     }
 
     fn track_mut(&mut self, id: &str) -> Option<&mut AudioTrack> {
         self.tracks.get_mut(id)
+    }
+
+    fn tracks_mut(&mut self) -> EntityIterMut<AudioTrack> {
+        self.tracks.iter_mut()
     }
 
     fn mime_type(&self) -> &str {
@@ -59,11 +62,33 @@ impl SwitchingSet for AudioSwitchingSet {
 impl ValidateSwitchingSet<AudioTrack> for AudioSwitchingSet {}
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Deserialize, Serialize, Copy)]
-pub struct SamplesPerFrame(#[serde(deserialize_with = "UInt::deserialize_u64")] u64);
+#[serde(try_from = "u64")]
+pub struct SamplesPerFrame(u64);
+
+impl TryFrom<u64> for SamplesPerFrame {
+    type Error = Error;
+
+    fn try_from(value: u64) -> Result<Self> {
+        if value == 0 {
+            Err(Error::NullSamplesPerFrame())
+        } else {
+            check_js_safety_unsigned(value);
+            Ok(Self(value))
+        }
+    }
+}
 
 impl Default for SamplesPerFrame {
     fn default() -> Self {
         Self(1024)
+    }
+}
+
+impl Deref for SamplesPerFrame {
+    type Target = u64;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
 

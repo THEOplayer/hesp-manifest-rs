@@ -1,7 +1,7 @@
 use crate::util::Entity;
 use crate::{
-    Address, AudioMimeType, AudioTrackData, ContinuationPattern, Error, Initialization,
-    InitializationPattern, MediaType, Result, SamplesPerFrame, ScaledDuration, ScaledValue,
+    Address, AudioMimeType, AudioTrackData, ContinuationPattern, Error, FrameRate, Initialization,
+    InitializationPattern, MediaType, Result, SamplesPerFrame, Scale, ScaledDuration, ScaledValue,
     Segment, SegmentId, Segments, Track, TrackTransmission, TrackUid, ValidateTrack,
 };
 
@@ -102,6 +102,13 @@ impl Initialization for AudioTrack {
 
     fn active_sequence_number(&self) -> Option<u64> {
         self.active_sequence_number
+    }
+
+    fn frame_rate(&self) -> FrameRate {
+        FrameRate::new(
+            self.sample_rate,
+            Scale::try_from(*self.samples_per_frame).unwrap(),
+        )
     }
 }
 

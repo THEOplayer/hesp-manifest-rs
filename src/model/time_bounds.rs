@@ -36,10 +36,10 @@ impl TimeBounds {
     }
 
     pub fn duration(self) -> Option<ScaledDuration> {
-        Some(ScaledDuration {
-            value: self.end_time? - self.start_time?,
-            scale: self.scale,
-        })
+        Some(ScaledDuration::new(
+            self.end_time? - self.start_time?,
+            self.scale,
+        ))
     }
 
     pub const fn start_time(&self) -> Option<u64> {

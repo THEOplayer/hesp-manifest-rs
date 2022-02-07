@@ -9,3 +9,9 @@ impl FrameRate {
         Self(UnsignedScaledValue::new(value, scale))
     }
 }
+
+impl From<FrameRate> for UnsignedScaledValue {
+    fn from(frame_rate: FrameRate) -> Self {
+        frame_rate.0
+    }
+}

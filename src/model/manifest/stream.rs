@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{ScaledDuration, TimeSource, UnsignedScaledValue};
+use crate::{ScaledDuration, TimeSource};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]

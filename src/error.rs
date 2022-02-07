@@ -16,6 +16,12 @@ pub enum Error {
     InvalidVideoMime(String),
     #[error("Presentation with id {0} is active but has no currentTime")]
     MissingCurrentTime(String),
+    #[error("Presentation with id {0} is active but has no startTime")]
+    MissingStartTime(String),
+    #[error(
+        "Presentation with id {0} is active but its currentTime is earlier than its startTime"
+    )]
+    ImpossibleCurrentTime(String),
     #[error("segment id's must be incremented by one: {1} must not follow {0}")]
     InvalidSegmentIds(SegmentId, SegmentId),
     #[error("SwitchingSetProtection must contain at least one system")]

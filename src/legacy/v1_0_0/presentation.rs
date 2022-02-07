@@ -1,6 +1,7 @@
 use crate::util::Uri;
 use crate::{
-    MetadataSwitchingSetData, PresentationEvent, ScaledValue, TimeBounds, VideoSwitchingSetData,
+    MetadataSwitchingSetData, PresentationEvent, TimeBounds, UnsignedScaledValue,
+    VideoSwitchingSetData,
 };
 use serde::Deserialize;
 
@@ -12,7 +13,7 @@ pub struct PresentationData {
     #[serde(default)]
     pub audio: Vec<super::AudioSwitchingSetData>,
     pub base_url: Option<Uri>,
-    pub current_time: Option<ScaledValue>,
+    pub current_time: Option<UnsignedScaledValue>,
     #[serde(default)]
     pub events: Vec<PresentationEvent>,
     #[serde(default)]

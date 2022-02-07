@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 use crate::util::UInt;
-use crate::{Error, Result, Scale, ScaledDuration};
+use crate::{Error, Result, Scale, ScaledDuration, UnsignedScaledValue};
 
 #[skip_serializing_none]
 #[derive(Deserialize, Debug, Serialize, Clone, Copy)]
@@ -42,14 +42,14 @@ impl TimeBounds {
         ))
     }
 
-    pub fn start_time(&self) -> Option<ScaledDuration> {
+    pub fn start_time(&self) -> Option<UnsignedScaledValue> {
         self.start_time
-            .map(|start| ScaledDuration::new(start, self.scale))
+            .map(|start| UnsignedScaledValue::new(start, self.scale))
     }
 
-    pub fn end_time(&self) -> Option<ScaledDuration> {
+    pub fn end_time(&self) -> Option<UnsignedScaledValue> {
         self.end_time
-            .map(|end| ScaledDuration::new(end, self.scale))
+            .map(|end| UnsignedScaledValue::new(end, self.scale))
     }
 }
 

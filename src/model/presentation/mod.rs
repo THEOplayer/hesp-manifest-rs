@@ -87,6 +87,14 @@ impl Presentation {
         return self.transmission().get_type() == TransmissionType::Multicast;
     }
 
+    pub fn time_bounds(&self) -> TimeBounds {
+        self.time_bounds
+    }
+
+    pub fn current_time(&self) -> Option<ScaledValue> {
+        self.current_time
+    }
+
     pub(super) fn validate_active(&self) -> Result<()> {
         if self.current_time.is_none() {
             return Err(Error::MissingCurrentTime(self.id.clone()));

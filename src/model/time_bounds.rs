@@ -42,16 +42,14 @@ impl TimeBounds {
         ))
     }
 
-    pub const fn start_time(&self) -> Option<u64> {
+    pub fn start_time(&self) -> Option<ScaledDuration> {
         self.start_time
+            .map(|start| ScaledDuration::new(start, self.scale))
     }
 
-    pub const fn end_time(&self) -> Option<u64> {
+    pub fn end_time(&self) -> Option<ScaledDuration> {
         self.end_time
-    }
-
-    pub const fn scale(&self) -> Scale {
-        self.scale
+            .map(|end| ScaledDuration::new(end, self.scale))
     }
 }
 

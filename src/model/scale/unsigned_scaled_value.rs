@@ -1,6 +1,7 @@
 use gcd::Gcd;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
+use std::num::TryFromIntError;
 use std::ops::{Div, Mul, Sub};
 
 use crate::util::UInt;
@@ -45,11 +46,7 @@ impl Mul<UnsignedScaledValue> for UnsignedScaledValue {
     fn mul(self, other: Self) -> Self {
         let value = u128::from(self.value) * u128::from(other.value);
         let scale = u128::from(u64::from(self.scale)) * u128::from(u64::from(other.scale));
-        let gcd = value.gcd(scale);
-        Self::new(
-            (value / gcd) as u64,
-            ((scale / gcd) as u64).try_into().unwrap(),
-        )
+        from_u128(value, scale).unwrap_or_else(|_| panic!("attempt to multiply with overflow"))
     }
 }
 
@@ -60,11 +57,7 @@ impl Div<UnsignedScaledValue> for UnsignedScaledValue {
     fn div(self, other: Self) -> Self {
         let value = u128::from(self.value) * u128::from(u64::from(other.scale));
         let scale = u128::from(u64::from(self.scale)) * u128::from(other.value);
-        let gcd = value.gcd(scale);
-        Self::new(
-            (value / gcd) as u64,
-            ((scale / gcd) as u64).try_into().unwrap(),
-        )
+        from_u128(value, scale).unwrap_or_else(|_| panic!("attempt to divide with overflow"))
     }
 }
 
@@ -93,12 +86,20 @@ impl Sub<UnsignedScaledValue> for UnsignedScaledValue {
         let right = u128::from(other.value) * scale_a;
         let value = left - right;
         let scale = scale_a * scale_b;
-        let gcd = value.gcd(scale);
-        Self::new(
-            (value / gcd) as u64,
-            (u64::try_from(scale / gcd).unwrap()).try_into().unwrap(),
-        )
+        from_u128(value, scale).unwrap_or_else(|_| panic!("attempt to subtract with overflow"))
     }
+}
+
+/// assumes scale is not zero
+fn from_u128(
+    value: u128,
+    scale: u128,
+) -> std::result::Result<UnsignedScaledValue, TryFromIntError> {
+    let gcd = value.gcd(scale);
+    Ok(UnsignedScaledValue::new(
+        u64::try_from(value / gcd)?,
+        u64::try_from(scale / gcd)?.try_into().unwrap(),
+    ))
 }
 
 // tests

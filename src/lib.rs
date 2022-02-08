@@ -1,3 +1,5 @@
+extern crate core;
+
 pub use error::{Error, Result};
 pub use model::*;
 

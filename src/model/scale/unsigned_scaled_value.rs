@@ -129,4 +129,10 @@ mod test {
         let c = UnsignedScaledValue::new(7, Scale::try_from(12u64).unwrap());
         assert_eq!(a - b, c);
     }
+
+    #[test]
+    fn floor() {
+        let a = UnsignedScaledValue::new(5, Scale::try_from(4u64).unwrap());
+        assert_eq!(a.floor(), 1);
+    }
 }

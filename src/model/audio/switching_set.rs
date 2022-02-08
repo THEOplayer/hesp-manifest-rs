@@ -1,11 +1,9 @@
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
-use crate::util::{
-    check_js_safety_unsigned, Entity, EntityIter, EntityIterMut, EntityMap, FromEntities,
-};
+use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    Address, AudioMimeType, AudioSwitchingSetData, AudioTrack, Error, Language, MediaType, Result,
+    Address, AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, MediaType, Result, Scale,
     SwitchingSet, SwitchingSetProtection, ValidateSwitchingSet,
 };
 
@@ -62,30 +60,22 @@ impl SwitchingSet for AudioSwitchingSet {
 impl ValidateSwitchingSet<AudioTrack> for AudioSwitchingSet {}
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Deserialize, Serialize, Copy)]
-#[serde(try_from = "u64")]
-pub struct SamplesPerFrame(u64);
+pub struct SamplesPerFrame(Scale);
 
-impl TryFrom<u64> for SamplesPerFrame {
-    type Error = Error;
-
-    fn try_from(value: u64) -> Result<Self> {
-        if value == 0 {
-            Err(Error::NullSamplesPerFrame())
-        } else {
-            check_js_safety_unsigned(value);
-            Ok(Self(value))
-        }
+impl From<Scale> for SamplesPerFrame {
+    fn from(value: Scale) -> Self {
+        Self(value)
     }
 }
 
 impl Default for SamplesPerFrame {
     fn default() -> Self {
-        Self(1024)
+        Self(1024u32.try_into().unwrap())
     }
 }
 
 impl Deref for SamplesPerFrame {
-    type Target = u64;
+    type Target = Scale;
 
     fn deref(&self) -> &Self::Target {
         &self.0

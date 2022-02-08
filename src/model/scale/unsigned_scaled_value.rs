@@ -100,3 +100,33 @@ impl Sub<UnsignedScaledValue> for UnsignedScaledValue {
         )
     }
 }
+
+// tests
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn mul() {
+        let a = UnsignedScaledValue::new(2, Scale::try_from(3u64).unwrap());
+        let b = UnsignedScaledValue::new(5, Scale::try_from(4u64).unwrap());
+        let c = UnsignedScaledValue::new(5, Scale::try_from(6u64).unwrap());
+        assert_eq!(a * b, c);
+    }
+
+    #[test]
+    fn div() {
+        let a = UnsignedScaledValue::new(2, Scale::try_from(3u64).unwrap());
+        let b = UnsignedScaledValue::new(4, Scale::try_from(5u64).unwrap());
+        let c = UnsignedScaledValue::new(5, Scale::try_from(6u64).unwrap());
+        assert_eq!(a / b, c);
+    }
+
+    #[test]
+    fn sub() {
+        let a = UnsignedScaledValue::new(5, Scale::try_from(4u64).unwrap());
+        let b = UnsignedScaledValue::new(2, Scale::try_from(3u64).unwrap());
+        let c = UnsignedScaledValue::new(7, Scale::try_from(12u64).unwrap());
+        assert_eq!(a - b, c);
+    }
+}

@@ -39,10 +39,9 @@ impl From<u64> for UnsignedScaledValue {
     }
 }
 
-impl Mul<UnsignedScaledValue> for UnsignedScaledValue {
+impl Mul for UnsignedScaledValue {
     type Output = Self;
 
-    #[allow(clippy::cast_possible_truncation)]
     fn mul(self, other: Self) -> Self {
         let value = u128::from(self.value) * u128::from(other.value);
         let scale = u128::from(u64::from(self.scale)) * u128::from(u64::from(other.scale));
@@ -50,10 +49,9 @@ impl Mul<UnsignedScaledValue> for UnsignedScaledValue {
     }
 }
 
-impl Div<UnsignedScaledValue> for UnsignedScaledValue {
+impl Div for UnsignedScaledValue {
     type Output = Self;
 
-    #[allow(clippy::cast_possible_truncation)]
     fn div(self, other: Self) -> Self {
         let value = u128::from(self.value) * u128::from(u64::from(other.scale));
         let scale = u128::from(u64::from(self.scale)) * u128::from(other.value);
@@ -75,10 +73,9 @@ impl PartialOrd for UnsignedScaledValue {
     }
 }
 
-impl Sub<UnsignedScaledValue> for UnsignedScaledValue {
+impl Sub for UnsignedScaledValue {
     type Output = Self;
 
-    #[allow(clippy::cast_possible_truncation)]
     fn sub(self, other: Self) -> Self {
         let scale_a = u128::from(u64::from(self.scale));
         let scale_b = u128::from(u64::from(other.scale));

@@ -105,7 +105,7 @@ impl Initialization for AudioTrack {
     }
 
     fn frame_rate(&self) -> FrameRate {
-        FrameRate::new(self.sample_rate, *self.samples_per_frame)
+        FrameRate::new(self.sample_rate, self.samples_per_frame.into())
     }
 }
 

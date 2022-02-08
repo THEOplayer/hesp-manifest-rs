@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use std::ops::Deref;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
@@ -68,17 +67,15 @@ impl From<Scale> for SamplesPerFrame {
     }
 }
 
-impl Default for SamplesPerFrame {
-    fn default() -> Self {
-        Self(1024u32.try_into().unwrap())
+impl From<SamplesPerFrame> for Scale {
+    fn from(value: SamplesPerFrame) -> Self {
+        value.0
     }
 }
 
-impl Deref for SamplesPerFrame {
-    type Target = Scale;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
+impl Default for SamplesPerFrame {
+    fn default() -> Self {
+        Self(1024u32.try_into().unwrap())
     }
 }
 

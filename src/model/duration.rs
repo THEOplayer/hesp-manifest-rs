@@ -36,7 +36,7 @@ mod tests {
 
     #[test]
     fn scaled_duration_is_lossless_and_does_not_truncate() {
-        let duration = ScaledDuration::new(u64::MAX, Scale::default());
+        let duration = ScaledDuration::new(u64::MAX, Scale::ONE);
         let duration: Duration = duration.into();
         assert_eq!(duration.as_secs(), u64::MAX);
         assert_eq!(duration.subsec_nanos(), 0);

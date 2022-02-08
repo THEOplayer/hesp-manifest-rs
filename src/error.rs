@@ -6,8 +6,6 @@ use crate::{SegmentId, TransmissionType};
 pub enum Error {
     #[error("Scale must be strictly positive")]
     NullScale(),
-    #[error("Samples per frame must be strictly positive")]
-    NullSamplesPerFrame(),
     #[error("activePresentation references unknown id {0}")]
     InvalidActivePresentationId(String),
     #[error("'{0}' is not a valid audio MIME Type")]

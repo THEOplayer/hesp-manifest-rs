@@ -45,10 +45,9 @@ impl From<Scale> for u64 {
 }
 
 impl Scale {
-    /// Returns whether this is the default scale.
-    /// See [default](Scale::default) for more information.
-    pub fn is_default(&self) -> bool {
-        self == &Self::default()
+    pub const ONE: Self = Scale(1);
+    pub fn is_one(&self) -> bool {
+        *self == Self::ONE
     }
 }
 
@@ -59,6 +58,6 @@ impl Default for Scale {
     /// This is also the default value for the HESP Manifest JSON specification `ScaledValue` scale
     /// and therefore can be omitted from the JSON.
     fn default() -> Self {
-        Self(1)
+        Self::ONE
     }
 }

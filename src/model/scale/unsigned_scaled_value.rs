@@ -2,7 +2,7 @@ use gcd::Gcd;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::num::TryFromIntError;
-use std::ops::{Div, Mul, Sub};
+use std::ops::{Div, Mul};
 
 use crate::util::UInt;
 use crate::Scale;
@@ -11,17 +11,29 @@ use crate::Scale;
 pub struct UnsignedScaledValue {
     #[serde(deserialize_with = "UInt::deserialize_u64")]
     pub value: u64,
-    #[serde(default, skip_serializing_if = "Scale::is_default")]
+    #[serde(default, skip_serializing_if = "Scale::is_one")]
     pub scale: Scale,
 }
 
 impl UnsignedScaledValue {
-    pub fn new(value: u64, scale: Scale) -> Self {
+    pub const ZERO: Self = Self::new(0, Scale::ONE);
+
+    pub const fn new(value: u64, scale: Scale) -> Self {
         Self { value, scale }
     }
 
     pub fn floor(self) -> u64 {
         self.value / u64::from(self.scale)
+    }
+
+    pub fn saturating_sub(self, other: Self) -> Self {
+        let scale_a = u128::from(u64::from(self.scale));
+        let scale_b = u128::from(u64::from(other.scale));
+        let left = u128::from(self.value) * scale_b;
+        let right = u128::from(other.value) * scale_a;
+        let value = left.saturating_sub(right);
+        let scale = scale_a * scale_b;
+        from_u128(value, scale).unwrap_or_else(|_| panic!("attempt to subtract with overflow"))
     }
 }
 
@@ -35,7 +47,7 @@ impl PartialEq for UnsignedScaledValue {
 
 impl From<u64> for UnsignedScaledValue {
     fn from(value: u64) -> Self {
-        Self::new(value, Scale::default())
+        Self::new(value, Scale::ONE)
     }
 }
 
@@ -73,30 +85,20 @@ impl PartialOrd for UnsignedScaledValue {
     }
 }
 
-impl Sub for UnsignedScaledValue {
-    type Output = Self;
-
-    fn sub(self, other: Self) -> Self {
-        let scale_a = u128::from(u64::from(self.scale));
-        let scale_b = u128::from(u64::from(other.scale));
-        let left = u128::from(self.value) * scale_b;
-        let right = u128::from(other.value) * scale_a;
-        let value = left - right;
-        let scale = scale_a * scale_b;
-        from_u128(value, scale).unwrap_or_else(|_| panic!("attempt to subtract with overflow"))
-    }
-}
-
 /// assumes scale is not zero
 fn from_u128(
     value: u128,
     scale: u128,
 ) -> std::result::Result<UnsignedScaledValue, TryFromIntError> {
-    let gcd = value.gcd(scale);
-    Ok(UnsignedScaledValue::new(
-        u64::try_from(value / gcd)?,
-        u64::try_from(scale / gcd)?.try_into().unwrap(),
-    ))
+    Ok(if value == 0 {
+        UnsignedScaledValue::ZERO
+    } else {
+        let gcd = value.gcd(scale);
+        UnsignedScaledValue::new(
+            u64::try_from(value / gcd)?,
+            u64::try_from(scale / gcd)?.try_into().unwrap(),
+        )
+    })
 }
 
 // tests
@@ -125,12 +127,19 @@ mod test {
         let a = UnsignedScaledValue::new(5, Scale::try_from(4u64).unwrap());
         let b = UnsignedScaledValue::new(2, Scale::try_from(3u64).unwrap());
         let c = UnsignedScaledValue::new(7, Scale::try_from(12u64).unwrap());
-        assert_eq!(a - b, c);
+        assert_eq!(a.saturating_sub(b), c);
+    }
+
+    #[test]
+    fn saturating_sub() {
+        let a = UnsignedScaledValue::new(5, Scale::try_from(4u64).unwrap());
+        let b = UnsignedScaledValue::new(20, Scale::try_from(3u64).unwrap());
+        assert_eq!(a.saturating_sub(b), UnsignedScaledValue::ZERO);
     }
 
     #[test]
     fn floor() {
-        let a = UnsignedScaledValue::new(5, Scale::try_from(4u64).unwrap());
-        assert_eq!(a.floor(), 1);
+        let a = UnsignedScaledValue::new(9, Scale::try_from(4u64).unwrap());
+        assert_eq!(a.floor(), 2);
     }
 }

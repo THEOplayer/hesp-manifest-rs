@@ -7,7 +7,7 @@ use crate::{Error, Result, Scale};
 pub struct ScaledValue {
     #[serde(deserialize_with = "Int::deserialize_i64")]
     pub value: i64,
-    #[serde(default, skip_serializing_if = "Scale::is_default")]
+    #[serde(default, skip_serializing_if = "Scale::is_one")]
     pub scale: Scale,
 }
 
@@ -27,7 +27,7 @@ impl PartialEq for ScaledValue {
 
 impl From<i64> for ScaledValue {
     fn from(value: i64) -> Self {
-        Self::new(value, Scale::default())
+        Self::new(value, Scale::ONE)
     }
 }
 

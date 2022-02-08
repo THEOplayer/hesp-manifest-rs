@@ -6,8 +6,8 @@ use crate::Scale;
 pub struct Resolution {
     width: u64,
     height: u64,
-    #[serde(default, skip_serializing_if = "Scale::is_default")]
+    #[serde(default, skip_serializing_if = "Scale::is_one")]
     sar_width: Scale,
-    #[serde(default, skip_serializing_if = "Scale::is_default")]
+    #[serde(default, skip_serializing_if = "Scale::is_one")]
     sar_height: Scale,
 }

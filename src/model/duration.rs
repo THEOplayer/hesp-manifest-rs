@@ -12,15 +12,14 @@ impl ScaledDuration {
     }
 }
 
-const NANOS_PER_SEC: u32 = 1_000_000_000;
+const NANOS_PER_SEC: u128 = 1_000_000_000;
 
 impl From<ScaledDuration> for Duration {
-    #[allow(clippy::cast_lossless, clippy::cast_possible_truncation)]
     fn from(duration: ScaledDuration) -> Self {
         let nanos =
-            duration.0.value as u128 * NANOS_PER_SEC as u128 / u64::from(duration.0.scale) as u128;
-        let secs = (nanos / (NANOS_PER_SEC as u128)) as u64;
-        let nanos = (nanos % (NANOS_PER_SEC as u128)) as u32;
+            u128::from(duration.0.value) * NANOS_PER_SEC / u128::from(u64::from(duration.0.scale));
+        let secs = u64::try_from(nanos / NANOS_PER_SEC).unwrap();
+        let nanos = u32::try_from(nanos % NANOS_PER_SEC).unwrap();
         Self::new(secs, nanos)
     }
 }

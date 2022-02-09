@@ -1,12 +1,10 @@
-#[macro_use]
-extern crate lazy_static;
+extern crate core;
 
 pub use error::{Error, Result};
 pub use model::*;
-pub use parse::deserialize;
-pub use util::*;
 
 mod error;
+pub mod event;
+pub mod legacy;
 mod model;
-mod parse;
-mod util;
+pub mod util;

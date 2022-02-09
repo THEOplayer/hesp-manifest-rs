@@ -1,29 +1,28 @@
-use std::convert::{TryFrom, TryInto};
-
 use serde::{Deserialize, Serialize};
-use serde_with::skip_serializing_none;
 
-use crate::*;
+use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
+use crate::{
+    Address, AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, MediaType, Result, Scale,
+    SwitchingSet, SwitchingSetProtection, ValidateSwitchingSet,
+};
 
-use super::AudioTrackDef;
-
-#[skip_serializing_none]
-#[derive(Debug, Serialize, Clone, Deserialize)]
-#[serde(rename_all = "camelCase", try_from = "AudioSwitchingSetDef")]
+#[derive(Debug, Clone)]
 pub struct AudioSwitchingSet {
-    id: String,
-    language: Language,
-    tracks: EntityVec<AudioTrack>,
-    align_id: Option<String>,
-    base_url: Option<RelativeBaseUrl>,
-    channels: Option<u64>,
-    label: Option<String>,
-    mime_type: AudioMimeType,
-    protection: Option<SwitchingSetProtection>,
+    pub(super) id: String,
+    pub(super) language: Language,
+    pub(super) tracks: EntityMap<AudioTrack>,
+    pub(super) align_id: Option<String>,
+    pub(super) channels: Option<u64>,
+    pub(super) label: Option<String>,
+    pub(super) mime_type: AudioMimeType,
+    pub(super) protection: Option<SwitchingSetProtection>,
+}
+
+impl AudioSwitchingSet {
+    const MEDIA_TYPE: MediaType = MediaType::Audio;
 }
 
 impl Entity for AudioSwitchingSet {
-    type Id = str;
     fn id(&self) -> &str {
         &self.id
     }
@@ -31,105 +30,91 @@ impl Entity for AudioSwitchingSet {
 
 impl SwitchingSet for AudioSwitchingSet {
     type Track = AudioTrack;
-    fn tracks(&self) -> &[AudioTrack] {
-        &self.tracks
+
+    fn media_type(&self) -> MediaType {
+        Self::MEDIA_TYPE
     }
+
+    fn tracks(&self) -> EntityIter<AudioTrack> {
+        self.tracks.iter()
+    }
+
     fn track(&self, id: &str) -> Option<&AudioTrack> {
         self.tracks.get(id)
     }
-    fn tracks_mut(&mut self) -> &mut [AudioTrack] {
-        &mut self.tracks
+
+    fn track_mut(&mut self, id: &str) -> Option<&mut AudioTrack> {
+        self.tracks.get_mut(id)
     }
-    fn base_url(&self) -> &Option<RelativeBaseUrl> {
-        &self.base_url
+
+    fn tracks_mut(&mut self) -> EntityIterMut<AudioTrack> {
+        self.tracks.iter_mut()
     }
-    fn base_url_mut(&mut self) -> &mut Option<RelativeBaseUrl> {
-        &mut self.base_url
-    }
+
     fn mime_type(&self) -> &str {
         self.mime_type.as_ref()
     }
 }
 
-impl MediaSwitchingSet for AudioSwitchingSet {
-    type MediaTrack = AudioTrack;
-    const MEDIA_TYPE: MediaType = MediaType::Audio;
-}
+impl ValidateSwitchingSet<AudioTrack> for AudioSwitchingSet {}
 
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct AudioSwitchingSetDef {
-    id: String,
-    language: Language,
-    tracks: EntityVec<AudioTrackDef>,
-    align_id: Option<String>,
-    base_url: Option<RelativeBaseUrl>,
-    channels: Option<u64>,
-    codecs: Option<String>,
-    continuation_pattern: Option<ContinuationPattern>,
-    #[serde(default = "AudioSwitchingSet::default_frame_rate")]
-    frame_rate: u64,
-    initialization_pattern: Option<InitializationPattern>,
-    label: Option<String>,
-    #[serde(default)]
-    media_time_offset: ScaledValue,
-    #[serde(default)]
-    mime_type: AudioMimeType,
-    protection: Option<SwitchingSetProtection>,
-    sample_rate: Option<u64>,
-}
+#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Deserialize, Serialize, Copy)]
+pub struct SamplesPerFrame(Scale);
 
-impl AudioSwitchingSet {
-    fn default_frame_rate() -> u64 {
-        1024
+impl From<Scale> for SamplesPerFrame {
+    fn from(value: Scale) -> Self {
+        Self(value)
     }
 }
 
-impl TryFrom<AudioSwitchingSetDef> for AudioSwitchingSet {
-    type Error = Error;
-    fn try_from(def: AudioSwitchingSetDef) -> Result<Self> {
-        let AudioSwitchingSetDef {
-            id,
-            language,
-            tracks,
-            align_id,
-            base_url,
-            channels,
-            codecs,
-            continuation_pattern,
-            frame_rate,
-            initialization_pattern,
-            label,
-            media_time_offset,
-            mime_type,
-            protection,
-            sample_rate,
-        } = def;
-        let tracks = tracks
+impl From<SamplesPerFrame> for Scale {
+    fn from(value: SamplesPerFrame) -> Self {
+        value.0
+    }
+}
+
+impl Default for SamplesPerFrame {
+    fn default() -> Self {
+        Self(1024u32.try_into().unwrap())
+    }
+}
+
+impl AudioSwitchingSet {
+    pub fn new(
+        presentation_id: &str,
+        presentation_address: &Address,
+        data: AudioSwitchingSetData,
+    ) -> Result<Self> {
+        let address = presentation_address.join(data.base_url)?;
+        let mime_type = data.mime_type.unwrap_or_default();
+        let tracks = data
+            .tracks
             .into_iter()
             .map(|track| {
                 AudioTrack::new(
-                    track,
-                    codecs.as_ref(),
-                    continuation_pattern.as_ref(),
-                    frame_rate,
-                    initialization_pattern.as_ref(),
-                    media_time_offset,
-                    sample_rate,
+                    presentation_id.to_owned(),
+                    data.id.clone(),
+                    &address,
+                    mime_type.clone(),
+                    track
+                        .with_default_sample_rate(data.sample_rate)
+                        .with_default_codecs(&data.codecs)
+                        .with_default_samples_per_frame(data.samples_per_frame)
+                        .with_default_media_time_offset(data.media_time_offset)
+                        .with_default_continuation_pattern(&data.continuation_pattern)
+                        .with_default_initialization_pattern(&data.initialization_pattern),
                 )
             })
-            .collect::<Result<Vec<AudioTrack>>>()?
-            .try_into()?;
-        Ok(AudioSwitchingSet {
-            id,
-            language,
+            .into_entities()?;
+        Ok(Self {
+            id: data.id,
+            language: data.language,
             tracks,
-            align_id,
-            base_url,
-            channels,
-            label,
+            align_id: data.align_id,
+            channels: data.channels.map(u64::from),
+            label: data.label,
             mime_type,
-            protection,
+            protection: data.protection,
         })
     }
 }
@@ -137,9 +122,10 @@ impl TryFrom<AudioSwitchingSetDef> for AudioSwitchingSet {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use url::Url;
 
     #[test]
-    fn codecs_in_set() {
+    fn codecs_in_set() -> anyhow::Result<()> {
         let data = r#"
             {
                 "id": "0",
@@ -152,7 +138,9 @@ mod tests {
                     }
                 ]
             }"#;
-        let result = serde_json::from_str::<AudioSwitchingSet>(data);
+        let address = Address::new(Url::parse("https://www.theoplayer.com").unwrap(), None)?;
+        let data = serde_json::from_str::<AudioSwitchingSetData>(data).unwrap();
+        let result = AudioSwitchingSet::new("p1", &address, data);
 
         assert!(result.is_err());
         let error = result.unwrap_err().to_string();
@@ -161,5 +149,7 @@ mod tests {
             "Error did not indicate missing codecs `{}`",
             error
         );
+
+        Ok(())
     }
 }

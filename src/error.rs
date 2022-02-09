@@ -1,8 +1,11 @@
-use crate::{SegmentId, TransmissionType};
 use thiserror::Error;
+
+use crate::{SegmentId, TransmissionType};
 
 #[derive(Error, Debug)]
 pub enum Error {
+    #[error("Scale must be strictly positive")]
+    NullScale(),
     #[error("activePresentation references unknown id {0}")]
     InvalidActivePresentationId(String),
     #[error("'{0}' is not a valid audio MIME Type")]
@@ -11,6 +14,12 @@ pub enum Error {
     InvalidVideoMime(String),
     #[error("Presentation with id {0} is active but has no currentTime")]
     MissingCurrentTime(String),
+    #[error("Presentation with id {0} is active but has no startTime")]
+    MissingStartTime(String),
+    #[error(
+        "Presentation with id {0} is active but its currentTime is earlier than its startTime"
+    )]
+    ImpossibleCurrentTime(String),
     #[error("segment id's must be incremented by one: {1} must not follow {0}")]
     InvalidSegmentIds(SegmentId, SegmentId),
     #[error("SwitchingSetProtection must contain at least one system")]
@@ -19,8 +28,12 @@ pub enum Error {
     EmptyTimeBounds,
     #[error("startTime {start} must be before endTime {end}")]
     ReverseTimeBounds { start: u64, end: u64 },
-    #[error("Track {0} has no segmentDuration therefore each segment must have timeBounds")]
+    #[error(
+        "Track {0} has no segmentDuration therefore each segment must have timeBounds without gaps"
+    )]
     MissingSegmentDuration(String),
+    #[error("Track {0} is active so it must have an active sequence number")]
+    MissingActiveSequenceNumber(String),
     #[error("Track {0} must have codecs")]
     MissingCodecs(String),
     #[error("Track {0} must have a continuation pattern")]
@@ -31,14 +44,16 @@ pub enum Error {
     MissingSampleRate(String),
     #[error("Track {0} must have an initialization pattern")]
     MissingInitializationPattern(String),
-    #[error("Ids must be unique (duplicates: {0})")]
-    DuplicateIds(String),
-    #[error("ContinuationPattern '{0}' must contain {{segmentId}}")]
-    InvalidContinuationPattern(String),
-    #[error("InitializationPattern '{0}' must contain {{initId}}")]
-    InvalidInitializationPattern(String),
+    #[error("Ids must be unique (found duplicate: {0})")]
+    DuplicateId(String),
+    #[error("Pattern '{0}' must contain {1}")]
+    InvalidPattern(String, &'static str),
     #[error("Presentation '{0}' must not contain multicast data")]
     InvalidUnicastPresentation(String),
+    #[error("'{0:?}' is not a valid version for a unicast manifest")]
+    InvalidUnicastVersion(&'static str),
+    #[error("'{0:?}' is not a valid version for a multicast manifest")]
+    InvalidMulticastVersion(&'static str),
     #[error("Presentation '{presentation}' is {transmission:?} therefore Track '{track}' must be {transmission:?}")]
     InvalidTrackTransmission {
         presentation: String,
@@ -51,8 +66,12 @@ pub enum Error {
     InvalidTrackPath(String),
     #[error("'{0}' is not a valid MediaType")]
     InvalidMediaType(String),
+    #[error("'{0}' cannot be converted to a float (f64's mantissa is only 52 bits wide)")]
+    FloatOverflow(String),
     #[error(transparent)]
     UrlParseError(#[from] url::ParseError),
+    #[error(transparent)]
+    InvalidJson(#[from] serde_path_to_error::Error<serde_json::Error>),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

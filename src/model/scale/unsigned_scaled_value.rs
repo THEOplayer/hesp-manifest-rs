@@ -1,6 +1,7 @@
 use gcd::Gcd;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
+use std::fmt;
 use std::num::TryFromIntError;
 use std::ops::{Div, Mul};
 
@@ -82,6 +83,16 @@ impl Ord for UnsignedScaledValue {
 impl PartialOrd for UnsignedScaledValue {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
+    }
+}
+
+impl fmt::Display for UnsignedScaledValue {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.scale == Scale::ONE {
+            self.value.fmt(f)
+        } else {
+            write!(f, "{}/{}", self.value, self.scale)
+        }
     }
 }
 

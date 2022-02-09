@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 use crate::util::{try_convert_i64_to_float, try_convert_u64_to_float, Int};
 use crate::{Error, Result, Scale};
@@ -38,5 +39,15 @@ impl TryFrom<ScaledValue> for f64 {
         let value = try_convert_i64_to_float(input.value)?;
         let scale = try_convert_u64_to_float(input.scale.into())?;
         Ok(value / scale)
+    }
+}
+
+impl fmt::Display for ScaledValue {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.scale == Scale::ONE {
+            self.value.fmt(f)
+        } else {
+            write!(f, "{}/{}", self.value, self.scale)
+        }
     }
 }

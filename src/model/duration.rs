@@ -1,3 +1,4 @@
+use std::fmt;
 use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
@@ -27,6 +28,16 @@ impl From<ScaledDuration> for Duration {
 impl From<ScaledDuration> for UnsignedScaledValue {
     fn from(duration: ScaledDuration) -> Self {
         duration.0
+    }
+}
+
+impl fmt::Display for ScaledDuration {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.0.scale == Scale::ONE {
+            write!(f, "{}s", self.0.value)
+        } else {
+            write!(f, "{}s/{}", self.0.value, self.0.scale)
+        }
     }
 }
 

@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 pub use scaled_value::ScaledValue;
 pub use unsigned_scaled_value::UnsignedScaledValue;
@@ -59,5 +60,11 @@ impl Default for Scale {
     /// and therefore can be omitted from the JSON.
     fn default() -> Self {
         Self::ONE
+    }
+}
+
+impl fmt::Display for Scale {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.0.fmt(f)
     }
 }

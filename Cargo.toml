@@ -1,6 +1,6 @@
 [package]
 name = "hesp-manifest"
-version = "0.4.0-beta.12"
+version = "0.4.0"
 edition = "2021"
 authors = ["THEO Technologies <info@theoplayer.com>"]
 publish = ["theo"]

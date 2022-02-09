@@ -1,6 +1,6 @@
 use crate::util::Entity;
 use crate::{
-    Address, AudioMimeType, AudioTrackData, ContinuationPattern, Error, Initialization,
+    Address, AudioMimeType, AudioTrackData, ContinuationPattern, Error, FrameRate, Initialization,
     InitializationPattern, MediaType, Result, SamplesPerFrame, ScaledDuration, ScaledValue,
     Segment, SegmentId, Segments, Track, TrackTransmission, TrackUid, ValidateTrack,
 };
@@ -103,6 +103,10 @@ impl Initialization for AudioTrack {
     fn active_sequence_number(&self) -> Option<u64> {
         self.active_sequence_number
     }
+
+    fn frame_rate(&self) -> FrameRate {
+        FrameRate::new(self.sample_rate, self.samples_per_frame.into())
+    }
 }
 
 impl AudioTrack {
@@ -128,7 +132,9 @@ impl AudioTrack {
             .sample_rate
             .ok_or_else(|| Error::MissingSampleRate(id.clone()))?
             .into();
-
+        if data.segment_duration.is_none() {
+            data.segments.ensure_time_bounds_defined(&id)?;
+        }
         Ok(Self {
             bandwidth: data.bandwidth.into(),
             uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),

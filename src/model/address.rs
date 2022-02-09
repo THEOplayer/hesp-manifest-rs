@@ -73,7 +73,7 @@ impl Address {
     }
 
     pub fn make_absolute(&mut self) {
-        self.uri = Some(Uri::Absolute(self.url().into_owned()))
+        self.uri = Some(Uri::Absolute(self.url().into_owned()));
     }
 }
 

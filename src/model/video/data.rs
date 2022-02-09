@@ -3,7 +3,7 @@ use serde_with::skip_serializing_none;
 
 use crate::util::{Entity, UInt, Uri};
 use crate::{
-    normalize_tracks, Resolution, ScaledDuration, ScaledValue, SegmentId, Segments,
+    normalize_tracks, FrameRate, Resolution, ScaledDuration, ScaledValue, SegmentId, Segments,
     SwitchingSetProtection, TransferObjectIdentifierLimits, VideoMimeType, VideoSwitchingSet,
     VideoTrack,
 };
@@ -18,7 +18,7 @@ pub struct VideoSwitchingSetData {
     pub base_url: Option<Uri>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
-    pub frame_rate: Option<ScaledValue>,
+    pub frame_rate: Option<FrameRate>,
     pub initialization_pattern: Option<String>,
     pub label: Option<String>,
     pub media_time_offset: Option<ScaledValue>,
@@ -73,7 +73,7 @@ pub struct VideoTrackData {
     pub base_url: Option<Uri>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
-    pub frame_rate: Option<ScaledValue>,
+    pub frame_rate: Option<FrameRate>,
     pub label: Option<String>,
     pub initialization_pattern: Option<String>,
     pub media_time_offset: Option<ScaledValue>,
@@ -147,7 +147,7 @@ impl VideoTrackData {
         self
     }
 
-    pub const fn with_default_frame_rate(mut self, frame_rate: Option<ScaledValue>) -> Self {
+    pub const fn with_default_frame_rate(mut self, frame_rate: Option<FrameRate>) -> Self {
         if self.frame_rate.is_none() {
             self.frame_rate = frame_rate;
         }

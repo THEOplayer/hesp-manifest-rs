@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities, UInt};
+use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    Address, AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, MediaType, Result,
+    Address, AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, MediaType, Result, Scale,
     SwitchingSet, SwitchingSetProtection, ValidateSwitchingSet,
 };
 
@@ -39,16 +39,16 @@ impl SwitchingSet for AudioSwitchingSet {
         self.tracks.iter()
     }
 
-    fn tracks_mut(&mut self) -> EntityIterMut<AudioTrack> {
-        self.tracks.iter_mut()
-    }
-
     fn track(&self, id: &str) -> Option<&AudioTrack> {
         self.tracks.get(id)
     }
 
     fn track_mut(&mut self, id: &str) -> Option<&mut AudioTrack> {
         self.tracks.get_mut(id)
+    }
+
+    fn tracks_mut(&mut self) -> EntityIterMut<AudioTrack> {
+        self.tracks.iter_mut()
     }
 
     fn mime_type(&self) -> &str {
@@ -59,11 +59,23 @@ impl SwitchingSet for AudioSwitchingSet {
 impl ValidateSwitchingSet<AudioTrack> for AudioSwitchingSet {}
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Deserialize, Serialize, Copy)]
-pub struct SamplesPerFrame(#[serde(deserialize_with = "UInt::deserialize_u64")] u64);
+pub struct SamplesPerFrame(Scale);
+
+impl From<Scale> for SamplesPerFrame {
+    fn from(value: Scale) -> Self {
+        Self(value)
+    }
+}
+
+impl From<SamplesPerFrame> for Scale {
+    fn from(value: SamplesPerFrame) -> Self {
+        value.0
+    }
+}
 
 impl Default for SamplesPerFrame {
     fn default() -> Self {
-        Self(1024)
+        Self(1024u32.try_into().unwrap())
     }
 }
 

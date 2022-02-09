@@ -5,9 +5,9 @@ pub use multicast::*;
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
     Address, AudioSwitchingSet, AudioTrack, Error, InitializableTrack, MediaType,
-    MetadataSwitchingSet, MetadataTrack, Result, ScaledValue, SwitchingSet, TimeBounds, Track,
+    MetadataSwitchingSet, MetadataTrack, Result, SwitchingSet, TimeBounds, Track,
     TrackTransmission, TrackUid, TransferObjectIdentifierLimits, TransmissionType,
-    ValidateSwitchingSet, VideoSwitchingSet, VideoTrack,
+    UnsignedScaledValue, ValidateSwitchingSet, VideoSwitchingSet, VideoTrack,
 };
 
 mod data;
@@ -19,7 +19,7 @@ pub struct Presentation {
     id: String,
     time_bounds: TimeBounds,
     audio: EntityMap<AudioSwitchingSet>,
-    current_time: Option<ScaledValue>,
+    current_time: Option<UnsignedScaledValue>,
     events: EntityMap<PresentationEvent>,
     metadata: EntityMap<MetadataSwitchingSet>,
     video: EntityMap<VideoSwitchingSet>,
@@ -87,9 +87,23 @@ impl Presentation {
         return self.transmission().get_type() == TransmissionType::Multicast;
     }
 
+    pub fn time_bounds(&self) -> TimeBounds {
+        self.time_bounds
+    }
+
+    pub fn current_time(&self) -> Option<UnsignedScaledValue> {
+        self.current_time
+    }
+
     pub(super) fn validate_active(&self) -> Result<()> {
         if self.current_time.is_none() {
             return Err(Error::MissingCurrentTime(self.id.clone()));
+        }
+        if self.time_bounds.start_time().is_none() {
+            return Err(Error::MissingStartTime(self.id.clone()));
+        }
+        if self.current_time.unwrap() < self.time_bounds.start_time().unwrap() {
+            return Err(Error::ImpossibleCurrentTime(self.id.clone()));
         }
         for set in &self.video {
             set.validate_active()?;

@@ -45,6 +45,12 @@ impl From<Scale> for u64 {
     }
 }
 
+impl From<Scale> for u128 {
+    fn from(scale: Scale) -> Self {
+        u64::from(scale).into()
+    }
+}
+
 impl Scale {
     pub const ONE: Self = Scale(1);
     pub fn is_one(&self) -> bool {

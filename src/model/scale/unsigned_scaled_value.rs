@@ -2,8 +2,6 @@ use gcd::Gcd;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::fmt;
-use std::num::TryFromIntError;
-use std::ops::{Div, Mul};
 
 use crate::util::UInt;
 use crate::Scale;
@@ -27,14 +25,36 @@ impl UnsignedScaledValue {
         self.value / u64::from(self.scale)
     }
 
-    pub fn saturating_sub(self, other: Self) -> Self {
-        let scale_a = u128::from(u64::from(self.scale));
-        let scale_b = u128::from(u64::from(other.scale));
+    pub fn checked_add(self, other: Self) -> Option<Self> {
+        let scale_a = u128::from(self.scale);
+        let scale_b = u128::from(other.scale);
         let left = u128::from(self.value) * scale_b;
         let right = u128::from(other.value) * scale_a;
-        let value = left.saturating_sub(right);
+        let value = left.checked_add(right)?;
         let scale = scale_a * scale_b;
-        from_u128(value, scale).unwrap_or_else(|_| panic!("attempt to subtract with overflow"))
+        checked_from_u128(value, scale)
+    }
+
+    pub fn checked_sub(self, other: Self) -> Option<Self> {
+        let scale_a = u128::from(self.scale);
+        let scale_b = u128::from(other.scale);
+        let left = u128::from(self.value) * scale_b;
+        let right = u128::from(other.value) * scale_a;
+        let value = left.checked_sub(right)?;
+        let scale = scale_a * scale_b;
+        checked_from_u128(value, scale)
+    }
+
+    pub fn checked_mul(self, other: Self) -> Option<Self> {
+        let value = u128::from(self.value) * u128::from(other.value);
+        let scale = u128::from(self.scale) * u128::from(other.scale);
+        checked_from_u128(value, scale)
+    }
+
+    pub fn checked_div(self, other: Self) -> Option<Self> {
+        let value = u128::from(self.value) * u128::from(other.scale);
+        let scale = u128::from(self.scale) * u128::from(other.value);
+        checked_from_u128(value, scale)
     }
 }
 
@@ -49,26 +69,6 @@ impl PartialEq for UnsignedScaledValue {
 impl From<u64> for UnsignedScaledValue {
     fn from(value: u64) -> Self {
         Self::new(value, Scale::ONE)
-    }
-}
-
-impl Mul for UnsignedScaledValue {
-    type Output = Self;
-
-    fn mul(self, other: Self) -> Self {
-        let value = u128::from(self.value) * u128::from(other.value);
-        let scale = u128::from(u64::from(self.scale)) * u128::from(u64::from(other.scale));
-        from_u128(value, scale).unwrap_or_else(|_| panic!("attempt to multiply with overflow"))
-    }
-}
-
-impl Div for UnsignedScaledValue {
-    type Output = Self;
-
-    fn div(self, other: Self) -> Self {
-        let value = u128::from(self.value) * u128::from(u64::from(other.scale));
-        let scale = u128::from(u64::from(self.scale)) * u128::from(other.value);
-        from_u128(value, scale).unwrap_or_else(|_| panic!("attempt to divide with overflow"))
     }
 }
 
@@ -97,17 +97,14 @@ impl fmt::Display for UnsignedScaledValue {
 }
 
 /// assumes scale is not zero
-fn from_u128(
-    value: u128,
-    scale: u128,
-) -> std::result::Result<UnsignedScaledValue, TryFromIntError> {
-    Ok(if value == 0 {
+fn checked_from_u128(value: u128, scale: u128) -> Option<UnsignedScaledValue> {
+    Some(if value == 0 {
         UnsignedScaledValue::ZERO
     } else {
         let gcd = value.gcd(scale);
         UnsignedScaledValue::new(
-            u64::try_from(value / gcd)?,
-            u64::try_from(scale / gcd)?.try_into().unwrap(),
+            u64::try_from(value / gcd).ok()?,
+            u64::try_from(scale / gcd).ok()?.try_into().unwrap(),
         )
     })
 }
@@ -122,7 +119,7 @@ mod test {
         let a = UnsignedScaledValue::new(2, Scale::try_from(3u64).unwrap());
         let b = UnsignedScaledValue::new(5, Scale::try_from(4u64).unwrap());
         let c = UnsignedScaledValue::new(5, Scale::try_from(6u64).unwrap());
-        assert_eq!(a * b, c);
+        assert_eq!(a.checked_mul(b), Some(c));
     }
 
     #[test]
@@ -130,7 +127,15 @@ mod test {
         let a = UnsignedScaledValue::new(2, Scale::try_from(3u64).unwrap());
         let b = UnsignedScaledValue::new(4, Scale::try_from(5u64).unwrap());
         let c = UnsignedScaledValue::new(5, Scale::try_from(6u64).unwrap());
-        assert_eq!(a / b, c);
+        assert_eq!(a.checked_div(b), Some(c));
+    }
+
+    #[test]
+    fn add() {
+        let a = UnsignedScaledValue::new(5, Scale::try_from(4u64).unwrap());
+        let b = UnsignedScaledValue::new(2, Scale::try_from(3u64).unwrap());
+        let c = UnsignedScaledValue::new(23, Scale::try_from(12u64).unwrap());
+        assert_eq!(a.checked_add(b), Some(c));
     }
 
     #[test]
@@ -138,14 +143,7 @@ mod test {
         let a = UnsignedScaledValue::new(5, Scale::try_from(4u64).unwrap());
         let b = UnsignedScaledValue::new(2, Scale::try_from(3u64).unwrap());
         let c = UnsignedScaledValue::new(7, Scale::try_from(12u64).unwrap());
-        assert_eq!(a.saturating_sub(b), c);
-    }
-
-    #[test]
-    fn saturating_sub() {
-        let a = UnsignedScaledValue::new(5, Scale::try_from(4u64).unwrap());
-        let b = UnsignedScaledValue::new(20, Scale::try_from(3u64).unwrap());
-        assert_eq!(a.saturating_sub(b), UnsignedScaledValue::ZERO);
+        assert_eq!(a.checked_sub(b), Some(c));
     }
 
     #[test]

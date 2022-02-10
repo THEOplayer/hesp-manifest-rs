@@ -3,7 +3,7 @@ use url::Url;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct ManifestUpdate {
-    pub url: Url,
+    pub url: Option<Url>,
 }
 
 impl ManifestUpdate {

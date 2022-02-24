@@ -1,6 +1,7 @@
 use serde::Serialize;
 use url::Url;
 
+use super::{BaseManifest, ManifestData};
 use crate::util::{EntityIter, EntityIterMut, FromEntities};
 use crate::{
     Error, Manifest, ManifestDeserialize, ManifestSerialize, MediaType, Presentation,
@@ -8,12 +9,10 @@ use crate::{
     TransferObjectIdentifierLimits, UnicastManifest,
 };
 
-use super::ManifestData;
-
 #[derive(Debug, Clone, Serialize)]
 #[serde(into = "ManifestSerialize")]
 pub struct MulticastManifest {
-    pub(super) inner: UnicastManifest,
+    pub(super) inner: BaseManifest,
 }
 
 impl MulticastManifest {
@@ -68,30 +67,27 @@ impl MulticastManifest {
         self.presentations().filter_map(multicast_tsi)
     }
 
-    pub fn from_unicast<F>(
-        mut manifest: UnicastManifest,
-        presentation_transformer: F,
-    ) -> Result<Self>
+    pub fn from_unicast<F>(manifest: UnicastManifest, presentation_transformer: F) -> Result<Self>
     where
         F: FnMut(Presentation) -> Presentation,
     {
-        if !matches!(manifest.stream_type, StreamType::Live(_)) {
+        let mut inner = manifest.inner;
+        if !matches!(inner.stream_type, StreamType::Live(_)) {
             return Err(Error::InvalidMulticastStreamType);
         }
-        manifest.presentations = manifest
+        inner.presentations = inner
             .presentations
             .into_iter()
             .map(presentation_transformer)
             .map(Ok)
             .into_entities()?;
-        Ok(Self { inner: manifest })
+        Ok(Self { inner })
     }
 }
 
 impl Manifest for MulticastManifest {
     fn new(location: Url, data: ManifestData) -> Result<Self> {
-        let inner = UnicastManifest::new(location, data)?;
-        Ok(Self { inner })
+        BaseManifest::new(location, data).map(|inner| Self { inner })
     }
 
     fn presentations(&self) -> EntityIter<Presentation> {
@@ -131,7 +127,7 @@ impl From<MulticastManifest> for UnicastManifest {
         for presentation in &mut inner.presentations {
             presentation.set_unicast();
         }
-        inner
+        Self { inner }
     }
 }
 

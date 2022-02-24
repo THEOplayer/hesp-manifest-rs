@@ -1,0 +1,423 @@
+{
+  "manifestVersion": "1.0.0-multicast",
+  "creationDate": "2022-02-24T10:09:13.645+00:00",
+  "fallbackPollRate": 1,
+  "presentations": [
+    {
+      "id": "main-pres",
+      "timeBounds": {
+        "startTime": 694046,
+        "scale": 44100
+      },
+      "audio": [
+        {
+          "id": "main",
+          "language": "eng",
+          "tracks": [
+            {
+              "id": "128kbps",
+              "bandwidth": 128000,
+              "segments": [
+                {
+                  "id": 6014,
+                  "timeBounds": {
+                    "startTime": 5305042751,
+                    "endTime": 5305924399,
+                    "scale": 44100
+                  }
+                },
+                {
+                  "id": 6015,
+                  "timeBounds": {
+                    "startTime": 5305924399,
+                    "endTime": 5306806046,
+                    "scale": 44100
+                  }
+                },
+                {
+                  "id": 6016,
+                  "timeBounds": {
+                    "startTime": 5306806046,
+                    "endTime": 5307688751,
+                    "scale": 44100
+                  }
+                },
+                {
+                  "id": 6017,
+                  "timeBounds": {
+                    "startTime": 5307688751,
+                    "endTime": 5308570399,
+                    "scale": 44100
+                  }
+                },
+                {
+                  "id": 6018,
+                  "timeBounds": {
+                    "startTime": 5308570399,
+                    "endTime": 5309452090,
+                    "scale": 44100
+                  }
+                },
+                {
+                  "id": 6019,
+                  "timeBounds": {
+                    "startTime": 5309452090,
+                    "scale": 44100
+                  }
+                }
+              ],
+              "activeSegment": 6019,
+              "activeSequenceNumber": 5184580,
+              "baseUrl": "main-pres/audio/main/128kbps/",
+              "channels": 2,
+              "toiLimits": {
+                "start": 65537,
+                "end": 81921
+              }
+            }
+          ],
+          "codecs": "mp4a.40.2",
+          "continuationPattern": "{segmentId}.hspc",
+          "samplesPerFrame": 1024,
+          "initializationPattern": "{initId}.hspi",
+          "label": "audio",
+          "mediaTimeOffset": {
+            "value": 0
+          },
+          "mimeType": "audio/mp4",
+          "sampleRate": 44100
+        }
+      ],
+      "currentTime": {
+        "value": 5309703989,
+        "scale": 44100
+      },
+      "video": [
+        {
+          "id": "main",
+          "tracks": [
+            {
+              "id": "1080p",
+              "bandwidth": 4000000,
+              "resolution": {
+                "width": 1920,
+                "height": 1080
+              },
+              "segments": [
+                {
+                  "id": 6013,
+                  "timeBounds": {
+                    "startTime": 10824869970,
+                    "endTime": 10826669970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6014,
+                  "timeBounds": {
+                    "startTime": 10826669970,
+                    "endTime": 10828469970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6015,
+                  "timeBounds": {
+                    "startTime": 10828469970,
+                    "endTime": 10830269970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6016,
+                  "timeBounds": {
+                    "startTime": 10830269970,
+                    "endTime": 10832069970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6017,
+                  "timeBounds": {
+                    "startTime": 10832069970,
+                    "endTime": 10833869970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6018,
+                  "timeBounds": {
+                    "startTime": 10833869970,
+                    "endTime": 10835669970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6019,
+                  "timeBounds": {
+                    "startTime": 10835669970,
+                    "scale": 90000
+                  }
+                }
+              ],
+              "activeSegment": 6019,
+              "activeSequenceNumber": 3611550,
+              "baseUrl": "main-pres/video/main/1080p/",
+              "codecs": "avc1.4d4028",
+              "label": "HD quality",
+              "toiLimits": {
+                "start": 32769,
+                "end": 49153
+              }
+            },
+            {
+              "id": "720p",
+              "bandwidth": 2500000,
+              "resolution": {
+                "width": 1280,
+                "height": 720
+              },
+              "segments": [
+                {
+                  "id": 6013,
+                  "timeBounds": {
+                    "startTime": 10824869970,
+                    "endTime": 10826669970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6014,
+                  "timeBounds": {
+                    "startTime": 10826669970,
+                    "endTime": 10828469970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6015,
+                  "timeBounds": {
+                    "startTime": 10828469970,
+                    "endTime": 10830269970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6016,
+                  "timeBounds": {
+                    "startTime": 10830269970,
+                    "endTime": 10832069970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6017,
+                  "timeBounds": {
+                    "startTime": 10832069970,
+                    "endTime": 10833869970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6018,
+                  "timeBounds": {
+                    "startTime": 10833869970,
+                    "endTime": 10835669970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6019,
+                  "timeBounds": {
+                    "startTime": 10835669970,
+                    "scale": 90000
+                  }
+                }
+              ],
+              "activeSegment": 6019,
+              "activeSequenceNumber": 3611551,
+              "baseUrl": "main-pres/video/main/720p/",
+              "codecs": "avc1.4d401f",
+              "label": "High quality",
+              "toiLimits": {
+                "start": 49153,
+                "end": 65537
+              }
+            },
+            {
+              "id": "480p",
+              "bandwidth": 1200000,
+              "resolution": {
+                "width": 848,
+                "height": 480
+              },
+              "segments": [
+                {
+                  "id": 6013,
+                  "timeBounds": {
+                    "startTime": 10824869970,
+                    "endTime": 10826669970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6014,
+                  "timeBounds": {
+                    "startTime": 10826669970,
+                    "endTime": 10828469970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6015,
+                  "timeBounds": {
+                    "startTime": 10828469970,
+                    "endTime": 10830269970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6016,
+                  "timeBounds": {
+                    "startTime": 10830269970,
+                    "endTime": 10832069970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6017,
+                  "timeBounds": {
+                    "startTime": 10832069970,
+                    "endTime": 10833869970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6018,
+                  "timeBounds": {
+                    "startTime": 10833869970,
+                    "endTime": 10835669970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6019,
+                  "timeBounds": {
+                    "startTime": 10835669970,
+                    "scale": 90000
+                  }
+                }
+              ],
+              "activeSegment": 6019,
+              "activeSequenceNumber": 3611551,
+              "baseUrl": "main-pres/video/main/480p/",
+              "codecs": "avc1.4d401f",
+              "label": "Medium quality",
+              "toiLimits": {
+                "start": 16385,
+                "end": 32769
+              }
+            },
+            {
+              "id": "360p",
+              "bandwidth": 900000,
+              "resolution": {
+                "width": 640,
+                "height": 360
+              },
+              "segments": [
+                {
+                  "id": 6013,
+                  "timeBounds": {
+                    "startTime": 10824869970,
+                    "endTime": 10826669970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6014,
+                  "timeBounds": {
+                    "startTime": 10826669970,
+                    "endTime": 10828469970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6015,
+                  "timeBounds": {
+                    "startTime": 10828469970,
+                    "endTime": 10830269970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6016,
+                  "timeBounds": {
+                    "startTime": 10830269970,
+                    "endTime": 10832069970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6017,
+                  "timeBounds": {
+                    "startTime": 10832069970,
+                    "endTime": 10833869970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6018,
+                  "timeBounds": {
+                    "startTime": 10833869970,
+                    "endTime": 10835669970,
+                    "scale": 90000
+                  }
+                },
+                {
+                  "id": 6019,
+                  "timeBounds": {
+                    "startTime": 10835669970,
+                    "scale": 90000
+                  }
+                }
+              ],
+              "activeSegment": 6019,
+              "activeSequenceNumber": 3611550,
+              "baseUrl": "main-pres/video/main/360p/",
+              "codecs": "avc1.4d4016",
+              "label": "Low quality",
+              "toiLimits": {
+                "start": 1,
+                "end": 16385
+              }
+            }
+          ],
+          "continuationPattern": "{segmentId}.hspc",
+          "frameRate": {
+            "value": 30
+          },
+          "initializationPattern": "{initId}.hspi",
+          "mediaTimeOffset": {
+            "value": 0
+          },
+          "mimeType": "video/mp4"
+        }
+      ],
+      "multicastMetadata": {
+        "fec": {
+          "encodingId": 5,
+          "encodingSymbolLength": 1428,
+          "maximumSourceBlockLength": 178
+        },
+        "transportSessionId": 1,
+        "address": "127.0.0.1"
+      }
+    }
+  ],
+  "streamType": "live",
+  "availabilityDuration": {
+    "value": 120
+  },
+  "activePresentation": "main-pres"
+}

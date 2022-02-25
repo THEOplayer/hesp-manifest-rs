@@ -1,4 +1,7 @@
-use hesp_manifest::{Manifest, UnicastManifest};
+use hesp_manifest::{
+    Manifest, MulticastManifest, TrackUid, TransferObjectIdentifierLimits, UnicastManifest,
+};
+use std::collections::HashMap;
 use std::fs;
 use url::Url;
 
@@ -30,5 +33,18 @@ fn validate_empty_manifest() -> anyhow::Result<()> {
     assert!(result.is_err());
     let error = result.unwrap_err().to_string();
     assert!(error.contains("missing field"), "Wrong error `{}`", error);
+    Ok(())
+}
+
+#[test]
+fn validate_multicast_manifest() -> anyhow::Result<()> {
+    let location = Url::parse("https://www.theoplayer.com/")?;
+    let input = fs::read_to_string("tests/multicast-manifest.json")?;
+
+    let result = MulticastManifest::from_json(location, &input)?;
+
+    let toi_limits: HashMap<&TrackUid, TransferObjectIdentifierLimits> =
+        result.all_toi_limits().collect();
+    assert_eq!(toi_limits.len(), 5);
     Ok(())
 }

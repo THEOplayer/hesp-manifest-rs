@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
+use crate::model::manifest::base::BaseManifest;
 use crate::util::{UInt, Uri};
 use crate::{legacy, DateTime, MulticastManifest, PresentationData, StreamType, UnicastManifest};
 
@@ -44,6 +45,24 @@ impl ManifestData {
     }
 }
 
+impl From<BaseManifest> for ManifestData {
+    fn from(input: BaseManifest) -> Self {
+        let mut result = Self {
+            creation_date: input.creation_date,
+            fallback_poll_rate: input.fallback_poll_rate.into(),
+            presentations: input
+                .presentations
+                .into_iter()
+                .map(PresentationData::from)
+                .collect(),
+            stream_type: input.stream_type,
+            content_base_url: None,
+        };
+        result.normalize();
+        result
+    }
+}
+
 impl From<MulticastManifest> for ManifestSerialize {
     fn from(input: MulticastManifest) -> Self {
         Self::V1_1_0Multicast(ManifestData::from(input))
@@ -58,19 +77,7 @@ impl From<UnicastManifest> for ManifestSerialize {
 
 impl From<UnicastManifest> for ManifestData {
     fn from(input: UnicastManifest) -> Self {
-        let mut result = Self {
-            creation_date: input.creation_date,
-            fallback_poll_rate: input.fallback_poll_rate.into(),
-            presentations: input
-                .presentations
-                .into_iter()
-                .map(PresentationData::from)
-                .collect(),
-            stream_type: input.stream_type,
-            content_base_url: None,
-        };
-        result.normalize();
-        result
+        input.inner.into()
     }
 }
 

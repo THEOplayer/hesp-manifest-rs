@@ -1,8 +1,5 @@
 image:
-  name: registry.theoplayer.com/rust:1.58
-  username: $THEO_DOCKER_USERNAME
-  password: $THEO_DOCKER_PASSWORD
-  email: docker@theoplayer.com
+  name: ghcr.io/egonny/rust:1.59
 
 definitions:
   caches:

@@ -14,23 +14,34 @@ pub struct EntityMap<E: Entity> {
 }
 
 impl<E: Entity> EntityMap<E> {
+    #[must_use]
     pub fn get(&self, id: &str) -> Option<&E> {
         self.inner.get(id)
     }
+
+    #[must_use]
     pub fn get_mut(&mut self, id: &str) -> Option<&mut E> {
         self.inner.get_mut(id)
     }
+
+    #[must_use]
     pub fn len(&self) -> usize {
         self.inner.len()
     }
+
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.inner.is_empty()
     }
+
+    #[must_use]
     pub fn iter(&self) -> EntityIter<E> {
         EntityIter {
             inner: self.inner.values(),
         }
     }
+
+    #[must_use]
     pub fn iter_mut(&mut self) -> EntityIterMut<E> {
         EntityIterMut {
             inner: self.inner.values_mut(),

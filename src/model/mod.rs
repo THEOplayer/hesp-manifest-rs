@@ -15,7 +15,6 @@ pub use switching_set::*;
 pub use time_bounds::TimeBounds;
 pub use time_source::TimeSource;
 pub use track::*;
-pub use transmission::*;
 pub use video::*;
 
 mod address;
@@ -35,5 +34,4 @@ mod switching_set;
 mod time_bounds;
 mod time_source;
 mod track;
-mod transmission;
 mod video;

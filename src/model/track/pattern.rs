@@ -26,10 +26,12 @@ impl UrlPattern {
         Ok(self.base_address.url().join(path)?)
     }
 
+    #[must_use]
     pub fn into_pattern(self) -> String {
         self.pattern
     }
 
+    #[must_use]
     pub fn into_pattern_including_base_url(self) -> String {
         if self.pattern.starts_with('/') || self.pattern.contains("://") {
             self.pattern
@@ -60,6 +62,7 @@ impl UrlPattern {
         self.validate()
     }
 
+    #[must_use]
     pub fn base_url(&self) -> Option<&Uri> {
         self.base_address.uri()
     }

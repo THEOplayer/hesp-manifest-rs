@@ -26,6 +26,7 @@ impl From<ManifestData> for crate::ManifestData {
                 .collect(),
             stream_type: input.stream_type,
             content_base_url: input.content_base_url,
+            multicast_metadata: None,
         }
     }
 }

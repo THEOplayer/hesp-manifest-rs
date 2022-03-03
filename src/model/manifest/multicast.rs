@@ -1,12 +1,12 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use url::Url;
 
 use super::{BaseManifest, ManifestData};
-use crate::util::{EntityIter, EntityIterMut, FromEntities};
+use crate::util::{EntityIter, EntityIterMut};
 use crate::{
-    Error, Manifest, ManifestDeserialize, ManifestSerialize, MediaType, Presentation,
-    PresentationTransmission, Result, StreamType, SwitchingSet, Track, TrackTransmission, TrackUid,
-    TransferObjectIdentifierLimits, UnicastManifest,
+    Error, InitializableTrack, Manifest, ManifestDeserialize, ManifestSerialize, MediaType,
+    Presentation, Result, StreamType, SwitchingSet, Track, TrackMulticastMetadata,
+    TrackTransmission, TrackUid, UnicastManifest,
 };
 
 #[derive(Debug, Clone, Serialize)]
@@ -16,41 +16,15 @@ pub struct MulticastManifest {
 }
 
 impl MulticastManifest {
+    #[must_use]
     pub fn active_presentation(&self) -> &Presentation {
         self.inner.active_presentation().unwrap()
     }
 
-    pub fn transport_session_id(&self, presentation_id: &str) -> Option<u32> {
-        multicast_tsi(self.presentation(presentation_id)?)
-    }
-
-    pub fn all_toi_limits(
-        &self,
-    ) -> impl Iterator<Item = (&TrackUid, TransferObjectIdentifierLimits)> + '_ {
-        fn toi<T: Track>(track: &T) -> Option<(&TrackUid, TransferObjectIdentifierLimits)> {
-            match track.transmission() {
-                TrackTransmission::Unicast => None,
-                &TrackTransmission::Multicast { toi_limits } => Some((track.uid(), toi_limits)),
-            }
-        }
-        self.presentations().flat_map(|presentation| {
-            let video_toi = presentation.video_tracks().filter_map(toi);
-            let audio_toi = presentation.audio_tracks().filter_map(toi);
-            video_toi.chain(audio_toi)
-        })
-    }
-
-    pub fn toi_limits(&self, track: &TrackUid) -> Option<TransferObjectIdentifierLimits> {
-        self.track_transmission(track)
-            .and_then(|transmission| match transmission {
-                TrackTransmission::Unicast => None,
-                TrackTransmission::Multicast { toi_limits } => Some(toi_limits),
-            })
-    }
-
-    pub fn track_transmission(&self, track: &TrackUid) -> Option<TrackTransmission> {
+    #[must_use]
+    pub fn track_transmission(&self, track: &TrackUid) -> Option<&TrackTransmission> {
         let presentation = self.presentation(track.presentation_id())?;
-        Some(*match track.media_type() {
+        Some(match track.media_type() {
             MediaType::Video => presentation
                 .video_switching_set(track.switching_set_id())?
                 .track(track.track_id())?
@@ -63,30 +37,55 @@ impl MulticastManifest {
         })
     }
 
-    pub fn transport_session_ids(&self) -> impl Iterator<Item = u32> + '_ {
-        self.presentations().filter_map(multicast_tsi)
+    pub fn track_transmission_mut(&mut self, track: &TrackUid) -> Option<&mut TrackTransmission> {
+        let presentation = self.presentation_mut(track.presentation_id())?;
+        Some(match track.media_type() {
+            MediaType::Video => {
+                &mut presentation
+                    .video_switching_set_mut(track.switching_set_id())?
+                    .track_mut(track.track_id())?
+                    .transmission
+            }
+            MediaType::Audio => {
+                &mut presentation
+                    .audio_switching_set_mut(track.switching_set_id())?
+                    .track_mut(track.track_id())?
+                    .transmission
+            }
+            MediaType::Metadata => unimplemented!("no multicast support for metadata yet"),
+        })
     }
 
-    pub fn from_unicast<F>(manifest: UnicastManifest, presentation_transformer: F) -> Result<Self>
-    where
-        F: FnMut(Presentation) -> Presentation,
-    {
+    pub fn multicast_tracks(
+        &self,
+    ) -> impl Iterator<Item = (&TrackMulticastMetadata, &dyn InitializableTrack)> + '_ {
+        self.presentations()
+            .flat_map(Presentation::multicast_tracks)
+    }
+
+    pub fn from_unicast<F>(
+        manifest: UnicastManifest,
+        multicast_metadata: ManifestMulticastMetadata,
+    ) -> Result<Self> {
         let mut inner = manifest.inner;
         if !matches!(inner.stream_type, StreamType::Live(_)) {
             return Err(Error::InvalidMulticastStreamType);
         }
-        inner.presentations = inner
-            .presentations
-            .into_iter()
-            .map(presentation_transformer)
-            .map(Ok)
-            .into_entities()?;
+        inner.multicast_metadata = Some(multicast_metadata);
         Ok(Self { inner })
+    }
+
+    #[must_use]
+    pub fn multicast_metadata(&self) -> &ManifestMulticastMetadata {
+        self.inner.multicast_metadata.as_ref().unwrap()
     }
 }
 
 impl Manifest for MulticastManifest {
     fn new(location: Url, data: ManifestData) -> Result<Self> {
+        if data.multicast_metadata.is_none() {
+            return Err(Error::MissingManifestMulticastMetadata);
+        }
         BaseManifest::new(location, data).map(|inner| Self { inner })
     }
 
@@ -123,7 +122,7 @@ impl Manifest for MulticastManifest {
 
 impl From<MulticastManifest> for UnicastManifest {
     fn from(input: MulticastManifest) -> Self {
-        let MulticastManifest { mut inner } = input;
+        let MulticastManifest { mut inner, .. } = input;
         for presentation in &mut inner.presentations {
             presentation.set_unicast();
         }
@@ -131,9 +130,10 @@ impl From<MulticastManifest> for UnicastManifest {
     }
 }
 
-const fn multicast_tsi(presentation: &Presentation) -> Option<u32> {
-    match presentation.transmission() {
-        PresentationTransmission::Unicast => None,
-        PresentationTransmission::Multicast(data) => Some(data.transport_session_id()),
-    }
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ManifestMulticastMetadata {
+    pub route_version: u8,
+    pub fec_encoding_id: u8,
+    pub address: String,
 }

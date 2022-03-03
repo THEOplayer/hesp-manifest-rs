@@ -2,8 +2,8 @@ use url::Url;
 
 use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    Address, AudioTrack, DateTime, Error, LiveStream, ManifestData, MetadataTrack, Presentation,
-    Result, StreamType, VideoTrack,
+    Address, AudioTrack, DateTime, Error, LiveStream, ManifestData, ManifestMulticastMetadata,
+    MetadataTrack, Presentation, Result, StreamType, VideoTrack,
 };
 
 #[derive(Debug, Clone)]
@@ -12,6 +12,7 @@ pub(super) struct BaseManifest {
     pub fallback_poll_rate: u64,
     pub presentations: EntityMap<Presentation>,
     pub stream_type: StreamType,
+    pub multicast_metadata: Option<ManifestMulticastMetadata>,
 }
 
 impl BaseManifest {
@@ -51,6 +52,7 @@ impl BaseManifest {
             fallback_poll_rate: data.fallback_poll_rate.into(),
             presentations,
             stream_type: data.stream_type,
+            multicast_metadata: data.multicast_metadata,
         };
 
         Ok(manifest)

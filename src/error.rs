@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use crate::{SegmentId, TransmissionType};
+use crate::{SegmentId, TrackUid};
 
 #[derive(Error, Debug)]
 pub enum Error {
@@ -36,6 +36,10 @@ pub enum Error {
     MissingActiveSequenceNumber(String),
     #[error("Track {0} must have codecs")]
     MissingCodecs(String),
+    #[error("Multicast manifest must have multicast metadata")]
+    MissingManifestMulticastMetadata,
+    #[error("Unicast manifest must not have multicast metadata")]
+    UnicastMulticastMetadata,
     #[error("Track {0} must have a continuation pattern")]
     MissingContinuationPattern(String),
     #[error("Track {0} must have a framerate")]
@@ -48,18 +52,12 @@ pub enum Error {
     DuplicateId(String),
     #[error("Pattern '{0}' must contain {1}")]
     InvalidPattern(String, &'static str),
-    #[error("Presentation '{0}' must not contain multicast data")]
-    InvalidUnicastPresentation(String),
+    #[error("Track '{0}' must not contain multicast data")]
+    InvalidUnicastTrack(TrackUid),
     #[error("'{0:?}' is not a valid version for a unicast manifest")]
     InvalidUnicastVersion(&'static str),
     #[error("'{0:?}' is not a valid version for a multicast manifest")]
     InvalidMulticastVersion(&'static str),
-    #[error("Presentation '{presentation}' is {transmission:?} therefore Track '{track}' must be {transmission:?}")]
-    InvalidTrackTransmission {
-        presentation: String,
-        track: String,
-        transmission: TransmissionType,
-    },
     #[error("Multicast presentation must have streamType 'live'")]
     InvalidMulticastStreamType,
     #[error("Track path '{0}' must contain exactly 3 forward slashes")]

@@ -5,7 +5,7 @@ use crate::util::{Entity, UInt, Uri};
 use crate::{
     normalize_tracks, AudioMimeType, AudioSwitchingSet, AudioTrack, Language, SamplesPerFrame,
     ScaledDuration, ScaledValue, SegmentId, Segments, SwitchingSetProtection,
-    TransferObjectIdentifierLimits,
+    TrackMulticastMetadata,
 };
 
 #[skip_serializing_none]
@@ -86,7 +86,7 @@ pub struct AudioTrackData {
     pub media_time_offset: Option<ScaledValue>,
     pub sample_rate: Option<UInt>,
     pub segment_duration: Option<ScaledDuration>,
-    pub toi_limits: Option<TransferObjectIdentifierLimits>,
+    pub multicast_metadata: Option<TrackMulticastMetadata>,
 }
 
 impl From<AudioTrack> for AudioTrackData {
@@ -123,12 +123,13 @@ impl From<AudioTrack> for AudioTrackData {
             media_time_offset: Some(input.media_time_offset),
             sample_rate: Some(input.sample_rate.into()),
             segment_duration: input.segment_duration,
-            toi_limits: input.transmission.into(),
+            multicast_metadata: input.transmission.into(),
         }
     }
 }
 
 impl AudioTrackData {
+    #[must_use]
     pub fn with_default_codecs(mut self, codecs: &Option<String>) -> Self {
         if self.codecs.is_none() {
             self.codecs = codecs.clone();
@@ -136,6 +137,7 @@ impl AudioTrackData {
         self
     }
 
+    #[must_use]
     pub fn with_default_continuation_pattern(
         mut self,
         continuation_pattern: &Option<String>,
@@ -146,6 +148,7 @@ impl AudioTrackData {
         self
     }
 
+    #[must_use]
     pub fn with_default_initialization_pattern(
         mut self,
         initialization_pattern: &Option<String>,
@@ -156,6 +159,7 @@ impl AudioTrackData {
         self
     }
 
+    #[must_use]
     pub const fn with_default_samples_per_frame(
         mut self,
         samples_per_frame: Option<SamplesPerFrame>,
@@ -166,6 +170,7 @@ impl AudioTrackData {
         self
     }
 
+    #[must_use]
     pub const fn with_default_media_time_offset(
         mut self,
         media_time_offset: Option<ScaledValue>,
@@ -176,6 +181,7 @@ impl AudioTrackData {
         self
     }
 
+    #[must_use]
     pub const fn with_default_sample_rate(mut self, sample_rate: Option<UInt>) -> Self {
         if self.sample_rate.is_none() {
             self.sample_rate = sample_rate;

@@ -89,6 +89,7 @@ impl From<MetadataTrack> for MetadataTrackData {
 }
 
 impl MetadataTrackData {
+    #[must_use]
     pub fn with_default_codecs(mut self, codecs: &Option<String>) -> Self {
         if self.codecs.is_none() {
             self.codecs = codecs.clone();
@@ -96,6 +97,7 @@ impl MetadataTrackData {
         self
     }
 
+    #[must_use]
     pub fn with_default_continuation_pattern(
         mut self,
         continuation_pattern: &Option<String>,
@@ -106,6 +108,7 @@ impl MetadataTrackData {
         self
     }
 
+    #[must_use]
     pub const fn with_default_media_time_offset(
         mut self,
         media_time_offset: Option<ScaledValue>,

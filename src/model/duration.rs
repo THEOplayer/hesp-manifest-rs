@@ -8,6 +8,7 @@ use crate::{Scale, UnsignedScaledValue};
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, Default, Eq, PartialEq)]
 pub struct ScaledDuration(UnsignedScaledValue);
 impl ScaledDuration {
+    #[must_use]
     pub fn new(value: u64, scale: Scale) -> Self {
         Self(UnsignedScaledValue::new(value, scale))
     }

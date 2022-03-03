@@ -3,7 +3,10 @@ use serde_with::skip_serializing_none;
 
 use crate::model::manifest::base::BaseManifest;
 use crate::util::{UInt, Uri};
-use crate::{legacy, DateTime, MulticastManifest, PresentationData, StreamType, UnicastManifest};
+use crate::{
+    legacy, DateTime, ManifestMulticastMetadata, MulticastManifest, PresentationData, StreamType,
+    UnicastManifest,
+};
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(tag = "manifestVersion")]
@@ -35,6 +38,7 @@ pub struct ManifestData {
     #[serde(flatten)]
     pub stream_type: StreamType,
     pub content_base_url: Option<Uri>,
+    pub multicast_metadata: Option<ManifestMulticastMetadata>,
 }
 
 impl ManifestData {
@@ -57,6 +61,7 @@ impl From<BaseManifest> for ManifestData {
                 .collect(),
             stream_type: input.stream_type,
             content_base_url: None,
+            multicast_metadata: input.multicast_metadata,
         };
         result.normalize();
         result

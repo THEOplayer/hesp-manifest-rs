@@ -17,14 +17,17 @@ pub struct UnsignedScaledValue {
 impl UnsignedScaledValue {
     pub const ZERO: Self = Self::new(0, Scale::ONE);
 
+    #[must_use]
     pub const fn new(value: u64, scale: Scale) -> Self {
         Self { value, scale }
     }
 
+    #[must_use]
     pub fn floor(self) -> u64 {
         self.value / u64::from(self.scale)
     }
 
+    #[must_use]
     pub fn checked_add(self, other: Self) -> Option<Self> {
         let scale_a = u128::from(self.scale);
         let scale_b = u128::from(other.scale);
@@ -35,6 +38,7 @@ impl UnsignedScaledValue {
         checked_from_u128(value, scale)
     }
 
+    #[must_use]
     pub fn checked_sub(self, other: Self) -> Option<Self> {
         let scale_a = u128::from(self.scale);
         let scale_b = u128::from(other.scale);
@@ -45,12 +49,14 @@ impl UnsignedScaledValue {
         checked_from_u128(value, scale)
     }
 
+    #[must_use]
     pub fn checked_mul(self, other: Self) -> Option<Self> {
         let value = u128::from(self.value) * u128::from(other.value);
         let scale = u128::from(self.scale) * u128::from(other.scale);
         checked_from_u128(value, scale)
     }
 
+    #[must_use]
     pub fn checked_div(self, other: Self) -> Option<Self> {
         let value = u128::from(self.value) * u128::from(other.scale);
         let scale = u128::from(self.scale) * u128::from(other.value);

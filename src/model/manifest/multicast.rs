@@ -63,7 +63,7 @@ impl MulticastManifest {
             .flat_map(Presentation::multicast_tracks)
     }
 
-    pub fn from_unicast<F>(
+    pub fn from_unicast(
         manifest: UnicastManifest,
         multicast_metadata: ManifestMulticastMetadata,
     ) -> Result<Self> {

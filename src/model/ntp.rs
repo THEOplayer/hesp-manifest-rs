@@ -90,8 +90,6 @@ mod tests {
 
     fn historic_ntp_times() {
         let ymd = |y, m, d| u32::from(NtpTime::from(Utc.ymd(y, m, d).and_hms(0, 0, 0)));
-        // 1 CE TODO: this does not work
-        // assert_eq!(ymd(1, 1, 1), 202_939_144);
         // Last day Julian
         assert_eq!(ymd(1582, 10, 4), 2_873_647_488);
         // Last day NTP Era -1

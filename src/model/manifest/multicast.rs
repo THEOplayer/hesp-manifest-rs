@@ -5,7 +5,7 @@ use super::{BaseManifest, ManifestData};
 use crate::util::{EntityIter, EntityIterMut};
 use crate::{
     Error, InitializableTrack, Manifest, ManifestDeserialize, ManifestSerialize, MediaType,
-    Presentation, Result, StreamType, SwitchingSet, Track, TrackMulticastMetadata,
+    NTPTime, Presentation, Result, StreamType, SwitchingSet, Track, TrackMulticastMetadata,
     TrackTransmission, TrackUid, UnicastManifest,
 };
 
@@ -79,6 +79,11 @@ impl MulticastManifest {
     pub fn multicast_metadata(&self) -> &ManifestMulticastMetadata {
         self.inner.multicast_metadata.as_ref().unwrap()
     }
+
+    #[must_use]
+    pub fn is_expired(&self) -> bool {
+        self.multicast_metadata().expiration_time <= NTPTime::now()
+    }
 }
 
 impl Manifest for MulticastManifest {
@@ -136,4 +141,5 @@ pub struct ManifestMulticastMetadata {
     pub route_version: u8,
     pub fec_encoding_id: u8,
     pub address: String,
+    pub expiration_time: NTPTime,
 }

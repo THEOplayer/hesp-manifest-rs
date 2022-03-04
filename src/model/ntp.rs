@@ -5,6 +5,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 const EPOCH_0_TIMESTAMP: i64 = -2_208_988_800;
 const WRAP: i64 = 2_i64.pow(32);
+/// approximately 68 years
 const MIDDLE: u32 = 2_u32.pow(16);
 
 #[derive(Debug, Deserialize, Clone, Serialize, Eq, PartialEq, Copy)]
@@ -31,13 +32,13 @@ impl NTPTime {
     }
 
     #[must_use]
-    pub fn add_seconds(&self, seconds: u32) -> Self {
+    pub fn add_seconds(self, seconds: u32) -> Self {
         let seconds = self.seconds.wrapping_add(seconds);
         Self { seconds }
     }
 
     #[must_use]
-    pub fn sub_seconds(&self, seconds: u32) -> Self {
+    pub fn sub_seconds(self, seconds: u32) -> Self {
         let seconds = self.seconds.wrapping_sub(seconds);
         Self { seconds }
     }

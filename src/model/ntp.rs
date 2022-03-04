@@ -1,0 +1,84 @@
+use chrono::{DateTime, TimeZone};
+use serde::{self, Deserialize, Serialize};
+use std::time::{SystemTime, UNIX_EPOCH};
+
+const EPOCH_0_TIMESTAMP: i64 = -2_208_988_800;
+const WRAP: i64 = 2_i64.pow(32);
+
+#[derive(Debug, Deserialize, Clone, Serialize)]
+#[serde(from = "u32", into = "u32")]
+pub struct NTPTime {
+    seconds: u32,
+}
+
+impl NTPTime {
+    #[must_use]
+    pub fn now() -> Self {
+        let timestamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("system time before Unix epoch")
+            .as_secs();
+        Self::from_timestamp(i64::try_from(timestamp).expect("system time impossibly large"))
+    }
+
+    #[must_use]
+    pub fn from_timestamp(timestamp: i64) -> Self {
+        let seconds = (timestamp - EPOCH_0_TIMESTAMP).rem_euclid(WRAP);
+        let seconds = u32::try_from(seconds).unwrap();
+        Self { seconds }
+    }
+
+    #[must_use]
+    pub fn add_seconds(&self, seconds: u32) -> Self {
+        let seconds = self.seconds.wrapping_add(seconds);
+        Self { seconds }
+    }
+
+    #[must_use]
+    pub fn sub_seconds(&self, seconds: u32) -> Self {
+        let seconds = self.seconds.wrapping_sub(seconds);
+        Self { seconds }
+    }
+}
+
+impl From<u32> for NTPTime {
+    fn from(seconds: u32) -> Self {
+        NTPTime { seconds }
+    }
+}
+
+impl From<NTPTime> for u32 {
+    fn from(ntp: NTPTime) -> Self {
+        ntp.seconds
+    }
+}
+
+impl<Tz: TimeZone> From<DateTime<Tz>> for NTPTime {
+    fn from(date: DateTime<Tz>) -> Self {
+        Self::from_timestamp(date.timestamp())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chrono::Utc;
+
+    #[test]
+
+    fn historic_ntp_times() {
+        let ymd = |y, m, d| u32::from(NTPTime::from(Utc.ymd(y, m, d).and_hms(0, 0, 0)));
+        // 1 CE TODO: this does not work
+        // assert_eq!(ymd(1, 1, 1), 202_939_144);
+        // Last day Julian
+        assert_eq!(ymd(1582, 10, 4), 2_873_647_488);
+        // Last day NTP Era -1
+        assert_eq!(ymd(1899, 12, 31), 4_294_880_896);
+        // First day NTP Era 0
+        assert_eq!(ymd(1900, 1, 1), 0);
+        // First day UNIX
+        assert_eq!(ymd(1970, 1, 1), 2_208_988_800);
+        // Fist day NTP Era 1
+        assert_eq!(ymd(2036, 2, 8), 63_104);
+    }
+}

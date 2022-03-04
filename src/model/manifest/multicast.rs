@@ -24,36 +24,40 @@ impl MulticastManifest {
     #[must_use]
     pub fn track_transmission(&self, track: &TrackUid) -> Option<&TrackTransmission> {
         let presentation = self.presentation(track.presentation_id())?;
-        Some(match track.media_type() {
-            MediaType::Video => presentation
-                .video_switching_set(track.switching_set_id())?
-                .track(track.track_id())?
-                .transmission(),
-            MediaType::Audio => presentation
-                .audio_switching_set(track.switching_set_id())?
-                .track(track.track_id())?
-                .transmission(),
-            MediaType::Metadata => unimplemented!("no multicast support for metadata yet"),
-        })
+        match track.media_type() {
+            MediaType::Video => Some(
+                presentation
+                    .video_switching_set(track.switching_set_id())?
+                    .track(track.track_id())?
+                    .transmission(),
+            ),
+            MediaType::Audio => Some(
+                presentation
+                    .audio_switching_set(track.switching_set_id())?
+                    .track(track.track_id())?
+                    .transmission(),
+            ),
+            MediaType::Metadata => None,
+        }
     }
 
     pub fn track_transmission_mut(&mut self, track: &TrackUid) -> Option<&mut TrackTransmission> {
         let presentation = self.presentation_mut(track.presentation_id())?;
-        Some(match track.media_type() {
-            MediaType::Video => {
+        match track.media_type() {
+            MediaType::Video => Some(
                 &mut presentation
                     .video_switching_set_mut(track.switching_set_id())?
                     .track_mut(track.track_id())?
-                    .transmission
-            }
-            MediaType::Audio => {
+                    .transmission,
+            ),
+            MediaType::Audio => Some(
                 &mut presentation
                     .audio_switching_set_mut(track.switching_set_id())?
                     .track_mut(track.track_id())?
-                    .transmission
-            }
-            MediaType::Metadata => unimplemented!("no multicast support for metadata yet"),
-        })
+                    .transmission,
+            ),
+            MediaType::Metadata => None,
+        }
     }
 
     pub fn multicast_tracks(

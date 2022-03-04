@@ -1,13 +1,16 @@
+use std::net::SocketAddr;
+
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use super::{BaseManifest, ManifestData};
 use crate::util::{EntityIter, EntityIterMut};
 use crate::{
     Error, InitializableTrack, Manifest, ManifestDeserialize, ManifestSerialize, MediaType,
     NtpTime, Presentation, Result, StreamType, SwitchingSet, Track, TrackMulticastMetadata,
     TrackTransmission, TrackUid, UnicastManifest,
 };
+
+use super::{BaseManifest, ManifestData};
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(into = "ManifestSerialize")]
@@ -139,11 +142,11 @@ impl From<MulticastManifest> for UnicastManifest {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Eq, PartialEq, Hash)]
 #[serde(rename_all = "camelCase")]
 pub struct ManifestMulticastMetadata {
     pub route_version: u8,
     pub fec_encoding_id: u8,
-    pub address: String,
+    pub address: SocketAddr,
     pub expiration_time: NtpTime,
 }

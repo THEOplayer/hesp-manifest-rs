@@ -1,4 +1,4 @@
-use hesp_manifest::{Manifest, MulticastManifest, UnicastManifest};
+use hesp_manifest::{Manifest, ManifestMulticastMetadata, MulticastManifest, UnicastManifest};
 use std::fs;
 use url::Url;
 
@@ -45,6 +45,15 @@ fn validate_multicast_manifest() -> anyhow::Result<()> {
         .map(|(meta, _)| meta.transport_session_id)
         .collect();
 
+    assert_eq!(
+        result.multicast_metadata(),
+        &ManifestMulticastMetadata {
+            route_version: 1,
+            fec_encoding_id: 5,
+            address: "239.0.0.1:6666".parse().unwrap(),
+            expiration_time: 10.into(),
+        }
+    );
     assert_eq!(session_ids, vec![1, 2]);
     Ok(())
 }

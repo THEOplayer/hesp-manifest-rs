@@ -8,7 +8,7 @@ const WRAP: i64 = 2_i64.pow(32);
 /// approximately 68 years
 const MIDDLE: u32 = 2_u32.pow(16);
 
-#[derive(Debug, Deserialize, Clone, Serialize, Eq, PartialEq, Copy)]
+#[derive(Debug, Deserialize, Clone, Serialize, Eq, PartialEq, Copy, Hash)]
 #[serde(from = "u32", into = "u32")]
 pub struct NtpTime {
     seconds: u32,

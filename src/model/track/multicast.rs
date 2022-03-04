@@ -1,16 +1,17 @@
 use serde::{self, Deserialize, Serialize};
+use std::net::SocketAddr;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TrackMulticastMetadata {
     pub fec_encoding_id: u8,
     pub transport_session_id: u32,
-    pub address: String,
+    pub address: SocketAddr,
 }
 
 impl TrackMulticastMetadata {
     #[must_use]
-    pub const fn new(fec_encoding_id: u8, transport_session_id: u32, address: String) -> Self {
+    pub const fn new(fec_encoding_id: u8, transport_session_id: u32, address: SocketAddr) -> Self {
         Self {
             fec_encoding_id,
             transport_session_id,

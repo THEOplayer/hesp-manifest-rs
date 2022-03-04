@@ -112,4 +112,12 @@ mod tests {
         assert_eq!(cmp(11, 10), Ordering::Greater);
         assert_eq!(cmp(u32::MAX - 10, 10), Ordering::Less);
     }
+
+    #[test]
+    fn add_seconds_wraps() {
+        let a = NtpTime::from(Utc.ymd(1899, 12, 31).and_hms(12, 0, 0));
+        let b = NtpTime::from(Utc.ymd(1900, 1, 1).and_hms(12, 0, 0));
+        let secs_in_day = 24 * 60 * 60;
+        assert_eq!(a.add_seconds(secs_in_day), b);
+    }
 }

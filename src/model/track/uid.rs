@@ -18,6 +18,7 @@ struct TrackUidData {
 }
 
 impl TrackUid {
+    #[must_use]
     pub fn new(
         presentation_id: String,
         media_type: MediaType,
@@ -32,18 +33,22 @@ impl TrackUid {
         };
         Self(Arc::new(data))
     }
+    #[must_use]
     #[inline]
     pub fn presentation_id(&self) -> &str {
         &self.0.presentation_id
     }
+    #[must_use]
     #[inline]
     pub fn media_type(&self) -> MediaType {
         self.0.media_type
     }
+    #[must_use]
     #[inline]
     pub fn switching_set_id(&self) -> &str {
         &self.0.switching_set_id
     }
+    #[must_use]
     #[inline]
     pub fn track_id(&self) -> &str {
         &self.0.track_id

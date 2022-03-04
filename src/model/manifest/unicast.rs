@@ -27,12 +27,16 @@ impl UnicastManifest {
         self.inner.metadata_tracks()
     }
 
+    #[must_use]
     pub fn active_presentation(&self) -> Option<&Presentation> {
         self.inner.active_presentation()
     }
 }
 impl Manifest for UnicastManifest {
     fn new(location: Url, data: ManifestData) -> Result<Self> {
+        if data.multicast_metadata.is_some() {
+            return Err(Error::UnicastMulticastMetadata);
+        }
         let inner = BaseManifest::new(location, data)?;
         for presentation in &inner.presentations {
             presentation.ensure_unicast()?;

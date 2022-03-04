@@ -53,6 +53,7 @@ impl From<Scale> for u128 {
 
 impl Scale {
     pub const ONE: Self = Scale(1);
+    #[must_use]
     pub fn is_one(&self) -> bool {
         *self == Self::ONE
     }

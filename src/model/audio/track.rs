@@ -152,7 +152,7 @@ impl AudioTrack {
             mime_type,
             sample_rate,
             segment_duration: data.segment_duration,
-            transmission: data.toi_limits.into(),
+            transmission: data.multicast_metadata.into(),
         })
     }
 }

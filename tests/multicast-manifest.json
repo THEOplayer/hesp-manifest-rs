@@ -2,6 +2,12 @@
   "manifestVersion": "1.0.0-multicast",
   "creationDate": "2022-02-24T10:09:13.645+00:00",
   "fallbackPollRate": 1,
+  "multicastMetadata": {
+    "routeVersion": 1,
+    "fecEncodingId": 5,
+    "address": "239.0.0.1:6666",
+    "expirationTime": 10
+  },
   "presentations": [
     {
       "id": "main-pres",
@@ -70,9 +76,10 @@
               "activeSequenceNumber": 5184580,
               "baseUrl": "main-pres/audio/main/128kbps/",
               "channels": 2,
-              "toiLimits": {
-                "start": 65537,
-                "end": 81921
+              "multicastMetadata": {
+                "transportSessionId": 2,
+                "fecEncodingId": 5,
+                "address": "239.0.0.1:6666"
               }
             }
           ],
@@ -165,9 +172,10 @@
               "baseUrl": "main-pres/video/main/1080p/",
               "codecs": "avc1.4d4028",
               "label": "HD quality",
-              "toiLimits": {
-                "start": 32769,
-                "end": 49153
+              "multicastMetadata": {
+                "transportSessionId": 1,
+                "fecEncodingId": 5,
+                "address": "239.0.0.1:6666"
               }
             },
             {
@@ -238,11 +246,7 @@
               "activeSequenceNumber": 3611551,
               "baseUrl": "main-pres/video/main/720p/",
               "codecs": "avc1.4d401f",
-              "label": "High quality",
-              "toiLimits": {
-                "start": 49153,
-                "end": 65537
-              }
+              "label": "High quality"
             },
             {
               "id": "480p",
@@ -312,11 +316,7 @@
               "activeSequenceNumber": 3611551,
               "baseUrl": "main-pres/video/main/480p/",
               "codecs": "avc1.4d401f",
-              "label": "Medium quality",
-              "toiLimits": {
-                "start": 16385,
-                "end": 32769
-              }
+              "label": "Medium quality"
             },
             {
               "id": "360p",
@@ -386,11 +386,7 @@
               "activeSequenceNumber": 3611550,
               "baseUrl": "main-pres/video/main/360p/",
               "codecs": "avc1.4d4016",
-              "label": "Low quality",
-              "toiLimits": {
-                "start": 1,
-                "end": 16385
-              }
+              "label": "Low quality"
             }
           ],
           "continuationPattern": "{segmentId}.hspc",
@@ -403,16 +399,7 @@
           },
           "mimeType": "video/mp4"
         }
-      ],
-      "multicastMetadata": {
-        "fec": {
-          "encodingId": 5,
-          "encodingSymbolLength": 1428,
-          "maximumSourceBlockLength": 178
-        },
-        "transportSessionId": 1,
-        "address": "127.0.0.1"
-      }
+      ]
     }
   ],
   "streamType": "live",

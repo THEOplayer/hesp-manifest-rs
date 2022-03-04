@@ -5,7 +5,8 @@
   "multicastMetadata": {
     "routeVersion": 1,
     "fecEncodingId": 5,
-    "address": "239.0.0.1:6666"
+    "address": "239.0.0.1:6666",
+    "expirationTime": 10
   },
   "presentations": [
     {

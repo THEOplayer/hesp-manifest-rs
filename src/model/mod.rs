@@ -7,7 +7,7 @@ pub use language::Language;
 pub use manifest::*;
 pub use media::MediaType;
 pub use metadata::*;
-pub use ntp::NTPTime;
+pub use ntp::NtpTime;
 pub use presentation::*;
 pub use resolution::Resolution;
 pub use scale::*;

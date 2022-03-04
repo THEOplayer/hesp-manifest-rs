@@ -10,11 +10,11 @@ const MIDDLE: u32 = 2_u32.pow(16);
 
 #[derive(Debug, Deserialize, Clone, Serialize, Eq, PartialEq, Copy)]
 #[serde(from = "u32", into = "u32")]
-pub struct NTPTime {
+pub struct NtpTime {
     seconds: u32,
 }
 
-impl NTPTime {
+impl NtpTime {
     #[must_use]
     pub fn now() -> Self {
         let timestamp = SystemTime::now()
@@ -44,25 +44,25 @@ impl NTPTime {
     }
 }
 
-impl From<u32> for NTPTime {
+impl From<u32> for NtpTime {
     fn from(seconds: u32) -> Self {
-        NTPTime { seconds }
+        NtpTime { seconds }
     }
 }
 
-impl From<NTPTime> for u32 {
-    fn from(ntp: NTPTime) -> Self {
+impl From<NtpTime> for u32 {
+    fn from(ntp: NtpTime) -> Self {
         ntp.seconds
     }
 }
 
-impl<Tz: TimeZone> From<DateTime<Tz>> for NTPTime {
+impl<Tz: TimeZone> From<DateTime<Tz>> for NtpTime {
     fn from(date: DateTime<Tz>) -> Self {
         Self::from_timestamp(date.timestamp())
     }
 }
 
-impl Ord for NTPTime {
+impl Ord for NtpTime {
     fn cmp(&self, other: &Self) -> Ordering {
         let res = other.seconds.wrapping_sub(self.seconds);
         if res == 0 {
@@ -75,7 +75,7 @@ impl Ord for NTPTime {
     }
 }
 
-impl PartialOrd for NTPTime {
+impl PartialOrd for NtpTime {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
@@ -89,7 +89,7 @@ mod tests {
     #[test]
 
     fn historic_ntp_times() {
-        let ymd = |y, m, d| u32::from(NTPTime::from(Utc.ymd(y, m, d).and_hms(0, 0, 0)));
+        let ymd = |y, m, d| u32::from(NtpTime::from(Utc.ymd(y, m, d).and_hms(0, 0, 0)));
         // 1 CE TODO: this does not work
         // assert_eq!(ymd(1, 1, 1), 202_939_144);
         // Last day Julian
@@ -106,7 +106,7 @@ mod tests {
 
     #[test]
     fn compare() {
-        let cmp = |a, b| NTPTime::from(a).cmp(&NTPTime::from(b));
+        let cmp = |a, b| NtpTime::from(a).cmp(&NtpTime::from(b));
         assert_eq!(cmp(10, 10), Ordering::Equal);
         assert_eq!(cmp(10, 11), Ordering::Less);
         assert_eq!(cmp(11, 10), Ordering::Greater);

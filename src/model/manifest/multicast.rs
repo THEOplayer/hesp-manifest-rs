@@ -91,6 +91,18 @@ impl MulticastManifest {
     pub fn is_expired(&self) -> bool {
         self.multicast_metadata().expiration_time <= NtpTime::now()
     }
+
+    pub fn initializable_tracks(&mut self) -> impl Iterator<Item = &dyn InitializableTrack> {
+        self.presentations()
+            .flat_map(Presentation::initializable_tracks)
+    }
+
+    pub fn initializable_tracks_mut(
+        &mut self,
+    ) -> impl Iterator<Item = &mut dyn InitializableTrack> {
+        self.presentations_mut()
+            .flat_map(Presentation::initializable_tracks_mut)
+    }
 }
 
 impl Manifest for MulticastManifest {

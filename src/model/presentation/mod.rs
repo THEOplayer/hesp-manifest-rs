@@ -177,14 +177,14 @@ impl Presentation {
     }
 
     pub fn tracks_mut(&mut self) -> impl Iterator<Item = &mut dyn Track> {
-        let audio_iter = Self::as_track_mut_iterator(&mut self.audio);
-        let video_iter = Self::as_track_mut_iterator(&mut self.video);
-        let metadata_iter = Self::as_track_mut_iterator(&mut self.metadata);
+        let audio_iter = Self::track_mut_iterator(&mut self.audio);
+        let video_iter = Self::track_mut_iterator(&mut self.video);
+        let metadata_iter = Self::track_mut_iterator(&mut self.metadata);
 
         audio_iter.chain(video_iter).chain(metadata_iter)
     }
 
-    fn as_track_mut_iterator<T: SwitchingSet>(
+    fn track_mut_iterator<T: SwitchingSet>(
         map: &mut EntityMap<T>,
     ) -> impl Iterator<Item = &mut dyn Track> {
         map.iter_mut()
@@ -204,13 +204,13 @@ impl Presentation {
     pub fn initializable_tracks_mut(
         &mut self,
     ) -> impl Iterator<Item = &mut dyn InitializableTrack> {
-        let audio_iter = Self::as_initializable_track_mut_iterator(&mut self.audio);
-        let video_iter = Self::as_initializable_track_mut_iterator(&mut self.video);
+        let audio_iter = Self::initializable_track_mut_iterator(&mut self.audio);
+        let video_iter = Self::initializable_track_mut_iterator(&mut self.video);
 
         audio_iter.chain(video_iter)
     }
 
-    fn as_initializable_track_mut_iterator<'a, T, U>(
+    fn initializable_track_mut_iterator<'a, T, U>(
         map: &'a mut EntityMap<T>,
     ) -> impl Iterator<Item = &mut dyn InitializableTrack>
     where

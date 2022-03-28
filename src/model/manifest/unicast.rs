@@ -1,3 +1,4 @@
+use chrono::{DateTime, FixedOffset};
 use serde::Serialize;
 use url::Url;
 
@@ -62,6 +63,14 @@ impl Manifest for UnicastManifest {
 
     fn stream_type(&self) -> &StreamType {
         self.inner.stream_type()
+    }
+
+    fn creation_date(&self) -> DateTime<FixedOffset> {
+        *self.inner.creation_date
+    }
+
+    fn fallback_poll_rate(&self) -> u64 {
+        self.inner.fallback_poll_rate
     }
 
     fn from_json(location: Url, json: &str) -> Result<Self> {

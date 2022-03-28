@@ -1,3 +1,4 @@
+use chrono::{DateTime, FixedOffset};
 use url::Url;
 
 use base::BaseManifest;
@@ -62,6 +63,10 @@ pub trait Manifest: Sized {
                 track_uid.track_id(),
             )
     }
+
+    fn creation_date(&self) -> DateTime<FixedOffset>;
+
+    fn fallback_poll_rate(&self) -> u64;
 
     fn from_json(location: Url, json: &str) -> Result<Self>;
 }

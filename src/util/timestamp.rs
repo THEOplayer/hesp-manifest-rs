@@ -10,7 +10,7 @@ pub struct Timestamp(DateTime<FixedOffset>);
 impl FromStr for Timestamp {
     type Err = ParseError;
     fn from_str(s: &str) -> ParseResult<Self> {
-        chrono::DateTime::parse_from_rfc3339(s).map(Timestamp)
+        DateTime::parse_from_rfc3339(s).map(Timestamp)
     }
 }
 
@@ -41,13 +41,11 @@ impl From<DateTime<FixedOffset>> for Timestamp {
 
 #[cfg(test)]
 mod tests {
-    use anyhow::Result;
-    use chrono::{FixedOffset, TimeZone};
-
     use super::*;
+    use chrono::TimeZone;
 
     #[test]
-    fn serialize_timestamp() -> Result<()> {
+    fn serialize_timestamp() -> anyhow::Result<()> {
         let input = "\"2021-03-31T08:00:00.000Z\"";
 
         let from_str: Timestamp = serde_json::from_str(input)?;

@@ -1,14 +1,15 @@
+use chrono::{DateTime, FixedOffset};
 use url::Url;
 
 use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    Address, AudioTrack, DateTime, Error, LiveStream, ManifestData, ManifestMulticastMetadata,
-    MetadataTrack, Presentation, Result, StreamType, VideoTrack,
+    Address, AudioTrack, Error, LiveStream, ManifestData, ManifestMulticastMetadata, MetadataTrack,
+    Presentation, Result, StreamType, VideoTrack,
 };
 
 #[derive(Debug, Clone)]
 pub(super) struct BaseManifest {
-    pub creation_date: DateTime,
+    pub creation_date: DateTime<FixedOffset>,
     pub fallback_poll_rate: u64,
     pub presentations: EntityMap<Presentation>,
     pub stream_type: StreamType,
@@ -48,7 +49,7 @@ impl BaseManifest {
             .into_entities()?;
         validate_active(&data.stream_type, &presentations)?;
         let manifest = Self {
-            creation_date: data.creation_date,
+            creation_date: data.creation_date.into(),
             fallback_poll_rate: data.fallback_poll_rate.into(),
             presentations,
             stream_type: data.stream_type,

@@ -1,3 +1,4 @@
+use chrono::{DateTime, FixedOffset};
 use std::net::SocketAddr;
 
 use serde::{Deserialize, Serialize};
@@ -131,6 +132,14 @@ impl Manifest for MulticastManifest {
 
     fn stream_type(&self) -> &StreamType {
         self.inner.stream_type()
+    }
+
+    fn creation_date(&self) -> DateTime<FixedOffset> {
+        self.inner.creation_date
+    }
+
+    fn fallback_poll_rate(&self) -> u64 {
+        self.inner.fallback_poll_rate
     }
 
     fn from_json(location: Url, json: &str) -> Result<Self> {

@@ -135,7 +135,7 @@ impl Manifest for MulticastManifest {
     }
 
     fn creation_date(&self) -> DateTime<FixedOffset> {
-        *self.inner.creation_date
+        self.inner.creation_date
     }
 
     fn fallback_poll_rate(&self) -> u64 {

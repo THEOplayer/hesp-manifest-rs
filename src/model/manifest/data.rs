@@ -2,9 +2,9 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 use crate::model::manifest::base::BaseManifest;
-use crate::util::{UInt, Uri};
+use crate::util::{Timestamp, UInt, Uri};
 use crate::{
-    legacy, DateTime, ManifestMulticastMetadata, MulticastManifest, PresentationData, StreamType,
+    legacy, ManifestMulticastMetadata, MulticastManifest, PresentationData, StreamType,
     UnicastManifest,
 };
 
@@ -32,7 +32,7 @@ pub enum ManifestSerialize {
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ManifestData {
-    pub creation_date: DateTime,
+    pub creation_date: Timestamp,
     pub fallback_poll_rate: UInt,
     pub presentations: Vec<PresentationData>,
     #[serde(flatten)]
@@ -52,7 +52,7 @@ impl ManifestData {
 impl From<BaseManifest> for ManifestData {
     fn from(input: BaseManifest) -> Self {
         let mut result = Self {
-            creation_date: input.creation_date,
+            creation_date: input.creation_date.into(),
             fallback_poll_rate: input.fallback_poll_rate.into(),
             presentations: input
                 .presentations

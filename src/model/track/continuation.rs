@@ -13,10 +13,12 @@ impl ContinuationPattern {
         UrlPattern::new(address, pattern, Self::SEGMENT_ID_PATTERN).map(Self)
     }
 
+    #[must_use]
     pub fn segment(&self, id: SegmentId) -> Url {
         self.0.resolve(&id.to_string()).unwrap()
     }
 
+    #[must_use]
     pub fn base_url(&self) -> Option<&Uri> {
         self.0.base_url()
     }
@@ -29,10 +31,12 @@ impl ContinuationPattern {
         self.0.make_base_url_absolute();
     }
 
+    #[must_use]
     pub fn into_pattern(self) -> String {
         self.0.into_pattern()
     }
 
+    #[must_use]
     pub fn into_full_pattern(self) -> String {
         self.0.into_pattern_including_base_url()
     }

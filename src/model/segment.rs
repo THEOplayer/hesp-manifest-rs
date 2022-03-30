@@ -14,6 +14,7 @@ use crate::{Error, Result, ScaledDuration, TimeBounds};
 pub struct SegmentId(#[serde(deserialize_with = "UInt::deserialize_u64")] u64);
 
 impl SegmentId {
+    #[must_use]
     pub fn next(self) -> Self {
         self + 1
     }
@@ -72,12 +73,17 @@ pub struct Segment {
 }
 
 impl Segment {
+    #[must_use]
     pub const fn id(&self) -> SegmentId {
         self.id
     }
+
+    #[must_use]
     pub fn duration(&self) -> Option<ScaledDuration> {
         self.time_bounds?.duration()
     }
+
+    #[must_use]
     pub const fn time_bounds(&self) -> Option<TimeBounds> {
         self.time_bounds
     }

@@ -92,7 +92,7 @@ impl From<AudioTrackData> for crate::AudioTrackData {
             media_time_offset: input.media_time_offset,
             sample_rate: input.sample_rate,
             segment_duration: input.segment_duration,
-            toi_limits: None,
+            multicast_metadata: None,
         }
     }
 }

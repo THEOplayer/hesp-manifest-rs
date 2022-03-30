@@ -48,6 +48,7 @@ impl Address {
         })
     }
 
+    #[must_use]
     pub fn url(&self) -> Cow<Url> {
         match &self.uri {
             Some(Uri::Absolute(url)) => Cow::Borrowed(url),
@@ -56,10 +57,12 @@ impl Address {
         }
     }
 
+    #[must_use]
     pub fn manifest_location(&self) -> &Url {
         &self.manifest_location
     }
 
+    #[must_use]
     pub fn uri(&self) -> Option<&Uri> {
         self.uri.as_ref()
     }

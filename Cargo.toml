@@ -1,6 +1,6 @@
 [package]
 name = "hesp-manifest"
-version = "0.4.2"
+version = "0.5.0"
 edition = "2021"
 authors = ["THEO Technologies <info@theoplayer.com>"]
 publish = ["theo"]
@@ -9,7 +9,6 @@ publish = ["theo"]
 chrono = "0.4"
 itertools = "0.10"
 log = "0.4"
-lazy_static = "1.4.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_with = "1.9.4"

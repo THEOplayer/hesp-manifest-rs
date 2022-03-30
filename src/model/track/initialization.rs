@@ -64,14 +64,17 @@ impl InitializationPattern {
         UrlPattern::new(address, pattern, Self::INIT_ID_PATTERN).map(Self)
     }
 
+    #[must_use]
     pub fn now(&self) -> Url {
         self.init_id(InitId::Now)
     }
 
+    #[must_use]
     pub fn init_id<I: Into<InitId>>(&self, init_id: I) -> Url {
         self.0.resolve(&init_id.into().to_string()).unwrap()
     }
 
+    #[must_use]
     pub fn base_url(&self) -> Option<&Uri> {
         self.0.base_url()
     }
@@ -84,10 +87,12 @@ impl InitializationPattern {
         self.0.make_base_url_absolute();
     }
 
+    #[must_use]
     pub fn into_pattern(self) -> String {
         self.0.into_pattern()
     }
 
+    #[must_use]
     pub fn into_full_pattern(self) -> String {
         self.0.into_pattern_including_base_url()
     }

@@ -37,7 +37,6 @@ impl From<PresentationData> for crate::PresentationData {
             events: input.events,
             metadata: input.metadata,
             video: input.video,
-            multicast_metadata: None,
         }
     }
 }

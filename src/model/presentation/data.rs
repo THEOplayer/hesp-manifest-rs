@@ -3,8 +3,8 @@ use serde_with::skip_serializing_none;
 
 use crate::util::Uri;
 use crate::{
-    AudioSwitchingSetData, MetadataSwitchingSetData, Presentation, PresentationEvent,
-    PresentationMulticastMetadata, TimeBounds, UnsignedScaledValue, VideoSwitchingSetData,
+    AudioSwitchingSetData, MetadataSwitchingSetData, Presentation, PresentationEvent, TimeBounds,
+    UnsignedScaledValue, VideoSwitchingSetData,
 };
 
 #[skip_serializing_none]
@@ -23,7 +23,6 @@ pub struct PresentationData {
     pub metadata: Vec<MetadataSwitchingSetData>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub video: Vec<VideoSwitchingSetData>,
-    pub multicast_metadata: Option<PresentationMulticastMetadata>,
 }
 
 impl From<Presentation> for PresentationData {
@@ -53,7 +52,6 @@ impl From<Presentation> for PresentationData {
                 .into_iter()
                 .map(VideoSwitchingSetData::from)
                 .collect(),
-            multicast_metadata: input.transmission.into(),
         }
     }
 }

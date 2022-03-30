@@ -1,7 +1,4 @@
-use hesp_manifest::{
-    Manifest, MulticastManifest, TrackUid, TransferObjectIdentifierLimits, UnicastManifest,
-};
-use std::collections::HashMap;
+use hesp_manifest::{Manifest, ManifestMulticastMetadata, MulticastManifest, UnicastManifest};
 use std::fs;
 use url::Url;
 
@@ -43,8 +40,20 @@ fn validate_multicast_manifest() -> anyhow::Result<()> {
 
     let result = MulticastManifest::from_json(location, &input)?;
 
-    let toi_limits: HashMap<&TrackUid, TransferObjectIdentifierLimits> =
-        result.all_toi_limits().collect();
-    assert_eq!(toi_limits.len(), 5);
+    let session_ids: Vec<_> = result
+        .multicast_tracks()
+        .map(|(meta, _)| meta.transport_session_id)
+        .collect();
+
+    assert_eq!(
+        result.multicast_metadata(),
+        &ManifestMulticastMetadata {
+            route_version: 1,
+            fec_encoding_id: 5,
+            address: "239.0.0.1:6666".parse().unwrap(),
+            expiration_time: 10.into(),
+        }
+    );
+    assert_eq!(session_ids, vec![1, 2]);
     Ok(())
 }

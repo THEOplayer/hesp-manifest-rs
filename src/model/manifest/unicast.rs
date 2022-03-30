@@ -1,3 +1,4 @@
+use chrono::{DateTime, FixedOffset};
 use serde::Serialize;
 use url::Url;
 
@@ -27,12 +28,16 @@ impl UnicastManifest {
         self.inner.metadata_tracks()
     }
 
+    #[must_use]
     pub fn active_presentation(&self) -> Option<&Presentation> {
         self.inner.active_presentation()
     }
 }
 impl Manifest for UnicastManifest {
     fn new(location: Url, data: ManifestData) -> Result<Self> {
+        if data.multicast_metadata.is_some() {
+            return Err(Error::UnicastMulticastMetadata);
+        }
         let inner = BaseManifest::new(location, data)?;
         for presentation in &inner.presentations {
             presentation.ensure_unicast()?;
@@ -58,6 +63,14 @@ impl Manifest for UnicastManifest {
 
     fn stream_type(&self) -> &StreamType {
         self.inner.stream_type()
+    }
+
+    fn creation_date(&self) -> DateTime<FixedOffset> {
+        self.inner.creation_date
+    }
+
+    fn fallback_poll_rate(&self) -> u64 {
+        self.inner.fallback_poll_rate
     }
 
     fn from_json(location: Url, json: &str) -> Result<Self> {

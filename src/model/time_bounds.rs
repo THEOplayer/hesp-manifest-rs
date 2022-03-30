@@ -35,6 +35,7 @@ impl TimeBounds {
         }
     }
 
+    #[must_use]
     pub fn duration(self) -> Option<ScaledDuration> {
         Some(ScaledDuration::new(
             self.end_time? - self.start_time?,
@@ -42,11 +43,13 @@ impl TimeBounds {
         ))
     }
 
+    #[must_use]
     pub fn start_time(&self) -> Option<UnsignedScaledValue> {
         self.start_time
             .map(|start| UnsignedScaledValue::new(start, self.scale))
     }
 
+    #[must_use]
     pub fn end_time(&self) -> Option<UnsignedScaledValue> {
         self.end_time
             .map(|end| UnsignedScaledValue::new(end, self.scale))

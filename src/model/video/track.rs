@@ -149,7 +149,7 @@ impl VideoTrack {
             media_time_offset: data.media_time_offset.unwrap_or_default(),
             mime_type,
             segment_duration: data.segment_duration,
-            transmission: data.toi_limits.into(),
+            transmission: data.multicast_metadata.into(),
         })
     }
 }

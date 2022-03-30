@@ -1,13 +1,15 @@
 pub use continuation::ContinuationPattern;
 pub use initialization::*;
+pub use multicast::*;
 pub use pattern::UrlPattern;
 pub use uid::TrackUid;
 
 use crate::util::Entity;
-use crate::{MediaType, Result, ScaledDuration, Segment, SegmentId, TrackTransmission};
+use crate::{MediaType, Result, ScaledDuration, Segment, SegmentId};
 
 mod continuation;
 mod initialization;
+mod multicast;
 mod pattern;
 mod uid;
 

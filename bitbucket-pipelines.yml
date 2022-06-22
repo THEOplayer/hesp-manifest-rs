@@ -1,5 +1,5 @@
 image:
-  name: ghcr.io/egonny/rust:1.59
+  name: ghcr.io/egonny/rust:1.61
 
 definitions:
   caches:

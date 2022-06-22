@@ -77,8 +77,9 @@ impl Manifest for UnicastManifest {
         let deserializer = &mut serde_json::Deserializer::from_str(json);
         let data = match serde_path_to_error::deserialize(deserializer)? {
             ManifestDeserialize::V1_0_0(data) => data.into(),
-            ManifestDeserialize::V1_1_0(data) => data,
-            ManifestDeserialize::V1_1_0Multicast(_) => {
+            ManifestDeserialize::V1_1_0(data) => data.into(),
+            ManifestDeserialize::V2_0_0(data) => data,
+            ManifestDeserialize::V2_0_0Multicast(_) => {
                 return Err(Error::InvalidUnicastVersion("1.1.0-multicast"))
             }
         };

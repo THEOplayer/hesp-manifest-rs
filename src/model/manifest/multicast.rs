@@ -145,9 +145,10 @@ impl Manifest for MulticastManifest {
     fn from_json(location: Url, json: &str) -> Result<Self> {
         let deserializer = &mut serde_json::Deserializer::from_str(json);
         let data = match serde_path_to_error::deserialize(deserializer)? {
-            ManifestDeserialize::V1_1_0Multicast(data) => data,
+            ManifestDeserialize::V2_0_0Multicast(data) => data,
             ManifestDeserialize::V1_0_0(_) => return Err(Error::InvalidMulticastVersion("1.0.0")),
             ManifestDeserialize::V1_1_0(_) => return Err(Error::InvalidMulticastVersion("1.1.0")),
+            ManifestDeserialize::V2_0_0(_) => return Err(Error::InvalidMulticastVersion("2.0.0")),
         };
         Self::new(location, data)
     }

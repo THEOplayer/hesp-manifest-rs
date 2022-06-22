@@ -14,9 +14,11 @@ pub enum ManifestDeserialize {
     #[serde(rename = "1.0.0")]
     V1_0_0(legacy::v1_0_0::ManifestData),
     #[serde(rename = "1.1.0")]
-    V1_1_0(ManifestData),
-    #[serde(rename = "1.0.0-multicast")]
-    V1_1_0Multicast(ManifestData),
+    V1_1_0(legacy::v1_1_0::ManifestData),
+    #[serde(rename = "2.0.0")]
+    V2_0_0(ManifestData), //TODO is it v2.0.0 or v1.2.0?
+    #[serde(rename = "2.0.0-multicast")]
+    V2_0_0Multicast(ManifestData), //TODO is it v2.0.0 or v1.2.0?
 }
 
 #[derive(Serialize, Debug, Clone)]

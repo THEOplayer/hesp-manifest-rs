@@ -17,9 +17,7 @@ mod stream;
 mod unicast;
 
 pub trait Manifest: Sized {
-    fn new(location: Url, data: ManifestData) -> Result<Self>
-    where
-        Self: Sized;
+    fn new(location: Url, data: ManifestData) -> Result<Self>;
     fn presentations(&self) -> EntityIter<Presentation>;
     fn presentations_mut(&mut self) -> EntityIterMut<Presentation>;
     fn presentation(&self, id: &str) -> Option<&Presentation>;

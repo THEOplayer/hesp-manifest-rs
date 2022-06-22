@@ -21,6 +21,15 @@ fn deserialize_v1_1_0_manifest() -> anyhow::Result<()> {
 }
 
 #[test]
+fn deserialize_v2_0_0_manifest() -> anyhow::Result<()> {
+    let location = Url::parse("https://www.theoplayer.com/")?;
+    let input = fs::read_to_string("tests/v2_0_0-manifest.json")?;
+    UnicastManifest::from_json(location, &input)?;
+
+    Ok(())
+}
+
+#[test]
 fn validate_empty_manifest() -> anyhow::Result<()> {
     let location = Url::parse("https://www.theoplayer.com/")?;
     let input = fs::read_to_string("tests/empty-manifest.json")?;

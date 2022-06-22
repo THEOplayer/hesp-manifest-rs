@@ -1,5 +1,5 @@
 {
-  "manifestVersion": "1.0.0-multicast",
+  "manifestVersion": "2.0.0-multicast",
   "creationDate": "2022-02-24T10:09:13.645+00:00",
   "fallbackPollRate": 1,
   "multicastMetadata": {

@@ -24,10 +24,10 @@ pub enum ManifestDeserialize {
 #[derive(Serialize, Debug, Clone)]
 #[serde(tag = "manifestVersion")]
 pub enum ManifestSerialize {
-    #[serde(rename = "1.1.0")]
-    V1_1_0(ManifestData),
-    #[serde(rename = "1.0.0-multicast")]
-    V1_1_0Multicast(ManifestData),
+    #[serde(rename = "2.0.0")]
+    V2_0_0(ManifestData), //TODO is it v2.0.0 or v1.2.0?
+    #[serde(rename = "2.0.0-multicast")]
+    V2_0_0Multicast(ManifestData), //TODO is it v2.0.0 or v1.2.0?
 }
 
 #[skip_serializing_none]
@@ -72,13 +72,13 @@ impl From<BaseManifest> for ManifestData {
 
 impl From<MulticastManifest> for ManifestSerialize {
     fn from(input: MulticastManifest) -> Self {
-        Self::V1_1_0Multicast(ManifestData::from(input))
+        Self::V2_0_0Multicast(ManifestData::from(input))
     }
 }
 
 impl From<UnicastManifest> for ManifestSerialize {
     fn from(input: UnicastManifest) -> Self {
-        Self::V1_1_0(ManifestData::from(input))
+        Self::V2_0_0(ManifestData::from(input))
     }
 }
 

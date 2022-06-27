@@ -3,9 +3,13 @@
   "availabilityDuration": {
     "value": 1500
   },
+  "timeSource": {
+    "scheme": "urn:mpeg:dash:utc:ntp:2014",
+    "url": "http://timeserver"
+  },
   "creationDate": "2021-03-31T08:00:00.000Z",
   "fallbackPollRate": 300,
-  "manifestVersion": "1.1.0",
+  "manifestVersion": "2.0.0",
   "streamType": "live",
   "presentations": [
     {

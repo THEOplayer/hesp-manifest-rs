@@ -1,11 +1,10 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
-use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash)]
 pub struct TimeSource {
-    scheme: Uuid,
-    url: Url,
+    pub scheme: Url,
+    pub url: Url,
 }
 
 #[cfg(test)]
@@ -16,23 +15,34 @@ mod tests {
 
     #[test]
     fn serialize_time_source() -> Result<()> {
+        let source = TimeSource {
+            scheme: Url::parse("urn:mpeg:dash:utc:ntp:2014")?,
+            url: Url::parse("https://xxx")?,
+        };
+        let json = serde_json::to_string(&source)?;
+        assert_eq!(
+            json,
+            r#"{"scheme":"urn:mpeg:dash:utc:ntp:2014","url":"https://xxx/"}"#
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn deserialize_time_source() -> Result<()> {
         let data = r#"
         {
-            "scheme": "550e8400-e29b-41d4-a716-446655440000",
+            "scheme": "urn:mpeg:dash:utc:ntp:2014",
             "url": "https://xxx"
         }"#;
         let TimeSource { scheme, url } = serde_json::from_str(data)?;
 
-        assert_eq!(
-            scheme,
-            Uuid::parse_str("550e8400-e29b-41d4-a716-446655440000")?
-        );
+        assert_eq!(scheme, Url::parse("urn:mpeg:dash:utc:ntp:2014")?);
         assert_eq!(url, Url::parse("https://xxx")?);
         Ok(())
     }
 
     #[test]
-    fn invalid_uuid_in_time_source() {
+    fn invalid_scheme_in_time_source() {
         let data = r#"
         {
             "scheme": "John Doe",
@@ -43,8 +53,8 @@ mod tests {
         assert!(result.is_err());
         let error = result.unwrap_err().to_string();
         assert!(
-            error.contains("UUID parsing failed"),
-            "Error did not indicate UUID parsing failed `{}`",
+            error.contains("expected relative URL"),
+            "Error did not indicate scheme parsing failed `{}`",
             error
         );
     }
@@ -53,7 +63,7 @@ mod tests {
     fn invalid_url_in_time_source() {
         let data = r#"
         {
-            "scheme": "550e8400-e29b-41d4-a716-446655440000",
+            "scheme": "urn:mpeg:dash:utc:ntp:2014",
             "url": 43
         }"#;
         let result = serde_json::from_str::<TimeSource>(data);

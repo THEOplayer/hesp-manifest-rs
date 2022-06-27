@@ -1,3 +1,4 @@
+use crate::legacy::v1_0_0;
 use crate::util::Uri;
 use crate::{
     MetadataSwitchingSetData, PresentationEvent, TimeBounds, UnsignedScaledValue,
@@ -11,7 +12,7 @@ pub struct PresentationData {
     pub id: String,
     pub time_bounds: TimeBounds,
     #[serde(default)]
-    pub audio: Vec<super::AudioSwitchingSetData>,
+    pub audio: Vec<v1_0_0::AudioSwitchingSetData>,
     pub base_url: Option<Uri>,
     pub current_time: Option<UnsignedScaledValue>,
     #[serde(default)]

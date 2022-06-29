@@ -1,4 +1,4 @@
-pub use protection::SwitchingSetProtection;
+pub use protection::*;
 
 use crate::util::{Entity, EntityIter, EntityIterMut};
 use crate::{MediaType, Result, Track, ValidateTrack};

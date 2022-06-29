@@ -1,4 +1,4 @@
-use crate::legacy::v1_0_0;
+use crate::legacy::{v1_0_0, v1_1_0};
 use serde::Deserialize;
 
 use crate::util::{Timestamp, UInt, Uri};
@@ -14,7 +14,7 @@ pub struct ManifestData {
     pub content_base_url: Option<Uri>,
 }
 
-impl From<ManifestData> for crate::ManifestData {
+impl From<ManifestData> for v1_1_0::ManifestData {
     fn from(input: ManifestData) -> Self {
         Self {
             creation_date: input.creation_date,
@@ -24,9 +24,14 @@ impl From<ManifestData> for crate::ManifestData {
                 .into_iter()
                 .map(crate::PresentationData::from)
                 .collect(),
-            stream_type: input.stream_type.into(),
+            stream_type: input.stream_type,
             content_base_url: input.content_base_url,
-            multicast_metadata: None,
         }
+    }
+}
+
+impl From<ManifestData> for crate::ManifestData {
+    fn from(input: ManifestData) -> Self {
+        v1_1_0::ManifestData::from(input).into()
     }
 }

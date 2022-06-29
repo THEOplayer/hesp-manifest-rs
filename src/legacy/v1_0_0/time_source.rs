@@ -11,7 +11,7 @@ pub struct TimeSource {
 impl From<TimeSource> for crate::TimeSource {
     fn from(input: TimeSource) -> Self {
         Self {
-            scheme: Url::parse(&input.scheme.to_urn().to_string()).unwrap(),
+            scheme: Url::parse(&input.scheme.urn().to_string()).unwrap(),
             url: input.url,
         }
     }

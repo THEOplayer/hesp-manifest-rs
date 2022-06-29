@@ -11,6 +11,7 @@ pub struct LiveStream {
     pub time_source: Option<TimeSource>,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "streamType", rename_all = "lowercase")]
 pub enum StreamType {

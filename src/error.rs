@@ -1,3 +1,4 @@
+use std::num::ParseIntError;
 use thiserror::Error;
 
 use crate::{SegmentId, TrackUid};
@@ -66,6 +67,12 @@ pub enum Error {
     InvalidMediaType(String),
     #[error("'{0}' cannot be converted to a float (f64's mantissa is only 52 bits wide)")]
     FloatOverflow(String),
+    #[error("Illegal key format version: {0}")]
+    KeyFormatVersion(ParseIntError),
+    #[error("Missing fairplay attribute: {0}")]
+    MissingFairplayAttribute(&'static str),
+    #[error("Invalid Fairplay scheme ID")]
+    FairplaySchemeId,
     #[error(transparent)]
     UrlParseError(#[from] url::ParseError),
     #[error(transparent)]

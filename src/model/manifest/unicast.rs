@@ -109,8 +109,7 @@ mod tests {
                         "timeBounds": {"startTime": 0}
                     }
                 ],
-                "streamType": "live",
-                "activePresentation": "0"
+                "streamType": "vod"
             }"#;
         let location = Url::parse("https://www.theoplayer.com")?;
         let result = UnicastManifest::from_json(location, data);

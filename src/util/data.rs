@@ -21,7 +21,7 @@ where
 #[macro_export]
 macro_rules! normalize_tracks {
     ($self:expr, $value:ident) => (
-        crate::util::normalize(
+        $crate::util::normalize(
             &mut $self.$value,
             $self.tracks.iter_mut().map(|track| &mut track.$value),
         );

@@ -1,5 +1,8 @@
 use crate::util::Uri;
-use crate::{AudioSwitchingSetData, MetadataSwitchingSetData, PresentationEvent, TimeBounds, UnsignedScaledValue, VideoSwitchingSetData};
+use crate::{
+    AudioSwitchingSetData, MetadataSwitchingSetData, PresentationEvent, TimeBounds,
+    UnsignedScaledValue, VideoSwitchingSetData,
+};
 use serde::Deserialize;
 
 #[derive(Clone, Deserialize, Debug)]

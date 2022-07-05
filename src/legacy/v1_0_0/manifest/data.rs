@@ -1,6 +1,6 @@
 use crate::legacy::{v1_0_0, v1_1_0};
-use serde::Deserialize;
 use crate::{Error, Result};
+use serde::Deserialize;
 
 use crate::util::{Timestamp, UInt, Uri};
 

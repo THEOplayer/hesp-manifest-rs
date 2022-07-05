@@ -1,7 +1,7 @@
 use serde::Deserialize;
 
-use crate::legacy::v1_0_0;
-use crate::ScaledDuration;
+use crate::legacy::{v1_0_0, v1_1_0};
+use crate::{Error, Result, ScaledDuration};
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -19,21 +19,28 @@ pub enum StreamType {
     Vod,
 }
 
-impl From<LiveStream> for crate::LiveStream {
-    fn from(input: LiveStream) -> Self {
-        Self {
-            availability_duration: input.availability_duration,
-            active_presentation: input.active_presentation,
-            time_source: input.time_source.map(crate::TimeSource::from),
-        }
+impl LiveStream {
+    fn convert(self, presentations: &[v1_1_0::PresentationData]) -> Result<crate::LiveStream> {
+        let active_presentation = presentations
+            .iter()
+            .find(|p| p.id == self.active_presentation)
+            .ok_or_else(|| Error::InvalidActivePresentationId(self.active_presentation.clone()))?;
+        Ok(crate::LiveStream {
+            availability_duration: self.availability_duration,
+            time_source: self.time_source.map(crate::TimeSource::from),
+            current_time: active_presentation
+                .current_time
+                .ok_or_else(|| Error::MissingCurrentTime(self.active_presentation.clone()))?,
+            active_presentation: self.active_presentation,
+        })
     }
 }
 
-impl From<StreamType> for crate::StreamType {
-    fn from(input: StreamType) -> Self {
-        match input {
-            StreamType::Live(live) => Self::Live(live.into()),
-            StreamType::Vod => Self::Vod,
-        }
+impl StreamType {
+    pub fn convert(self, presentations: &[v1_1_0::PresentationData]) -> Result<crate::StreamType> {
+        Ok(match self {
+            StreamType::Live(input) => crate::StreamType::Live(input.convert(presentations)?),
+            StreamType::Vod => crate::StreamType::Vod,
+        })
     }
 }

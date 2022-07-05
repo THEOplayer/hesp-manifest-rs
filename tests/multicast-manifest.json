@@ -95,10 +95,6 @@
           "sampleRate": 44100
         }
       ],
-      "currentTime": {
-        "value": 5309703989,
-        "scale": 44100
-      },
       "video": [
         {
           "id": "main",
@@ -403,6 +399,10 @@
     }
   ],
   "streamType": "live",
+  "currentTime": {
+    "value": 5309703989,
+    "scale": 44100
+  },
   "availabilityDuration": {
     "value": 120
   },

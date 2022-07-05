@@ -1,7 +1,7 @@
 use chrono::{DateTime, FixedOffset};
 use url::Url;
 
-use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities};
+use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
     Address, AudioTrack, Error, LiveStream, ManifestData, ManifestMulticastMetadata, MetadataTrack,
     Presentation, Result, StreamType, VideoTrack,
@@ -78,14 +78,19 @@ pub(super) fn validate_active(
 ) -> Result<()> {
     if let StreamType::Live(LiveStream {
         active_presentation,
+        current_time,
         ..
     }) = stream_type
     {
-        presentations
+        let active_presentation = presentations
             .get(active_presentation)
-            .ok_or_else(|| Error::InvalidActivePresentationId(active_presentation.clone()))?
-            .validate_active()
-    } else {
-        Ok(())
+            .ok_or_else(|| Error::InvalidActivePresentationId(active_presentation.clone()))?;
+        active_presentation.validate_active()?;
+        if *current_time < active_presentation.time_bounds().start_time().unwrap() {
+            return Err(Error::ImpossibleCurrentTime(
+                active_presentation.id().to_string(),
+            ));
+        }
     }
+    Ok(())
 }

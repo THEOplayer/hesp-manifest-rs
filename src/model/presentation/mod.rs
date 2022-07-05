@@ -5,7 +5,7 @@ use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
     Address, AudioSwitchingSet, AudioTrack, Error, InitializableTrack, MediaType,
     MetadataSwitchingSet, MetadataTrack, Result, SwitchingSet, TimeBounds, Track,
-    TrackMulticastMetadata, TrackTransmission, UnsignedScaledValue, ValidateSwitchingSet,
+    TrackMulticastMetadata, TrackTransmission, ValidateSwitchingSet,
     VideoSwitchingSet, VideoTrack,
 };
 
@@ -17,7 +17,6 @@ pub struct Presentation {
     id: String,
     time_bounds: TimeBounds,
     audio: EntityMap<AudioSwitchingSet>,
-    current_time: Option<UnsignedScaledValue>,
     events: EntityMap<PresentationEvent>,
     metadata: EntityMap<MetadataSwitchingSet>,
     video: EntityMap<VideoSwitchingSet>,
@@ -46,7 +45,6 @@ impl Presentation {
             id,
             time_bounds: data.time_bounds,
             audio,
-            current_time: data.current_time,
             events: data.events.into_iter().map(Ok).into_entities()?,
             metadata,
             video,
@@ -108,20 +106,9 @@ impl Presentation {
         self.time_bounds
     }
 
-    #[must_use]
-    pub fn current_time(&self) -> Option<UnsignedScaledValue> {
-        self.current_time
-    }
-
     pub(super) fn validate_active(&self) -> Result<()> {
-        if self.current_time.is_none() {
-            return Err(Error::MissingCurrentTime(self.id.clone()));
-        }
         if self.time_bounds.start_time().is_none() {
             return Err(Error::MissingStartTime(self.id.clone()));
-        }
-        if self.current_time.unwrap() < self.time_bounds.start_time().unwrap() {
-            return Err(Error::ImpossibleCurrentTime(self.id.clone()));
         }
         for set in &self.video {
             set.validate_active()?;

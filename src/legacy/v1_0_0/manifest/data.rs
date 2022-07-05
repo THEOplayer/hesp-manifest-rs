@@ -1,5 +1,6 @@
 use crate::legacy::{v1_0_0, v1_1_0};
 use serde::Deserialize;
+use crate::{Error, Result};
 
 use crate::util::{Timestamp, UInt, Uri};
 
@@ -22,7 +23,7 @@ impl From<ManifestData> for v1_1_0::ManifestData {
             presentations: input
                 .presentations
                 .into_iter()
-                .map(crate::PresentationData::from)
+                .map(v1_1_0::PresentationData::from)
                 .collect(),
             stream_type: input.stream_type,
             content_base_url: input.content_base_url,
@@ -30,8 +31,10 @@ impl From<ManifestData> for v1_1_0::ManifestData {
     }
 }
 
-impl From<ManifestData> for crate::ManifestData {
-    fn from(input: ManifestData) -> Self {
-        v1_1_0::ManifestData::from(input).into()
+impl TryFrom<ManifestData> for crate::ManifestData {
+    type Error = Error;
+
+    fn try_from(value: ManifestData) -> Result<Self> {
+        v1_1_0::ManifestData::from(value).try_into()
     }
 }

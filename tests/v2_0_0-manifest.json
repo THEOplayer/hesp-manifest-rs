@@ -11,6 +11,10 @@
   "fallbackPollRate": 300,
   "manifestVersion": "2.0.0",
   "streamType": "live",
+  "currentTime": {
+    "value": 1080000000,
+    "scale": 90000
+  },
   "presentations": [
     {
       "id": "0",
@@ -97,10 +101,6 @@
       "id": "1",
       "timeBounds": {
         "startTime": 972000000,
-        "scale": 90000
-      },
-      "currentTime": {
-        "value": 1080000000,
         "scale": 90000
       },
       "baseUrl": "https://otherexample.com/s2/",

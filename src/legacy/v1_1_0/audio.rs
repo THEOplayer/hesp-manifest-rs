@@ -1,6 +1,5 @@
 use serde::Deserialize;
 
-use crate::legacy::v1_1_0;
 use crate::util::{UInt, Uri};
 use crate::{
     AudioMimeType, Language, SamplesPerFrame, ScaledDuration, ScaledValue, SegmentId, Segments,
@@ -18,7 +17,7 @@ pub struct AudioSwitchingSetData {
     pub channels: Option<UInt>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
-    pub frame_rate: Option<SamplesPerFrame>,
+    pub samples_per_frame: Option<SamplesPerFrame>,
     pub initialization_pattern: Option<String>,
     pub label: Option<String>,
     pub media_time_offset: Option<ScaledValue>,
@@ -27,7 +26,7 @@ pub struct AudioSwitchingSetData {
     pub sample_rate: Option<UInt>,
 }
 
-impl From<AudioSwitchingSetData> for v1_1_0::AudioSwitchingSetData {
+impl From<AudioSwitchingSetData> for crate::AudioSwitchingSetData {
     fn from(input: AudioSwitchingSetData) -> Self {
         Self {
             id: input.id,
@@ -35,20 +34,20 @@ impl From<AudioSwitchingSetData> for v1_1_0::AudioSwitchingSetData {
             tracks: input
                 .tracks
                 .into_iter()
-                .map(v1_1_0::AudioTrackData::from)
+                .map(crate::AudioTrackData::from)
                 .collect(),
             align_id: input.align_id,
             base_url: input.base_url,
-            channels: input.channels.map(UInt::from),
+            channels: input.channels,
             codecs: input.codecs,
             continuation_pattern: input.continuation_pattern,
-            samples_per_frame: input.frame_rate,
+            samples_per_frame: input.samples_per_frame,
             initialization_pattern: input.initialization_pattern,
             label: input.label,
             media_time_offset: input.media_time_offset,
             mime_type: input.mime_type,
             protection: input.protection,
-            sample_rate: input.sample_rate.map(UInt::from),
+            sample_rate: input.sample_rate,
         }
     }
 }
@@ -66,33 +65,34 @@ pub struct AudioTrackData {
     pub channels: Option<UInt>,
     pub codecs: Option<String>,
     pub continuation_pattern: Option<String>,
-    pub frame_rate: Option<SamplesPerFrame>,
     pub label: Option<String>,
     pub initialization_pattern: Option<String>,
     pub media_time_offset: Option<ScaledValue>,
     pub sample_rate: Option<UInt>,
+    pub samples_per_frame: Option<SamplesPerFrame>,
     pub segment_duration: Option<ScaledDuration>,
 }
 
-impl From<AudioTrackData> for v1_1_0::AudioTrackData {
+impl From<AudioTrackData> for crate::AudioTrackData {
     fn from(input: AudioTrackData) -> Self {
         Self {
             id: input.id,
             bandwidth: input.bandwidth,
             segments: input.segments,
-            active_segment: input.active_segment,
-            active_sequence_number: input.active_sequence_number,
+            start_segment_id: SegmentId::default(),
+            start_sequence_number: UInt::default(),
             average_bandwidth: input.average_bandwidth,
             base_url: input.base_url,
             channels: input.channels,
             codecs: input.codecs,
             continuation_pattern: input.continuation_pattern,
-            samples_per_frame: input.frame_rate,
+            samples_per_frame: input.samples_per_frame,
             label: input.label,
             initialization_pattern: input.initialization_pattern,
             media_time_offset: input.media_time_offset,
             sample_rate: input.sample_rate,
             segment_duration: input.segment_duration,
+            multicast_metadata: None,
         }
     }
 }

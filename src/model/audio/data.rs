@@ -72,9 +72,10 @@ pub struct AudioTrackData {
     pub id: String,
     pub bandwidth: UInt,
     pub segments: Segments,
-    #[serde(rename = "activeSegment")]
-    pub active_segment_id: Option<SegmentId>,
-    pub active_sequence_number: Option<UInt>,
+    #[serde(default)]
+    pub start_segment_id: SegmentId,
+    #[serde(default)]
+    pub start_sequence_number: UInt,
     pub average_bandwidth: Option<UInt>,
     pub base_url: Option<Uri>,
     pub channels: Option<UInt>,
@@ -110,8 +111,8 @@ impl From<AudioTrack> for AudioTrackData {
             id,
             bandwidth: input.bandwidth.into(),
             segments: input.segments,
-            active_segment_id: input.active_segment_id,
-            active_sequence_number: input.active_sequence_number.map(UInt::from),
+            start_segment_id: SegmentId::default(),
+            start_sequence_number: UInt::default(),
             average_bandwidth: input.average_bandwidth.map(UInt::from),
             base_url,
             channels: input.channels.map(UInt::from),

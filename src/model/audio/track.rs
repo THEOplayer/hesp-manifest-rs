@@ -10,8 +10,8 @@ pub struct AudioTrack {
     pub(super) bandwidth: u64,
     uid: TrackUid,
     pub(super) segments: Segments,
-    pub(super) active_segment_id: Option<SegmentId>,
-    pub(super) active_sequence_number: Option<u64>,
+    pub(super) start_segment_id: Option<SegmentId>,
+    pub(super) start_sequence_number: Option<u64>,
     pub(super) average_bandwidth: Option<u64>,
     pub(super) channels: Option<u64>,
     pub(super) codecs: String,
@@ -41,8 +41,8 @@ impl Track for AudioTrack {
         &self.uid
     }
 
-    fn bandwidth(&self) -> Option<u64> {
-        Some(self.bandwidth)
+    fn segments(&self) -> &[Segment] {
+        &self.segments
     }
 
     fn active_segment(&self) -> Option<&Segment> {
@@ -56,8 +56,12 @@ impl Track for AudioTrack {
         self.segment_duration
     }
 
-    fn segments(&self) -> &[Segment] {
-        &self.segments
+    fn average_bandwidth(&self) -> Option<u64> {
+        self.average_bandwidth
+    }
+
+    fn bandwidth(&self) -> Option<u64> {
+        Some(self.bandwidth)
     }
 
     fn continuation_pattern(&self) -> &ContinuationPattern {
@@ -66,10 +70,6 @@ impl Track for AudioTrack {
 
     fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern {
         &mut self.continuation_pattern
-    }
-
-    fn average_bandwidth(&self) -> Option<u64> {
-        self.average_bandwidth
     }
 
     fn media_type(&self) -> MediaType {

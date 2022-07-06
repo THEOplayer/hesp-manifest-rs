@@ -8,7 +8,7 @@ use crate::{
 pub struct MetadataTrack {
     uid: TrackUid,
     pub(super) segments: Segments,
-    pub(super) active_segment_id: Option<SegmentId>,
+    pub(super) start_segment_id: SegmentId,
     pub(super) average_bandwidth: Option<u64>,
     pub(super) bandwidth: Option<u64>,
     pub(super) codecs: Option<String>,

@@ -58,8 +58,8 @@ impl MetadataSwitchingSetData {
 pub struct MetadataTrackData {
     pub id: String,
     pub segments: Segments,
-    #[serde(rename = "activeSegment")]
-    pub active_segment_id: Option<SegmentId>,
+    #[serde(default)]
+    pub start_segment_id: SegmentId,
     pub average_bandwidth: Option<UInt>,
     pub bandwidth: Option<UInt>,
     pub base_url: Option<Uri>,

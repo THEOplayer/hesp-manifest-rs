@@ -65,9 +65,10 @@ pub struct VideoTrackData {
     pub bandwidth: UInt,
     pub resolution: Resolution,
     pub segments: Segments,
-    #[serde(rename = "activeSegment")]
-    pub active_segment_id: Option<SegmentId>,
-    pub active_sequence_number: Option<UInt>,
+    #[serde(default)]
+    pub start_segment_id: SegmentId,
+    #[serde(default)]
+    pub start_sequence_number: UInt,
     pub average_bandwidth: Option<UInt>,
     pub base_url: Option<Uri>,
     pub codecs: Option<String>,

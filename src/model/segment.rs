@@ -10,7 +10,7 @@ use serde_with::skip_serializing_none;
 use crate::util::UInt;
 use crate::{Error, Result, ScaledDuration, TimeBounds};
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash, Default)]
 pub struct SegmentId(#[serde(deserialize_with = "UInt::deserialize_u64")] u64);
 
 impl SegmentId {

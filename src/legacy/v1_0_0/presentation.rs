@@ -1,9 +1,6 @@
 use crate::legacy::{v1_0_0, v1_1_0};
 use crate::util::Uri;
-use crate::{
-    MetadataSwitchingSetData, PresentationEvent, TimeBounds, UnsignedScaledValue,
-    VideoSwitchingSetData,
-};
+use crate::{PresentationEvent, TimeBounds, UnsignedScaledValue};
 use serde::Deserialize;
 
 #[derive(Clone, Deserialize, Debug)]
@@ -18,9 +15,9 @@ pub struct PresentationData {
     #[serde(default)]
     pub events: Vec<PresentationEvent>,
     #[serde(default)]
-    pub metadata: Vec<MetadataSwitchingSetData>,
+    pub metadata: Vec<v1_0_0::MetadataSwitchingSetData>,
     #[serde(default)]
-    pub video: Vec<VideoSwitchingSetData>,
+    pub video: Vec<v1_0_0::VideoSwitchingSetData>,
 }
 
 impl From<PresentationData> for v1_1_0::PresentationData {
@@ -31,7 +28,7 @@ impl From<PresentationData> for v1_1_0::PresentationData {
             audio: input
                 .audio
                 .into_iter()
-                .map(crate::AudioSwitchingSetData::from)
+                .map(v1_1_0::AudioSwitchingSetData::from)
                 .collect(),
             current_time: input.current_time,
             base_url: input.base_url,

@@ -12,7 +12,7 @@ impl From<TimeSource> for crate::TimeSource {
     fn from(input: TimeSource) -> Self {
         Self {
             scheme: Url::parse(&input.scheme.urn().to_string()).unwrap(),
-            url: input.url,
+            value: input.url.to_string(),
         }
     }
 }

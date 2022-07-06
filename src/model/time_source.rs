@@ -4,7 +4,7 @@ use url::Url;
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash)]
 pub struct TimeSource {
     pub scheme: Url,
-    pub url: Url,
+    pub value: String,
 }
 
 #[cfg(test)]
@@ -17,12 +17,12 @@ mod tests {
     fn serialize_time_source() -> Result<()> {
         let source = TimeSource {
             scheme: Url::parse("urn:mpeg:dash:utc:ntp:2014")?,
-            url: Url::parse("https://xxx")?,
+            value: "https://xxx".to_string(),
         };
         let json = serde_json::to_string(&source)?;
         assert_eq!(
             json,
-            r#"{"scheme":"urn:mpeg:dash:utc:ntp:2014","url":"https://xxx/"}"#
+            r#"{"scheme":"urn:mpeg:dash:utc:ntp:2014","value":"https://xxx"}"#
         );
         Ok(())
     }
@@ -32,12 +32,12 @@ mod tests {
         let data = r#"
         {
             "scheme": "urn:mpeg:dash:utc:ntp:2014",
-            "url": "https://xxx"
+            "value": "https://xxx"
         }"#;
-        let TimeSource { scheme, url } = serde_json::from_str(data)?;
+        let TimeSource { scheme, value } = serde_json::from_str(data)?;
 
         assert_eq!(scheme, Url::parse("urn:mpeg:dash:utc:ntp:2014")?);
-        assert_eq!(url, Url::parse("https://xxx")?);
+        assert_eq!(value, "https://xxx");
         Ok(())
     }
 
@@ -46,7 +46,7 @@ mod tests {
         let data = r#"
         {
             "scheme": "John Doe",
-            "url": "https://xxx"
+            "value": "https://xxx"
         }"#;
         let result = serde_json::from_str::<TimeSource>(data);
 
@@ -59,21 +59,4 @@ mod tests {
         );
     }
 
-    #[test]
-    fn invalid_url_in_time_source() {
-        let data = r#"
-        {
-            "scheme": "urn:mpeg:dash:utc:ntp:2014",
-            "url": 43
-        }"#;
-        let result = serde_json::from_str::<TimeSource>(data);
-
-        assert!(result.is_err());
-        let error = result.unwrap_err().to_string();
-        assert!(
-            error.contains("expected a string representing an URL"),
-            "Error did not indicate URL parsing failed `{}`",
-            error
-        );
-    }
 }

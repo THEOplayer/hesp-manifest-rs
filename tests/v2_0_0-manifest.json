@@ -36,8 +36,6 @@
           "tracks": [
             {
               "id": "96kbps",
-              "activeSegment": 1799,
-              "activeSequenceNumber": 506249,
               "averageBandwidth": 96000,
               "bandwidth": 96000,
               "baseUrl": "96k/",
@@ -70,8 +68,6 @@
           "tracks": [
             {
               "id": "720p",
-              "activeSegment": 1799,
-              "activeSequenceNumber": 269999,
               "bandwidth": 3000000,
               "baseUrl": "720p/",
               "codecs": "avc1.4d001f",
@@ -119,8 +115,6 @@
           "tracks": [
             {
               "id": "128kbps",
-              "activeSegment": 200,
-              "activeSequenceNumber": 56250,
               "averageBandwidth": 128000,
               "bandwidth": 128000,
               "continuationPattern": "128k-content-{segmentId}.mp4",
@@ -152,8 +146,6 @@
           "tracks": [
             {
               "id": "720p",
-              "activeSegment": 200,
-              "activeSequenceNumber": 29999,
               "bandwidth": 3000000,
               "codecs": "avc1.4d001f",
               "continuationPattern": "720p-content-{segmentId}.mp4",
@@ -178,8 +170,6 @@
             },
             {
               "id": "1080p",
-              "activeSegment": 200,
-              "activeSequenceNumber": 29999,
               "bandwidth": 5000000,
               "codecs": "avc1.4d001f",
               "continuationPattern": "1080p-content-{segmentId}.mp4",

@@ -58,5 +58,4 @@ mod tests {
             error
         );
     }
-
 }

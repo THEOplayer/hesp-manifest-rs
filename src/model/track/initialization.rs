@@ -5,21 +5,13 @@ use std::str::FromStr;
 use url::Url;
 
 use crate::util::Uri;
-use crate::{Address, Error, FrameRate, Result, Track, UrlPattern};
+use crate::{Address, FrameRate, Result, Track, UrlPattern};
 
 pub trait Initialization: Track {
     fn initialization_pattern(&self) -> &InitializationPattern;
     fn initialization_pattern_mut(&mut self) -> &mut InitializationPattern;
-    fn active_sequence_number(&self) -> Option<u64>;
+    fn start_sequence_number(&self) -> u64;
     fn frame_rate(&self) -> FrameRate;
-
-    fn validate_active(&self) -> Result<()> {
-        if self.active_sequence_number().is_none() {
-            Err(Error::MissingActiveSequenceNumber(self.id().to_owned()))
-        } else {
-            Ok(())
-        }
-    }
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]

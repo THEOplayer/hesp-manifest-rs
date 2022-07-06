@@ -5,7 +5,7 @@ use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
     Address, AudioSwitchingSet, AudioTrack, Error, InitializableTrack, MediaType,
     MetadataSwitchingSet, MetadataTrack, Result, SwitchingSet, TimeBounds, Track,
-    TrackMulticastMetadata, TrackTransmission, ValidateSwitchingSet, VideoSwitchingSet, VideoTrack,
+    TrackMulticastMetadata, TrackTransmission, VideoSwitchingSet, VideoTrack,
 };
 
 mod data;
@@ -108,12 +108,6 @@ impl Presentation {
     pub(super) fn validate_active(&self) -> Result<()> {
         if self.time_bounds.start_time().is_none() {
             return Err(Error::MissingStartTime(self.id.clone()));
-        }
-        for set in &self.video {
-            set.validate_active()?;
-        }
-        for set in &self.audio {
-            set.validate_active()?;
         }
         Ok(())
     }

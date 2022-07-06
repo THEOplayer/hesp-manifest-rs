@@ -73,8 +73,8 @@ impl From<VideoTrackData> for crate::VideoTrackData {
             bandwidth: input.bandwidth,
             resolution: input.resolution,
             segments: input.segments,
-            start_segment_id: SegmentId::default(),
-            start_sequence_number: UInt::default(),
+            start_segment_id: SegmentId::default(), //TODO: calculate?
+            start_sequence_number: UInt::default(), //TODO: calculate?
             average_bandwidth: input.average_bandwidth,
             base_url: input.base_url,
             codecs: input.codecs,

@@ -5,11 +5,15 @@ use serde::{Deserialize, Deserializer, Serialize};
 const MAX_SAFE_INTEGER: i64 = 9_007_199_254_740_991;
 const MIN_SAFE_INTEGER: i64 = -9_007_199_254_740_991;
 
-#[derive(Copy, Clone, Serialize, Deserialize, Debug, Ord, PartialOrd, Eq, PartialEq, Hash, Default)]
+#[derive(
+    Copy, Clone, Serialize, Deserialize, Debug, Ord, PartialOrd, Eq, PartialEq, Hash, Default,
+)]
 #[serde(from = "u64")]
 pub struct UInt(u64);
 
-#[derive(Copy, Clone, Serialize, Deserialize, Debug, Ord, PartialOrd, Eq, PartialEq, Hash, Default)]
+#[derive(
+    Copy, Clone, Serialize, Deserialize, Debug, Ord, PartialOrd, Eq, PartialEq, Hash, Default,
+)]
 #[serde(from = "i64")]
 pub struct Int(i64);
 

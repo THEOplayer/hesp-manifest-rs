@@ -1,7 +1,7 @@
 pub use protection::*;
 
 use crate::util::{Entity, EntityIter, EntityIterMut};
-use crate::{MediaType, Result, Track, ValidateTrack};
+use crate::{MediaType, Track};
 
 mod protection;
 
@@ -14,13 +14,4 @@ pub trait SwitchingSet: Entity {
     fn track_mut(&mut self, id: &str) -> Option<&mut Self::Track>;
     fn tracks_mut(&mut self) -> EntityIterMut<Self::Track>;
     fn mime_type(&self) -> &str;
-}
-
-pub(crate) trait ValidateSwitchingSet<T: ValidateTrack>: SwitchingSet<Track = T> {
-    fn validate_active(&self) -> Result<()> {
-        for track in self.tracks() {
-            track.validate_active()?;
-        }
-        Ok(())
-    }
 }

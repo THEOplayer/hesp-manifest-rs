@@ -79,8 +79,8 @@ impl From<AudioTrackData> for crate::AudioTrackData {
             id: input.id,
             bandwidth: input.bandwidth,
             segments: input.segments,
-            start_segment_id: SegmentId::default(),
-            start_sequence_number: UInt::default(),
+            start_segment_id: SegmentId::default(), //TODO: calculate?
+            start_sequence_number: UInt::default(), //TODO: calculate?
             average_bandwidth: input.average_bandwidth,
             base_url: input.base_url,
             channels: input.channels,

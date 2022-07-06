@@ -1,7 +1,7 @@
 use crate::util::Entity;
 use crate::{
     Address, ContinuationPattern, Error, MediaType, MetadataTrackData, Result, ScaledDuration,
-    ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission, TrackUid, ValidateTrack,
+    ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission, TrackUid,
 };
 
 #[derive(Debug, Clone)]
@@ -34,30 +34,28 @@ impl Track for MetadataTrack {
         &self.uid
     }
 
-    fn bandwidth(&self) -> Option<u64> {
-        self.bandwidth
+    fn segments(&self) -> &[Segment] {
+        &self.segments
     }
 
-    fn active_segment(&self) -> Option<&Segment> {
-        match self.active_segment_id {
-            Some(id) => self.segment(id),
-            None => None,
-        }
+    fn start_segment_id(&self) -> SegmentId {
+        self.start_segment_id
     }
     fn segment_duration(&self) -> Option<ScaledDuration> {
         self.segment_duration
     }
-    fn segments(&self) -> &[Segment] {
-        &self.segments
+    fn average_bandwidth(&self) -> Option<u64> {
+        self.average_bandwidth
+    }
+    fn bandwidth(&self) -> Option<u64> {
+        self.bandwidth
     }
     fn continuation_pattern(&self) -> &ContinuationPattern {
         &self.continuation_pattern
     }
+
     fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern {
         &mut self.continuation_pattern
-    }
-    fn average_bandwidth(&self) -> Option<u64> {
-        self.average_bandwidth
     }
 
     fn media_type(&self) -> MediaType {
@@ -70,12 +68,6 @@ impl Track for MetadataTrack {
 
     fn transmission(&self) -> &TrackTransmission {
         &TrackTransmission::Unicast
-    }
-}
-
-impl ValidateTrack for MetadataTrack {
-    fn validate_active(&self) -> Result<()> {
-        Ok(())
     }
 }
 
@@ -99,7 +91,7 @@ impl MetadataTrack {
             bandwidth: data.bandwidth.map(u64::from),
             uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),
             segments: data.segments,
-            active_segment_id: data.active_segment_id,
+            start_segment_id: data.start_segment_id,
             average_bandwidth: data.average_bandwidth.map(u64::from),
             continuation_pattern: ContinuationPattern::new(address, continuation_pattern)?,
             label: data.label,

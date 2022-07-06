@@ -75,7 +75,7 @@ impl From<MetadataTrack> for MetadataTrackData {
         Self {
             id: input.id().to_owned(),
             segments: input.segments,
-            active_segment_id: input.active_segment_id,
+            start_segment_id: input.start_segment_id,
             average_bandwidth: input.average_bandwidth.map(UInt::from),
             bandwidth: input.bandwidth.map(UInt::from),
             base_url: input.continuation_pattern.base_url().cloned(),

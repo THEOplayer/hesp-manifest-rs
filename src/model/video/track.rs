@@ -2,7 +2,7 @@ use crate::util::Entity;
 use crate::{
     Address, ContinuationPattern, Error, FrameRate, Initialization, InitializationPattern,
     MediaType, Resolution, Result, ScaledDuration, ScaledValue, Segment, SegmentId, Segments,
-    Track, TrackTransmission, TrackUid, ValidateTrack, VideoMimeType, VideoTrackData,
+    Track, TrackTransmission, TrackUid, VideoMimeType, VideoTrackData,
 };
 
 #[derive(Debug, Clone)]
@@ -11,8 +11,8 @@ pub struct VideoTrack {
     pub(super) bandwidth: u64,
     pub(super) resolution: Resolution,
     pub(super) segments: Segments,
-    pub(super) start_segment_id: Option<SegmentId>,
-    pub(super) start_sequence_number: Option<u64>,
+    pub(super) start_segment_id: SegmentId,
+    pub(super) start_sequence_number: u64,
     pub(super) average_bandwidth: Option<u64>,
     pub(super) codecs: String,
     pub(super) continuation_pattern: ContinuationPattern,
@@ -40,23 +40,24 @@ impl Track for VideoTrack {
         &self.uid
     }
 
-    fn bandwidth(&self) -> Option<u64> {
-        Some(self.bandwidth)
+    fn segments(&self) -> &[Segment] {
+        &self.segments
     }
 
-    fn active_segment(&self) -> Option<&Segment> {
-        match self.active_segment_id {
-            Some(id) => self.segment(id),
-            None => None,
-        }
+    fn start_segment_id(&self) -> SegmentId {
+        self.start_segment_id
     }
 
     fn segment_duration(&self) -> Option<ScaledDuration> {
         self.segment_duration
     }
 
-    fn segments(&self) -> &[Segment] {
-        &self.segments
+    fn average_bandwidth(&self) -> Option<u64> {
+        self.average_bandwidth
+    }
+
+    fn bandwidth(&self) -> Option<u64> {
+        Some(self.bandwidth)
     }
 
     fn continuation_pattern(&self) -> &ContinuationPattern {
@@ -65,10 +66,6 @@ impl Track for VideoTrack {
 
     fn continuation_pattern_mut(&mut self) -> &mut ContinuationPattern {
         &mut self.continuation_pattern
-    }
-
-    fn average_bandwidth(&self) -> Option<u64> {
-        self.average_bandwidth
     }
 
     fn media_type(&self) -> MediaType {
@@ -84,12 +81,6 @@ impl Track for VideoTrack {
     }
 }
 
-impl ValidateTrack for VideoTrack {
-    fn validate_active(&self) -> Result<()> {
-        Initialization::validate_active(self)
-    }
-}
-
 impl Initialization for VideoTrack {
     fn initialization_pattern(&self) -> &InitializationPattern {
         &self.initialization_pattern
@@ -99,8 +90,8 @@ impl Initialization for VideoTrack {
         &mut self.initialization_pattern
     }
 
-    fn active_sequence_number(&self) -> Option<u64> {
-        self.active_sequence_number
+    fn start_sequence_number(&self) -> u64 {
+        self.start_sequence_number
     }
 
     fn frame_rate(&self) -> FrameRate {
@@ -138,8 +129,8 @@ impl VideoTrack {
             uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),
             resolution: data.resolution,
             segments: data.segments,
-            active_segment_id: data.active_segment_id,
-            active_sequence_number: data.active_sequence_number.map(u64::from),
+            start_segment_id: data.start_segment_id,
+            start_sequence_number: data.start_sequence_number.into(),
             average_bandwidth: data.average_bandwidth.map(u64::from),
             codecs,
             continuation_pattern: ContinuationPattern::new(address.clone(), continuation_pattern)?,

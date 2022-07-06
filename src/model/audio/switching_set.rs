@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
     Address, AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, MediaType, Result, Scale,
-    SwitchingSet, SwitchingSetProtection, ValidateSwitchingSet,
+    SwitchingSet, SwitchingSetProtection,
 };
 
 #[derive(Debug, Clone)]
@@ -55,8 +55,6 @@ impl SwitchingSet for AudioSwitchingSet {
         self.mime_type.as_ref()
     }
 }
-
-impl ValidateSwitchingSet<AudioTrack> for AudioSwitchingSet {}
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Deserialize, Serialize, Copy)]
 pub struct SamplesPerFrame(Scale);

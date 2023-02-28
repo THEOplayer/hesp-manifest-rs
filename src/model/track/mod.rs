@@ -46,5 +46,5 @@ pub(crate) trait ValidateTrack: Track {
     fn validate_active(&self) -> Result<()>;
 }
 
-pub trait InitializableTrack: Track + Initialization {}
-impl<T: Track + Initialization> InitializableTrack for T {}
+pub trait InitializableTrack: Track + Initialization + Send {}
+impl<T: Track + Initialization + Send> InitializableTrack for T {}

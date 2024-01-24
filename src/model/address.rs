@@ -111,7 +111,7 @@ mod tests {
             .join(None)?
             .join(Some(Uri::Relative("96k/".to_owned())))?;
 
-        assert_eq!(address.to_string(), "http://localhost/audio/96k");
+        assert_eq!(address.to_string(), "http://localhost/audio/96k/");
         Ok(())
     }
 

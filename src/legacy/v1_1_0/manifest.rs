@@ -29,7 +29,6 @@ impl TryFrom<ManifestData> for crate::ManifestData {
                 .map(crate::PresentationData::from)
                 .collect(),
             content_base_url: value.content_base_url,
-            multicast_metadata: None,
         })
     }
 }

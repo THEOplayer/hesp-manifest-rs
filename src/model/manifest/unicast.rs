@@ -5,8 +5,8 @@ use url::Url;
 use super::BaseManifest;
 use crate::util::{EntityIter, EntityIterMut};
 use crate::{
-    AudioTrack, Error, Manifest, ManifestData, ManifestDeserialize, ManifestSerialize,
-    MetadataTrack, Presentation, Result, StreamType, VideoTrack,
+    AudioTrack, Manifest, ManifestData, ManifestDeserialize, ManifestSerialize, MetadataTrack,
+    Presentation, Result, StreamType, VideoTrack,
 };
 
 #[derive(Debug, Clone, Serialize)]
@@ -35,14 +35,9 @@ impl UnicastManifest {
 }
 impl Manifest for UnicastManifest {
     fn new(location: Url, data: ManifestData) -> Result<Self> {
-        if data.multicast_metadata.is_some() {
-            return Err(Error::UnicastMulticastMetadata);
-        }
-        let inner = BaseManifest::new(location, data)?;
-        for presentation in &inner.presentations {
-            presentation.ensure_unicast()?;
-        }
-        Ok(Self { inner })
+        Ok(Self {
+            inner: BaseManifest::new(location, data)?,
+        })
     }
 
     fn presentations(&self) -> EntityIter<Presentation> {
@@ -79,9 +74,6 @@ impl Manifest for UnicastManifest {
             ManifestDeserialize::V1_0_0(data) => data.try_into()?,
             ManifestDeserialize::V1_1_0(data) => data.try_into()?,
             ManifestDeserialize::V2_0_0(data) => data,
-            ManifestDeserialize::V2_0_0Multicast(_) => {
-                return Err(Error::InvalidUnicastVersion("1.1.0-multicast"))
-            }
         };
         Self::new(location, data)
     }

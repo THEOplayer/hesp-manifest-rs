@@ -2,7 +2,7 @@ use crate::util::Entity;
 use crate::{
     Address, ContinuationPattern, Error, FrameRate, Initialization, InitializationPattern,
     MediaType, Resolution, Result, ScaledDuration, ScaledValue, Segment, SegmentId, Segments,
-    Track, TrackTransmission, TrackUid, VideoMimeType, VideoTrackData,
+    Track, TrackUid, VideoMimeType, VideoTrackData,
 };
 
 #[derive(Debug, Clone)]
@@ -22,7 +22,6 @@ pub struct VideoTrack {
     pub(super) media_time_offset: ScaledValue,
     pub(super) mime_type: VideoMimeType,
     pub(super) segment_duration: Option<ScaledDuration>,
-    pub(crate) transmission: TrackTransmission,
 }
 
 impl VideoTrack {
@@ -74,10 +73,6 @@ impl Track for VideoTrack {
 
     fn mime_type(&self) -> &str {
         self.mime_type.as_ref()
-    }
-
-    fn transmission(&self) -> &TrackTransmission {
-        &self.transmission
     }
 }
 
@@ -140,7 +135,6 @@ impl VideoTrack {
             media_time_offset: data.media_time_offset.unwrap_or_default(),
             mime_type,
             segment_duration: data.segment_duration,
-            transmission: data.multicast_metadata.into(),
         })
     }
 }

@@ -5,7 +5,6 @@ use crate::util::{Entity, UInt, Uri};
 use crate::{
     normalize_tracks, AudioMimeType, AudioSwitchingSet, AudioTrack, Language, SamplesPerFrame,
     ScaledDuration, ScaledValue, SegmentId, Segments, SwitchingSetProtection,
-    TrackMulticastMetadata,
 };
 
 #[skip_serializing_none]
@@ -87,7 +86,6 @@ pub struct AudioTrackData {
     pub media_time_offset: Option<ScaledValue>,
     pub sample_rate: Option<UInt>,
     pub segment_duration: Option<ScaledDuration>,
-    pub multicast_metadata: Option<TrackMulticastMetadata>,
 }
 
 impl From<AudioTrack> for AudioTrackData {
@@ -124,7 +122,6 @@ impl From<AudioTrack> for AudioTrackData {
             media_time_offset: Some(input.media_time_offset),
             sample_rate: Some(input.sample_rate.into()),
             segment_duration: input.segment_duration,
-            multicast_metadata: input.transmission.into(),
         }
     }
 }

@@ -1,7 +1,7 @@
 use crate::util::Entity;
 use crate::{
     Address, ContinuationPattern, Error, MediaType, MetadataTrackData, Result, ScaledDuration,
-    ScaledValue, Segment, SegmentId, Segments, Track, TrackTransmission, TrackUid,
+    ScaledValue, Segment, SegmentId, Segments, Track, TrackUid,
 };
 
 #[derive(Debug, Clone)]
@@ -64,10 +64,6 @@ impl Track for MetadataTrack {
 
     fn mime_type(&self) -> &str {
         self.mime_type.as_ref()
-    }
-
-    fn transmission(&self) -> &TrackTransmission {
-        &TrackTransmission::Unicast
     }
 }
 

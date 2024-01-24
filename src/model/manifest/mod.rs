@@ -3,7 +3,6 @@ use url::Url;
 
 use base::BaseManifest;
 pub use data::*;
-pub use multicast::*;
 pub use stream::*;
 pub use unicast::*;
 
@@ -12,7 +11,6 @@ use crate::{InitializableTrack, Presentation, Result, Track, TrackUid};
 
 mod base;
 mod data;
-mod multicast;
 mod stream;
 mod unicast;
 

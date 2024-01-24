@@ -3,10 +3,7 @@ use serde_with::skip_serializing_none;
 
 use crate::model::manifest::base::BaseManifest;
 use crate::util::{Timestamp, UInt, Uri};
-use crate::{
-    legacy, ManifestMulticastMetadata, MulticastManifest, PresentationData, StreamType,
-    UnicastManifest,
-};
+use crate::{legacy, PresentationData, StreamType, UnicastManifest};
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(tag = "manifestVersion")]
@@ -17,8 +14,6 @@ pub enum ManifestDeserialize {
     V1_1_0(legacy::v1_1_0::ManifestData),
     #[serde(rename = "2.0.0")]
     V2_0_0(ManifestData), //TODO is it v2.0.0 or v1.2.0?
-    #[serde(rename = "2.0.0-multicast")]
-    V2_0_0Multicast(ManifestData), //TODO is it v2.0.0 or v1.2.0?
 }
 
 #[derive(Serialize, Debug, Clone)]
@@ -26,8 +21,6 @@ pub enum ManifestDeserialize {
 pub enum ManifestSerialize {
     #[serde(rename = "2.0.0")]
     V2_0_0(ManifestData), //TODO is it v2.0.0 or v1.2.0?
-    #[serde(rename = "2.0.0-multicast")]
-    V2_0_0Multicast(ManifestData), //TODO is it v2.0.0 or v1.2.0?
 }
 
 #[skip_serializing_none]
@@ -40,7 +33,6 @@ pub struct ManifestData {
     #[serde(flatten)]
     pub stream_type: StreamType,
     pub content_base_url: Option<Uri>,
-    pub multicast_metadata: Option<ManifestMulticastMetadata>,
 }
 
 impl ManifestData {
@@ -63,16 +55,9 @@ impl From<BaseManifest> for ManifestData {
                 .collect(),
             stream_type: input.stream_type,
             content_base_url: None,
-            multicast_metadata: input.multicast_metadata,
         };
         result.normalize();
         result
-    }
-}
-
-impl From<MulticastManifest> for ManifestSerialize {
-    fn from(input: MulticastManifest) -> Self {
-        Self::V2_0_0Multicast(ManifestData::from(input))
     }
 }
 
@@ -84,12 +69,6 @@ impl From<UnicastManifest> for ManifestSerialize {
 
 impl From<UnicastManifest> for ManifestData {
     fn from(input: UnicastManifest) -> Self {
-        input.inner.into()
-    }
-}
-
-impl From<MulticastManifest> for ManifestData {
-    fn from(input: MulticastManifest) -> Self {
         input.inner.into()
     }
 }

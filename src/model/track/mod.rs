@@ -1,6 +1,5 @@
 pub use continuation::ContinuationPattern;
 pub use initialization::*;
-pub use multicast::*;
 pub use pattern::UrlPattern;
 pub use uid::TrackUid;
 
@@ -9,7 +8,6 @@ use crate::{MediaType, ScaledDuration, Segment, SegmentId};
 
 mod continuation;
 mod initialization;
-mod multicast;
 mod pattern;
 mod uid;
 
@@ -47,7 +45,6 @@ pub trait Track: Entity {
 
     fn media_type(&self) -> MediaType;
     fn mime_type(&self) -> &str;
-    fn transmission(&self) -> &TrackTransmission;
 }
 
 pub trait InitializableTrack: Track + Initialization + Send {}

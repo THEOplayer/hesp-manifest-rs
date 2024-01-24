@@ -1,7 +1,7 @@
 use crate::util::{UInt, Uri};
 use crate::{
     FrameRate, Resolution, ScaledDuration, ScaledValue, SegmentId, Segments,
-    SwitchingSetProtection, TrackMulticastMetadata, VideoMimeType,
+    SwitchingSetProtection, VideoMimeType,
 };
 use serde::Deserialize;
 
@@ -40,7 +40,6 @@ pub struct VideoTrackData {
     pub initialization_pattern: Option<String>,
     pub media_time_offset: Option<ScaledValue>,
     pub segment_duration: Option<ScaledDuration>,
-    pub multicast_metadata: Option<TrackMulticastMetadata>,
 }
 
 impl From<VideoSwitchingSetData> for crate::VideoSwitchingSetData {
@@ -84,7 +83,6 @@ impl From<VideoTrackData> for crate::VideoTrackData {
             initialization_pattern: input.initialization_pattern,
             media_time_offset: input.media_time_offset,
             segment_duration: input.segment_duration,
-            multicast_metadata: input.multicast_metadata,
         }
     }
 }

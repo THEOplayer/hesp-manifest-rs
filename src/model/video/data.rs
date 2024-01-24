@@ -4,7 +4,7 @@ use serde_with::skip_serializing_none;
 use crate::util::{Entity, UInt, Uri};
 use crate::{
     normalize_tracks, FrameRate, Resolution, ScaledDuration, ScaledValue, SegmentId, Segments,
-    SwitchingSetProtection, TrackMulticastMetadata, VideoMimeType, VideoSwitchingSet, VideoTrack,
+    SwitchingSetProtection, VideoMimeType, VideoSwitchingSet, VideoTrack,
 };
 
 #[skip_serializing_none]
@@ -78,7 +78,6 @@ pub struct VideoTrackData {
     pub initialization_pattern: Option<String>,
     pub media_time_offset: Option<ScaledValue>,
     pub segment_duration: Option<ScaledDuration>,
-    pub multicast_metadata: Option<TrackMulticastMetadata>,
 }
 
 impl From<VideoTrack> for VideoTrackData {
@@ -114,7 +113,6 @@ impl From<VideoTrack> for VideoTrackData {
             initialization_pattern: Some(initialization_pattern),
             media_time_offset: Some(input.media_time_offset),
             segment_duration: input.segment_duration,
-            multicast_metadata: input.transmission.into(),
         }
     }
 }

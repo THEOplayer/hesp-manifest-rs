@@ -144,8 +144,7 @@ mod tests {
         let error = result.unwrap_err().to_string();
         assert!(
             error.contains("must have codecs"),
-            "Error did not indicate missing codecs `{}`",
-            error
+            "Error did not indicate missing codecs `{error}`",
         );
 
         Ok(())

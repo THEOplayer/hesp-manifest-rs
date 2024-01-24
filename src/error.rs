@@ -1,7 +1,7 @@
 use std::num::ParseIntError;
 use thiserror::Error;
 
-use crate::{SegmentId, TrackUid};
+use crate::SegmentId;
 
 #[derive(Error, Debug)]
 pub enum Error {
@@ -38,10 +38,6 @@ pub enum Error {
     MissingActiveSequenceNumber(String),
     #[error("Track {0} must have codecs")]
     MissingCodecs(String),
-    #[error("Multicast manifest must have multicast metadata")]
-    MissingManifestMulticastMetadata,
-    #[error("Unicast manifest must not have multicast metadata")]
-    UnicastMulticastMetadata,
     #[error("Track {0} must have a continuation pattern")]
     MissingContinuationPattern(String),
     #[error("Track {0} must have a framerate")]
@@ -54,14 +50,8 @@ pub enum Error {
     DuplicateId(String),
     #[error("Pattern '{0}' must contain {1}")]
     InvalidPattern(String, &'static str),
-    #[error("Track '{0}' must not contain multicast data")]
-    InvalidUnicastTrack(TrackUid),
     #[error("'{0:?}' is not a valid version for a unicast manifest")]
     InvalidUnicastVersion(&'static str),
-    #[error("'{0:?}' is not a valid version for a multicast manifest")]
-    InvalidMulticastVersion(&'static str),
-    #[error("Multicast presentation must have streamType 'live'")]
-    InvalidMulticastStreamType,
     #[error("Track path '{0}' must contain exactly 3 forward slashes")]
     InvalidTrackPath(String),
     #[error("'{0}' is not a valid MediaType")]

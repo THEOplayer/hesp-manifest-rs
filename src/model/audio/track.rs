@@ -2,7 +2,7 @@ use crate::util::Entity;
 use crate::{
     Address, AudioMimeType, AudioTrackData, ContinuationPattern, Error, FrameRate, Initialization,
     InitializationPattern, MediaType, Result, SamplesPerFrame, ScaledDuration, ScaledValue,
-    Segment, SegmentId, Segments, Track, TrackTransmission, TrackUid,
+    Segment, SegmentId, Segments, Track, TrackUid,
 };
 
 #[derive(Debug, Clone)]
@@ -23,7 +23,6 @@ pub struct AudioTrack {
     pub(super) mime_type: AudioMimeType,
     pub(super) sample_rate: u64,
     pub(super) segment_duration: Option<ScaledDuration>,
-    pub(crate) transmission: TrackTransmission,
 }
 
 impl AudioTrack {
@@ -75,10 +74,6 @@ impl Track for AudioTrack {
 
     fn mime_type(&self) -> &str {
         self.mime_type.as_ref()
-    }
-
-    fn transmission(&self) -> &TrackTransmission {
-        &self.transmission
     }
 }
 
@@ -143,7 +138,6 @@ impl AudioTrack {
             mime_type,
             sample_rate,
             segment_duration: data.segment_duration,
-            transmission: data.multicast_metadata.into(),
         })
     }
 }

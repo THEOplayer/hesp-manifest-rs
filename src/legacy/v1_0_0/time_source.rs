@@ -34,8 +34,7 @@ mod tests {
         let error = result.unwrap_err().to_string();
         assert!(
             error.contains("UUID parsing failed"),
-            "Error did not indicate UUID parsing failed `{}`",
-            error
+            "Error did not indicate UUID parsing failed `{error}`"
         );
     }
 }

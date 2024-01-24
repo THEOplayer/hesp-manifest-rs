@@ -5,7 +5,7 @@ use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
     Address, AudioSwitchingSet, AudioTrack, Error, InitializableTrack, MediaType,
     MetadataSwitchingSet, MetadataTrack, Result, SwitchingSet, TimeBounds, Track,
-    TrackMulticastMetadata, TrackTransmission, VideoSwitchingSet, VideoTrack,
+    VideoSwitchingSet, VideoTrack,
 };
 
 mod data;
@@ -110,13 +110,6 @@ impl Presentation {
             return Err(Error::MissingStartTime(self.id.clone()));
         }
         Ok(())
-    }
-    pub(super) fn ensure_unicast(&self) -> Result<()> {
-        if let Some((_, track)) = self.multicast_tracks().next() {
-            Err(Error::InvalidUnicastTrack(track.uid().clone()))
-        } else {
-            Ok(())
-        }
     }
 
     pub fn video_tracks(&self) -> impl Iterator<Item = &VideoTrack> {
@@ -294,33 +287,6 @@ impl Presentation {
                 .map(|track| track as &mut dyn InitializableTrack),
             MediaType::Metadata => None,
         }
-    }
-
-    pub fn set_unicast(&mut self) {
-        for track in self.video_tracks_mut() {
-            track.transmission = TrackTransmission::Unicast;
-        }
-        for track in self.audio_tracks_mut() {
-            track.transmission = TrackTransmission::Unicast;
-        }
-    }
-
-    pub(crate) fn multicast_tracks(
-        &self,
-    ) -> impl Iterator<Item = (&TrackMulticastMetadata, &dyn InitializableTrack)> + '_ {
-        let video = self
-            .video_tracks()
-            .map(|track| (&track.transmission, track as &dyn InitializableTrack));
-        let audio = self
-            .audio_tracks()
-            .map(|track| (&track.transmission, track as &dyn InitializableTrack));
-        video.chain(audio).filter_map(|(transmission, track)| {
-            if let TrackTransmission::Multicast(metadata) = transmission {
-                Some((metadata, track))
-            } else {
-                None
-            }
-        })
     }
 }
 

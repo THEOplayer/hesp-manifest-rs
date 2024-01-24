@@ -9,7 +9,7 @@ use crate::{Scale, UnsignedScaledValue};
 pub struct ScaledDuration(UnsignedScaledValue);
 impl ScaledDuration {
     #[must_use]
-    pub fn new(value: u64, scale: Scale) -> Self {
+    pub const fn new(value: u64, scale: Scale) -> Self {
         Self(UnsignedScaledValue::new(value, scale))
     }
 }

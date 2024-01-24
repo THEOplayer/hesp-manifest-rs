@@ -42,7 +42,7 @@ impl SwitchingSetProtectionSystem {
     }
 
     #[must_use]
-    pub fn scheme_id(&self) -> Uuid {
+    pub const fn scheme_id(&self) -> Uuid {
         match &self.attributes {
             ProtectionSystemAttributes::Fairplay(_) => Fairplay::SCHEME_ID,
             ProtectionSystemAttributes::Generic { scheme_id, .. } => *scheme_id,
@@ -50,7 +50,7 @@ impl SwitchingSetProtectionSystem {
     }
 
     #[must_use]
-    pub fn attributes(&self) -> &ProtectionSystemAttributes {
+    pub const fn attributes(&self) -> &ProtectionSystemAttributes {
         &self.attributes
     }
 }
@@ -60,9 +60,9 @@ impl TryFrom<ProtectionSystemData> for ProtectionSystemAttributes {
 
     fn try_from(value: ProtectionSystemData) -> Result<Self> {
         if value.scheme_id == Fairplay::SCHEME_ID {
-            Fairplay::try_from(value).map(ProtectionSystemAttributes::Fairplay)
+            Fairplay::try_from(value).map(Self::Fairplay)
         } else {
-            Ok(ProtectionSystemAttributes::Generic {
+            Ok(Self::Generic {
                 scheme_id: value.scheme_id,
                 attributes: value.attributes,
             })
@@ -77,7 +77,7 @@ impl From<ProtectionSystemAttributes> for ProtectionSystemData {
             ProtectionSystemAttributes::Generic {
                 scheme_id,
                 attributes,
-            } => ProtectionSystemData {
+            } => Self {
                 scheme_id,
                 attributes,
             },

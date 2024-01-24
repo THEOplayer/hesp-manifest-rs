@@ -101,7 +101,7 @@ impl Presentation {
     }
 
     #[must_use]
-    pub fn time_bounds(&self) -> TimeBounds {
+    pub const fn time_bounds(&self) -> TimeBounds {
         self.time_bounds
     }
 

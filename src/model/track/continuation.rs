@@ -19,7 +19,7 @@ impl ContinuationPattern {
     }
 
     #[must_use]
-    pub fn base_url(&self) -> Option<&Uri> {
+    pub const fn base_url(&self) -> Option<&Uri> {
         self.0.base_url()
     }
 

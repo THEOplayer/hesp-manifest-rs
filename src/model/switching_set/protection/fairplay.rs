@@ -25,8 +25,8 @@ impl TryFrom<ProtectionSystemData> for Fairplay {
     type Error = Error;
 
     fn try_from(mut value: ProtectionSystemData) -> Result<Self> {
-        if value.scheme_id == Fairplay::SCHEME_ID {
-            Ok(Fairplay {
+        if value.scheme_id == Self::SCHEME_ID {
+            Ok(Self {
                 uri: value
                     .attributes
                     .remove("uri")
@@ -49,7 +49,7 @@ impl TryFrom<ProtectionSystemData> for Fairplay {
 
 impl From<Fairplay> for ProtectionSystemData {
     fn from(input: Fairplay) -> Self {
-        ProtectionSystemData {
+        Self {
             scheme_id: Fairplay::SCHEME_ID,
             attributes: HashMap::from([
                 ("uri".to_string(), input.uri.to_string()),

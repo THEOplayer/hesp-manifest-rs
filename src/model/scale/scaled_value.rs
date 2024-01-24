@@ -14,7 +14,7 @@ pub struct ScaledValue {
 
 impl ScaledValue {
     #[must_use]
-    pub fn new(value: i64, scale: Scale) -> Self {
+    pub const fn new(value: i64, scale: Scale) -> Self {
         Self { value, scale }
     }
 }

@@ -13,21 +13,21 @@ pub struct Address {
 }
 
 impl Address {
-    pub fn new(manifest_location: Url, base_url: Option<Uri>) -> Result<Address> {
+    pub fn new(manifest_location: Url, base_url: Option<Uri>) -> Result<Self> {
         if manifest_location.cannot_be_a_base() {
             return Err(url::ParseError::RelativeUrlWithCannotBeABaseBase.into());
         }
         if let Some(Uri::Relative(path)) = &base_url {
             manifest_location.join(path)?;
         };
-        Ok(Address {
+        Ok(Self {
             manifest_location,
             uri: base_url,
         })
     }
 
-    pub fn join(&self, uri: Option<Uri>) -> Result<Address> {
-        Ok(Address {
+    pub fn join(&self, uri: Option<Uri>) -> Result<Self> {
+        Ok(Self {
             manifest_location: self.manifest_location.clone(),
             uri: match (&self.uri, &uri) {
                 (_, Some(Uri::Absolute(_))) => uri,
@@ -58,12 +58,12 @@ impl Address {
     }
 
     #[must_use]
-    pub fn manifest_location(&self) -> &Url {
+    pub const fn manifest_location(&self) -> &Url {
         &self.manifest_location
     }
 
     #[must_use]
-    pub fn uri(&self) -> Option<&Uri> {
+    pub const fn uri(&self) -> Option<&Uri> {
         self.uri.as_ref()
     }
 

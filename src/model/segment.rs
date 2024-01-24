@@ -24,7 +24,7 @@ impl SegmentId {
 
 impl From<u64> for SegmentId {
     fn from(segment_id: u64) -> Self {
-        SegmentId(segment_id)
+        Self(segment_id)
     }
 }
 

@@ -32,13 +32,13 @@ impl NtpTime {
     }
 
     #[must_use]
-    pub fn add_seconds(self, seconds: u32) -> Self {
+    pub const fn add_seconds(self, seconds: u32) -> Self {
         let seconds = self.seconds.wrapping_add(seconds);
         Self { seconds }
     }
 
     #[must_use]
-    pub fn sub_seconds(self, seconds: u32) -> Self {
+    pub const fn sub_seconds(self, seconds: u32) -> Self {
         let seconds = self.seconds.wrapping_sub(seconds);
         Self { seconds }
     }
@@ -46,7 +46,7 @@ impl NtpTime {
 
 impl From<u32> for NtpTime {
     fn from(seconds: u32) -> Self {
-        NtpTime { seconds }
+        Self { seconds }
     }
 }
 
@@ -87,7 +87,6 @@ mod tests {
     use chrono::Utc;
 
     #[test]
-
     fn historic_ntp_times() {
         let ymd = |y, m, d| {
             u32::from(NtpTime::from(

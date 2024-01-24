@@ -6,7 +6,7 @@ pub struct FrameRate(UnsignedScaledValue);
 
 impl FrameRate {
     #[must_use]
-    pub fn new(value: u64, scale: Scale) -> Self {
+    pub const fn new(value: u64, scale: Scale) -> Self {
         Self(UnsignedScaledValue::new(value, scale))
     }
 }

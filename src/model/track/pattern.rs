@@ -63,7 +63,7 @@ impl UrlPattern {
     }
 
     #[must_use]
-    pub fn base_url(&self) -> Option<&Uri> {
+    pub const fn base_url(&self) -> Option<&Uri> {
         self.base_address.uri()
     }
 

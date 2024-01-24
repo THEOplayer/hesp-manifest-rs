@@ -22,7 +22,7 @@ pub enum InitId {
 
 impl From<u64> for InitId {
     fn from(id: u64) -> Self {
-        InitId::Numbered(id)
+        Self::Numbered(id)
     }
 }
 
@@ -40,8 +40,8 @@ impl FromStr for InitId {
 impl fmt::Display for InitId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            InitId::Now => write!(f, "now"),
-            InitId::Numbered(id) => id.fmt(f),
+            Self::Now => write!(f, "now"),
+            Self::Numbered(id) => id.fmt(f),
         }
     }
 }
@@ -67,7 +67,7 @@ impl InitializationPattern {
     }
 
     #[must_use]
-    pub fn base_url(&self) -> Option<&Uri> {
+    pub const fn base_url(&self) -> Option<&Uri> {
         self.0.base_url()
     }
 

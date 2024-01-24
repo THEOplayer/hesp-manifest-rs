@@ -39,8 +39,8 @@ impl LiveStream {
 impl StreamType {
     pub fn convert(self, presentations: &[v1_1_0::PresentationData]) -> Result<crate::StreamType> {
         Ok(match self {
-            StreamType::Live(input) => crate::StreamType::Live(input.convert(presentations)?),
-            StreamType::Vod => crate::StreamType::Vod,
+            Self::Live(input) => crate::StreamType::Live(input.convert(presentations)?),
+            Self::Vod => crate::StreamType::Vod,
         })
     }
 }

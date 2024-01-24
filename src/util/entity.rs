@@ -7,7 +7,7 @@ pub trait Entity {
     fn id(&self) -> &str;
 }
 
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct EntityMap<E: Entity> {
     inner: HashMap<String, E>,
     keys: Vec<String>,

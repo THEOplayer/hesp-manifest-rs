@@ -89,7 +89,11 @@ mod tests {
     #[test]
 
     fn historic_ntp_times() {
-        let ymd = |y, m, d| u32::from(NtpTime::from(Utc.ymd(y, m, d).and_hms(0, 0, 0)));
+        let ymd = |y, m, d| {
+            u32::from(NtpTime::from(
+                Utc.with_ymd_and_hms(y, m, d, 0, 0, 0).unwrap(),
+            ))
+        };
         // 1 CE
         assert_eq!(ymd(1, 1, 1), 202_934_144);
         // Last day Julian
@@ -115,8 +119,8 @@ mod tests {
 
     #[test]
     fn add_seconds_wraps() {
-        let a = NtpTime::from(Utc.ymd(1899, 12, 31).and_hms(12, 0, 0));
-        let b = NtpTime::from(Utc.ymd(1900, 1, 1).and_hms(12, 0, 0));
+        let a = NtpTime::from(Utc.with_ymd_and_hms(1899, 12, 31, 12, 0, 0).unwrap());
+        let b = NtpTime::from(Utc.with_ymd_and_hms(1900, 1, 1, 12, 0, 0).unwrap());
         let secs_in_day = 24 * 60 * 60;
         assert_eq!(a.add_seconds(secs_in_day), b);
     }

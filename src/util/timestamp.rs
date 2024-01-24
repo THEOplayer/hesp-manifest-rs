@@ -49,9 +49,10 @@ mod tests {
         let input = "\"2021-03-31T08:00:00.000Z\"";
 
         let from_str: Timestamp = serde_json::from_str(input)?;
-        let from_fixed: Timestamp = FixedOffset::east(0)
-            .ymd(2021, 3, 31)
-            .and_hms_micro(8, 0, 0, 0)
+        let from_fixed: Timestamp = FixedOffset::east_opt(0)
+            .unwrap()
+            .with_ymd_and_hms(2021, 3, 31, 8, 0, 0)
+            .unwrap()
             .into();
 
         assert_eq!(from_str, from_fixed);

@@ -1,14 +1,16 @@
 use chrono::{DateTime, FixedOffset};
+use serde::Serialize;
 use url::Url;
 
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    Address, AudioTrack, Error, LiveStream, ManifestData, MetadataTrack, Presentation, Result,
-    StreamType, VideoTrack,
+    Address, AudioTrack, Error, LiveStream, ManifestData, ManifestDeserialize, ManifestSerialize,
+    MetadataTrack, Presentation, Result, StreamType, VideoTrack,
 };
 
-#[derive(Debug, Clone)]
-pub(super) struct BaseManifest {
+#[derive(Debug, Clone, Serialize)]
+#[serde(into = "ManifestSerialize")]
+pub struct BaseManifest {
     pub creation_date: DateTime<FixedOffset>,
     pub fallback_poll_rate: u64,
     pub presentations: EntityMap<Presentation>,
@@ -16,10 +18,12 @@ pub(super) struct BaseManifest {
 }
 
 impl BaseManifest {
+    #[must_use]
     pub const fn stream_type(&self) -> &StreamType {
         &self.stream_type
     }
 
+    #[must_use]
     pub fn active_presentation(&self) -> Option<&Presentation> {
         match &self.stream_type {
             StreamType::Live(live_data) => self.presentation(&live_data.active_presentation),
@@ -56,17 +60,33 @@ impl BaseManifest {
 
         Ok(manifest)
     }
+
+    #[must_use]
     pub fn presentations(&self) -> EntityIter<Presentation> {
         self.presentations.iter()
     }
+
+    #[must_use]
     pub fn presentations_mut(&mut self) -> EntityIterMut<Presentation> {
         self.presentations.iter_mut()
     }
+
+    #[must_use]
     pub fn presentation(&self, id: &str) -> Option<&Presentation> {
         self.presentations.get(id)
     }
     pub fn presentation_mut(&mut self, id: &str) -> Option<&mut Presentation> {
         self.presentations.get_mut(id)
+    }
+
+    pub fn from_json(location: Url, json: &str) -> Result<Self> {
+        let deserializer = &mut serde_json::Deserializer::from_str(json);
+        let data = match serde_path_to_error::deserialize(deserializer)? {
+            ManifestDeserialize::V1_0_0(data) => data.try_into()?,
+            ManifestDeserialize::V1_1_0(data) => data.try_into()?,
+            ManifestDeserialize::V2_0_0(data) => data,
+        };
+        Self::new(location, data)
     }
 }
 
@@ -91,4 +111,70 @@ pub(super) fn validate_active(
         }
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn duplicate_presentation_id() -> anyhow::Result<()> {
+        let data = r#"
+            {
+                "availabilityDuration": {"value": 1500},
+                "creationDate": "2021-03-31T08:00:00.000Z",
+                "fallbackPollRate": 300,
+                "manifestVersion": "1.0.0",
+                "presentations": [
+                    {
+                        "id": "0",
+                        "timeBounds": {"startTime": 0}
+                    },
+                    {
+                        "id": "0",
+                        "timeBounds": {"startTime": 0}
+                    }
+                ],
+                "streamType": "vod"
+            }"#;
+        let location = Url::parse("https://www.theoplayer.com")?;
+        let result = BaseManifest::from_json(location, data);
+
+        assert!(result.is_err());
+        let error = result.unwrap_err().to_string();
+        assert!(
+            error.contains("Ids must be unique"),
+            "Error did not indicate duplicate presentation id `{error}`",
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn validate_active_presentation() -> anyhow::Result<()> {
+        let data = r#"
+            {
+                "availabilityDuration": {"value": 1500},
+                "creationDate": "2021-03-31T08:00:00.000Z",
+                "fallbackPollRate": 300,
+                "manifestVersion": "1.0.0",
+                "presentations": [
+                    {
+                        "id": "0",
+                        "timeBounds": {"startTime": 0}
+                    }
+                ],
+                "streamType": "live",
+                "activePresentation": "0"
+            }"#;
+        let location = Url::parse("https://www.theoplayer.com")?;
+        let result = BaseManifest::from_json(location, data);
+
+        assert!(result.is_err());
+        let error = result.unwrap_err().to_string();
+        assert!(
+            error.contains("has no currentTime"),
+            "Error did not indicate invalid active presentation `{error}`"
+        );
+        Ok(())
+    }
 }

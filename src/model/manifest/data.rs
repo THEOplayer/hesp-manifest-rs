@@ -3,7 +3,7 @@ use serde_with::skip_serializing_none;
 
 use crate::model::manifest::base::BaseManifest;
 use crate::util::{Timestamp, UInt, Uri};
-use crate::{legacy, PresentationData, StreamType, UnicastManifest};
+use crate::{legacy, PresentationData, StreamType};
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(tag = "manifestVersion")]
@@ -61,14 +61,8 @@ impl From<BaseManifest> for ManifestData {
     }
 }
 
-impl From<UnicastManifest> for ManifestSerialize {
-    fn from(input: UnicastManifest) -> Self {
+impl From<BaseManifest> for ManifestSerialize {
+    fn from(input: BaseManifest) -> Self {
         Self::V2_0_0(ManifestData::from(input))
-    }
-}
-
-impl From<UnicastManifest> for ManifestData {
-    fn from(input: UnicastManifest) -> Self {
-        input.inner.into()
     }
 }

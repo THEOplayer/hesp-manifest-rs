@@ -1,10 +1,9 @@
 use chrono::{DateTime, FixedOffset};
 use url::Url;
 
-use base::BaseManifest;
+pub use base::*;
 pub use data::*;
 pub use stream::*;
-pub use unicast::*;
 
 use crate::util::{EntityIter, EntityIterMut};
 use crate::{InitializableTrack, Presentation, Result, Track, TrackUid};
@@ -12,7 +11,6 @@ use crate::{InitializableTrack, Presentation, Result, Track, TrackUid};
 mod base;
 mod data;
 mod stream;
-mod unicast;
 
 pub trait Manifest: Sized {
     fn new(location: Url, data: ManifestData) -> Result<Self>;

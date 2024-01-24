@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::model::manifest::base::BaseManifest;
+use crate::model::manifest::BaseManifest;
 use crate::util::{Timestamp, UInt, Uri};
 use crate::{legacy, PresentationData, StreamType};
 

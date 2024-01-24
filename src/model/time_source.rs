@@ -54,8 +54,7 @@ mod tests {
         let error = result.unwrap_err().to_string();
         assert!(
             error.contains("expected relative URL"),
-            "Error did not indicate scheme parsing failed `{}`",
-            error
+            "Error did not indicate scheme parsing failed `{error}`"
         );
     }
 }

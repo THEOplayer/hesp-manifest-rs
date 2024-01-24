@@ -10,6 +10,6 @@ fn main() -> anyhow::Result<()> {
     let manifest = UnicastManifest::from_json(location, &input)?;
     let json = serde_json::to_string(&manifest)?;
 
-    println!("{}", json);
+    println!("{json}");
     Ok(())
 }

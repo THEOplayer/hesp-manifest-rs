@@ -38,6 +38,6 @@ fn validate_empty_manifest() -> anyhow::Result<()> {
 
     assert!(result.is_err());
     let error = result.unwrap_err().to_string();
-    assert!(error.contains("missing field"), "Wrong error `{}`", error);
+    assert!(error.contains("missing field"), "Wrong error `{error}`");
     Ok(())
 }

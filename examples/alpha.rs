@@ -8,6 +8,6 @@ fn main() -> anyhow::Result<()> {
     let input = fs::read_to_string("tests/alpha-manifest.json")?;
     let err = UnicastManifest::from_json(location, &input).err().unwrap();
 
-    println!("{}", err);
+    println!("{err}");
     Ok(())
 }

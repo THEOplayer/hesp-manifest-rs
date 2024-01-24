@@ -81,8 +81,7 @@ mod tests {
         let error = result.unwrap_err().to_string();
         assert!(
             error.contains("TimeBounds must have a start- or end-time"),
-            "Error did not indicate the need for start and end `{}`",
-            error
+            "Error did not indicate the need for start and end `{error}`"
         );
     }
 

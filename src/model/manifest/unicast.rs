@@ -110,8 +110,7 @@ mod tests {
         let error = result.unwrap_err().to_string();
         assert!(
             error.contains("Ids must be unique"),
-            "Error did not indicate duplicate presentation id `{}`",
-            error
+            "Error did not indicate duplicate presentation id `{error}`",
         );
         Ok(())
     }
@@ -140,8 +139,7 @@ mod tests {
         let error = result.unwrap_err().to_string();
         assert!(
             error.contains("has no currentTime"),
-            "Error did not indicate invalid active presentation `{}`",
-            error
+            "Error did not indicate invalid active presentation `{error}`"
         );
         Ok(())
     }

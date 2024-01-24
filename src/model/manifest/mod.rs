@@ -1,24 +1,27 @@
+use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
+use crate::{
+    Address, AudioTrack, Error, InitializableTrack, MetadataTrack, Presentation, Track, TrackUid,
+    VideoTrack,
+};
 use chrono::{DateTime, FixedOffset};
-use serde::Serialize;
-use url::Url;
 pub use data::*;
+use serde::Serialize;
 pub use stream::*;
-use crate::{Address, AudioTrack, Error, InitializableTrack, MetadataTrack, Presentation, Track, TrackUid, VideoTrack};
-use crate::util::{EntityIter, EntityIterMut, EntityMap, FromEntities, Entity};
+use url::Url;
 
 mod data;
 mod stream;
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(into = "ManifestSerialize")]
-pub struct BaseManifest {
+pub struct Manifest {
     pub creation_date: DateTime<FixedOffset>,
     pub fallback_poll_rate: u64,
     pub presentations: EntityMap<Presentation>,
     pub stream_type: StreamType,
 }
 
-impl BaseManifest {
+impl Manifest {
     #[must_use]
     pub const fn stream_type(&self) -> &StreamType {
         &self.stream_type
@@ -137,10 +140,10 @@ fn validate_active(
     presentations: &EntityMap<Presentation>,
 ) -> crate::Result<()> {
     if let StreamType::Live(LiveStream {
-                                active_presentation,
-                                current_time,
-                                ..
-                            }) = stream_type
+        active_presentation,
+        current_time,
+        ..
+    }) = stream_type
     {
         let active_presentation = presentations
             .get(active_presentation)
@@ -180,7 +183,7 @@ mod tests {
                 "streamType": "vod"
             }"#;
         let location = Url::parse("https://www.theoplayer.com")?;
-        let result = BaseManifest::from_json(location, data);
+        let result = Manifest::from_json(location, data);
 
         assert!(result.is_err());
         let error = result.unwrap_err().to_string();
@@ -209,7 +212,7 @@ mod tests {
                 "activePresentation": "0"
             }"#;
         let location = Url::parse("https://www.theoplayer.com")?;
-        let result = BaseManifest::from_json(location, data);
+        let result = Manifest::from_json(location, data);
 
         assert!(result.is_err());
         let error = result.unwrap_err().to_string();

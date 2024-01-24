@@ -1,4 +1,4 @@
-use hesp_manifest::BaseManifest;
+use hesp_manifest::Manifest;
 use std::fs;
 use url::Url;
 
@@ -6,7 +6,7 @@ use url::Url;
 fn main() -> anyhow::Result<()> {
     let location = Url::parse("https://www.theoplayer.com")?;
     let input = fs::read_to_string("tests/alpha-manifest.json")?;
-    let err = BaseManifest::from_json(location, &input).err().unwrap();
+    let err = Manifest::from_json(location, &input).err().unwrap();
 
     println!("{err}");
     Ok(())

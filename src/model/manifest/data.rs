@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::model::manifest::BaseManifest;
+use crate::model::manifest::Manifest;
 use crate::util::{Timestamp, UInt, Uri};
 use crate::{legacy, PresentationData, StreamType};
 
@@ -43,8 +43,8 @@ impl ManifestData {
     }
 }
 
-impl From<BaseManifest> for ManifestData {
-    fn from(input: BaseManifest) -> Self {
+impl From<Manifest> for ManifestData {
+    fn from(input: Manifest) -> Self {
         let mut result = Self {
             creation_date: input.creation_date.into(),
             fallback_poll_rate: input.fallback_poll_rate.into(),
@@ -61,8 +61,8 @@ impl From<BaseManifest> for ManifestData {
     }
 }
 
-impl From<BaseManifest> for ManifestSerialize {
-    fn from(input: BaseManifest) -> Self {
+impl From<Manifest> for ManifestSerialize {
+    fn from(input: Manifest) -> Self {
         Self::V2_0_0(ManifestData::from(input))
     }
 }

@@ -27,6 +27,10 @@ pub struct AudioTrack {
 
 impl AudioTrack {
     const MEDIA_TYPE: MediaType = MediaType::Audio;
+
+    pub const fn start_sequence_number(&self) -> u64 {
+        self.start_sequence_number
+    }
 }
 
 impl Entity for AudioTrack {

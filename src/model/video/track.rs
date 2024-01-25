@@ -137,4 +137,8 @@ impl VideoTrack {
             segment_duration: data.segment_duration,
         })
     }
+
+    pub const fn start_sequence_number(&self) -> u64 {
+        self.start_sequence_number
+    }
 }

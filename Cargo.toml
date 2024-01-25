@@ -20,3 +20,14 @@ gcd = "2.1.0"
 
 [dev-dependencies]
 anyhow = "1.0"
+
+[lints.clippy]
+
+# Pedantic
+pedantic = "warn"
+module_name_repetitions = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+
+nursery = "warn"
+fallible_impl_from = "allow"

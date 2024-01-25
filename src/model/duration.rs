@@ -16,6 +16,7 @@ impl ScaledDuration {
 
 const NANOS_PER_SEC: u128 = 1_000_000_000;
 
+#[allow(clippy::fallible_impl_from)]
 impl From<ScaledDuration> for Duration {
     fn from(duration: ScaledDuration) -> Self {
         let nanos =

@@ -8,6 +8,7 @@ pub struct TimeSource {
     pub url: Url,
 }
 
+#[allow(clippy::fallible_impl_from)]
 impl From<TimeSource> for crate::TimeSource {
     fn from(input: TimeSource) -> Self {
         Self {

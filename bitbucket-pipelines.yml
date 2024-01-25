@@ -2,34 +2,20 @@ image:
   name: instrumentisto/rust:1.75-bookworm
 
 definitions:
-  caches:
-    rust: rust-cache
   steps:
     - step: &build
         name: Build
-        caches:
-          - rust
         script:
-          - ./scripts/extract-cache.sh
           - cargo build --workspace --release --all-targets
-          - ./scripts/build-cache.sh
     - step: &test
         name: Test
-        caches:
-          - rust
         script:
-          - ./scripts/extract-cache.sh
           - cargo test --release --no-fail-fast --all-targets --workspace -- --nocapture --test
-          - ./scripts/build-cache.sh
     - step: &checks
         name: Checks
-        caches:
-          - rust
         script:
-          - ./scripts/extract-cache.sh
           - cargo clippy --release --all-targets --workspace -- -D warnings
           - cargo fmt --all -- --check
-          - ./scripts/build-cache.sh
 
 pipelines:
   default:
@@ -44,8 +30,5 @@ pipelines:
       - step: *checks
       - step:
           name: Publish
-          caches:
-            - rust
           script:
-            - ./scripts/extract-cache.sh
             - cargo publish

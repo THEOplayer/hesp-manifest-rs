@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::legacy::{v1_0_0, v1_1_0};
+use crate::data::{v1_0_0, v1_1_0};
 use crate::{Error, Result, ScaledDuration};
 
 #[derive(Deserialize, Debug, Clone)]

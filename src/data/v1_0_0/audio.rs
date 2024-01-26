@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::legacy::v1_1_0;
+use crate::data::v1_1_0;
 use crate::util::{UInt, Uri};
 use crate::{
     AudioMimeType, Language, SamplesPerFrame, ScaledDuration, ScaledValue, SegmentId, Segments,

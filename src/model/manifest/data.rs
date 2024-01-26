@@ -3,15 +3,15 @@ use serde_with::skip_serializing_none;
 
 use crate::model::manifest::Manifest;
 use crate::util::{Timestamp, UInt, Uri};
-use crate::{legacy, PresentationData, StreamType};
+use crate::{data, PresentationData, StreamType};
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(tag = "manifestVersion")]
 pub enum ManifestDeserialize {
     #[serde(rename = "1.0.0")]
-    V1_0_0(legacy::v1_0_0::ManifestData),
+    V1_0_0(data::v1_0_0::ManifestData),
     #[serde(rename = "1.1.0")]
-    V1_1_0(legacy::v1_1_0::ManifestData),
+    V1_1_0(data::v1_1_0::ManifestData),
     #[serde(rename = "2.0.0")]
     V2_0_0(ManifestData),
 }

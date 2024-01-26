@@ -1,4 +1,4 @@
-use crate::legacy::{v1_0_0, v1_1_0};
+use crate::legacy::v1_1_0;
 use crate::{Error, Result};
 use serde::Deserialize;
 
@@ -11,7 +11,7 @@ pub struct ManifestData {
     pub fallback_poll_rate: UInt,
     pub presentations: Vec<v1_1_0::PresentationData>,
     #[serde(flatten)]
-    pub stream_type: v1_0_0::StreamType,
+    pub stream_type: v1_1_0::StreamType,
     pub content_base_url: Option<Uri>,
 }
 

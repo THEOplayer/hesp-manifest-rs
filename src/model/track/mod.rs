@@ -4,7 +4,7 @@ pub use pattern::UrlPattern;
 pub use uid::TrackUid;
 
 use crate::util::Entity;
-use crate::{MediaType, ScaledDuration, Segment, SegmentId};
+use crate::{MediaType, ScaledDuration, Segment, SegmentId, UnsignedScaledValue};
 
 mod continuation;
 mod initialization;
@@ -20,8 +20,45 @@ pub trait Track: Entity {
             .find(|segment| segment.id() == segment_id)
     }
     fn segments(&self) -> &[Segment];
-    fn active_segment(&self) -> Option<&Segment> {
-        todo!()
+
+    #[allow(clippy::option_if_let_else)]
+    #[allow(clippy::cast_precision_loss)]
+    fn active_segment(&self, time: f64) -> Option<&Segment> {
+        let segments = self.segments();
+        if segments.is_empty() {
+            return None;
+        }
+        let first_segment = segments.first().unwrap();
+        let id_diff = u64::from(first_segment.id()) - u64::from(self.start_segment_id());
+        let default_duration = self.segment_duration().map(ScaledDuration::to_secs);
+        let mut current_end = first_segment
+            .time_bounds()
+            .and_then(|x| x.start_time())
+            .map_or(
+                id_diff as f64 * default_duration.unwrap(),
+                UnsignedScaledValue::to_secs,
+            );
+        for segment in segments {
+            let (start, end) = if let Some(time_bounds) = segment.time_bounds() {
+                let start = time_bounds
+                    .start_time()
+                    .map_or(current_end, UnsignedScaledValue::to_secs);
+                let end = time_bounds.end_time().map_or(
+                    current_end + default_duration.unwrap(),
+                    UnsignedScaledValue::to_secs,
+                );
+                (start, end)
+            } else {
+                let start = current_end;
+                let end = current_end + default_duration.unwrap();
+                (start, end)
+            };
+            if start <= time && time <= end {
+                return Some(segment);
+            }
+            current_end = end;
+        }
+        None
     }
     fn start_segment_id(&self) -> SegmentId;
 

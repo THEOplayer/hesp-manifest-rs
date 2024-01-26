@@ -62,6 +62,12 @@ impl UnsignedScaledValue {
         let scale = u128::from(self.scale) * u128::from(other.value);
         checked_from_u128(value, scale)
     }
+
+    #[allow(clippy::cast_precision_loss)]
+    #[must_use]
+    pub fn to_secs(self) -> f64 {
+        self.value as f64 / self.scale.0 as f64
+    }
 }
 
 impl PartialEq for UnsignedScaledValue {

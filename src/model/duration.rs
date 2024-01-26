@@ -12,6 +12,11 @@ impl ScaledDuration {
     pub const fn new(value: u64, scale: Scale) -> Self {
         Self(UnsignedScaledValue::new(value, scale))
     }
+
+    #[must_use]
+    pub fn to_secs(self) -> f64 {
+        self.0.to_secs()
+    }
 }
 
 const NANOS_PER_SEC: u128 = 1_000_000_000;

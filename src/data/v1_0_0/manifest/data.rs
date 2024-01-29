@@ -31,7 +31,7 @@ impl From<ManifestData> for v1_1_0::ManifestData {
     }
 }
 
-impl TryFrom<ManifestData> for crate::ManifestData {
+impl TryFrom<ManifestData> for crate::data::ManifestData {
     type Error = Error;
 
     fn try_from(value: ManifestData) -> Result<Self> {

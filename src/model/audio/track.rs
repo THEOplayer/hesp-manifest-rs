@@ -1,28 +1,29 @@
+use crate::data::AudioTrackData;
 use crate::util::Entity;
 use crate::{
-    Address, AudioMimeType, AudioTrackData, ContinuationPattern, Error, FrameRate, Initialization,
+    Address, AudioMimeType, ContinuationPattern, Error, FrameRate, Initialization,
     InitializationPattern, MediaType, Result, SamplesPerFrame, ScaledDuration, ScaledValue,
     Segment, SegmentId, Segments, Track, TrackUid,
 };
 
 #[derive(Debug, Clone)]
 pub struct AudioTrack {
-    pub(super) bandwidth: u64,
-    uid: TrackUid,
-    pub(super) segments: Segments,
-    pub(super) start_segment_id: SegmentId,
-    pub(super) start_sequence_number: u64,
-    pub(super) average_bandwidth: Option<u64>,
-    pub(super) channels: Option<u64>,
-    pub(super) codecs: String,
-    pub(super) continuation_pattern: ContinuationPattern,
-    pub(super) samples_per_frame: SamplesPerFrame,
-    pub(super) label: Option<String>,
-    pub(super) initialization_pattern: InitializationPattern,
-    pub(super) media_time_offset: ScaledValue,
-    pub(super) mime_type: AudioMimeType,
-    pub(super) sample_rate: u64,
-    pub(super) segment_duration: Option<ScaledDuration>,
+    pub(crate) bandwidth: u64,
+    pub(crate) uid: TrackUid,
+    pub(crate) segments: Segments,
+    pub(crate) start_segment_id: SegmentId,
+    pub(crate) start_sequence_number: u64,
+    pub(crate) average_bandwidth: Option<u64>,
+    pub(crate) channels: Option<u64>,
+    pub(crate) codecs: String,
+    pub(crate) continuation_pattern: ContinuationPattern,
+    pub(crate) samples_per_frame: SamplesPerFrame,
+    pub(crate) label: Option<String>,
+    pub(crate) initialization_pattern: InitializationPattern,
+    pub(crate) media_time_offset: ScaledValue,
+    pub(crate) mime_type: AudioMimeType,
+    pub(crate) sample_rate: u64,
+    pub(crate) segment_duration: Option<ScaledDuration>,
 }
 
 impl AudioTrack {

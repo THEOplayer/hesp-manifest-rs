@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::model::manifest::Manifest;
+use crate::data::PresentationData;
 use crate::util::{Timestamp, UInt, Uri};
-use crate::{data, PresentationData, StreamType};
+use crate::{data, Manifest, StreamType};
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(tag = "manifestVersion")]
@@ -13,14 +13,14 @@ pub enum ManifestDeserialize {
     #[serde(rename = "1.1.0")]
     V1_1_0(data::v1_1_0::ManifestData),
     #[serde(rename = "2.0.0")]
-    V2_0_0(ManifestData),
+    V2_0_0(data::v2_0_0::ManifestData),
 }
 
 #[derive(Serialize, Debug, Clone)]
 #[serde(tag = "manifestVersion")]
 pub enum ManifestSerialize {
     #[serde(rename = "2.0.0")]
-    V2_0_0(ManifestData),
+    V2_0_0(data::v2_0_0::ManifestData),
 }
 
 #[skip_serializing_none]

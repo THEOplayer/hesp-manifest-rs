@@ -1,6 +1,6 @@
-pub use data::PresentationData;
 pub use event::*;
 
+use crate::data::PresentationData;
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
     Address, AudioSwitchingSet, AudioTrack, Error, InitializableTrack, MediaType,
@@ -8,17 +8,16 @@ use crate::{
     VideoSwitchingSet, VideoTrack,
 };
 
-mod data;
 mod event;
 
 #[derive(Clone, Debug)]
 pub struct Presentation {
     id: String,
-    time_bounds: TimeBounds,
-    audio: EntityMap<AudioSwitchingSet>,
-    events: EntityMap<PresentationEvent>,
-    metadata: EntityMap<MetadataSwitchingSet>,
-    video: EntityMap<VideoSwitchingSet>,
+    pub(crate) time_bounds: TimeBounds,
+    pub(crate) audio: EntityMap<AudioSwitchingSet>,
+    pub(crate) events: EntityMap<PresentationEvent>,
+    pub(crate) metadata: EntityMap<MetadataSwitchingSet>,
+    pub(crate) video: EntityMap<VideoSwitchingSet>,
 }
 
 impl Presentation {
@@ -287,6 +286,11 @@ impl Presentation {
                 .map(|track| track as &mut dyn InitializableTrack),
             MediaType::Metadata => None,
         }
+    }
+
+    #[must_use]
+    pub fn events(&self) -> EntityMap<PresentationEvent> {
+        self.events.clone()
     }
 }
 

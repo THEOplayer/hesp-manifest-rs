@@ -1,22 +1,23 @@
+use crate::data::MetadataTrackData;
 use crate::util::Entity;
 use crate::{
-    Address, ContinuationPattern, Error, MediaType, MetadataTrackData, Result, ScaledDuration,
-    ScaledValue, Segment, SegmentId, Segments, Track, TrackUid,
+    Address, ContinuationPattern, Error, MediaType, Result, ScaledDuration, ScaledValue, Segment,
+    SegmentId, Segments, Track, TrackUid,
 };
 
 #[derive(Debug, Clone)]
 pub struct MetadataTrack {
     uid: TrackUid,
-    pub(super) segments: Segments,
-    pub(super) start_segment_id: SegmentId,
-    pub(super) average_bandwidth: Option<u64>,
-    pub(super) bandwidth: Option<u64>,
-    pub(super) codecs: Option<String>,
-    pub(super) continuation_pattern: ContinuationPattern,
-    pub(super) label: Option<String>,
-    pub(super) media_time_offset: ScaledValue,
-    pub(super) mime_type: String,
-    pub(super) segment_duration: Option<ScaledDuration>,
+    pub(crate) segments: Segments,
+    pub(crate) start_segment_id: SegmentId,
+    pub(crate) average_bandwidth: Option<u64>,
+    pub(crate) bandwidth: Option<u64>,
+    pub(crate) codecs: Option<String>,
+    pub(crate) continuation_pattern: ContinuationPattern,
+    pub(crate) label: Option<String>,
+    pub(crate) media_time_offset: ScaledValue,
+    pub(crate) mime_type: String,
+    pub(crate) segment_duration: Option<ScaledDuration>,
 }
 
 impl MetadataTrack {

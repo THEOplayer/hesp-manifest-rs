@@ -1,11 +1,9 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
-use crate::util::Uri;
-use crate::{
-    AudioSwitchingSetData, MetadataSwitchingSetData, Presentation, PresentationEvent, TimeBounds,
-    VideoSwitchingSetData,
-};
+use crate::data::{AudioSwitchingSetData, MetadataSwitchingSetData, VideoSwitchingSetData};
+use crate::util::{Entity, Uri};
+use crate::{Presentation, PresentationEvent, TimeBounds};
 
 #[skip_serializing_none]
 #[derive(Clone, Deserialize, Serialize, Debug)]
@@ -27,7 +25,7 @@ pub struct PresentationData {
 impl From<Presentation> for PresentationData {
     fn from(input: Presentation) -> Self {
         Self {
-            id: input.id,
+            id: input.id().to_string(),
             time_bounds: input.time_bounds,
             audio: input
                 .audio

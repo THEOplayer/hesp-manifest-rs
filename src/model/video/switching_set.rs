@@ -1,17 +1,17 @@
+use crate::data::VideoSwitchingSetData;
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    Address, MediaType, Result, SwitchingSet, SwitchingSetProtection, VideoMimeType,
-    VideoSwitchingSetData, VideoTrack,
+    Address, MediaType, Result, SwitchingSet, SwitchingSetProtection, VideoMimeType, VideoTrack,
 };
 
 #[derive(Debug, Clone)]
 pub struct VideoSwitchingSet {
-    pub(super) id: String,
-    pub(super) tracks: EntityMap<VideoTrack>,
-    pub(super) align_id: Option<String>,
-    pub(super) label: Option<String>,
-    pub(super) mime_type: VideoMimeType,
-    pub(super) protection: Option<SwitchingSetProtection>,
+    pub(crate) id: String,
+    pub(crate) tracks: EntityMap<VideoTrack>,
+    pub(crate) align_id: Option<String>,
+    pub(crate) label: Option<String>,
+    pub(crate) mime_type: VideoMimeType,
+    pub(crate) protection: Option<SwitchingSetProtection>,
 }
 
 impl VideoSwitchingSet {

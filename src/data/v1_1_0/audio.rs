@@ -1,5 +1,6 @@
 use serde::Deserialize;
 
+use crate::data::v2_0_0;
 use crate::util::{UInt, Uri};
 use crate::{
     AudioMimeType, Language, SamplesPerFrame, ScaledDuration, ScaledValue, SegmentId, Segments,
@@ -26,7 +27,7 @@ pub struct AudioSwitchingSetData {
     pub sample_rate: Option<UInt>,
 }
 
-impl From<AudioSwitchingSetData> for crate::AudioSwitchingSetData {
+impl From<AudioSwitchingSetData> for v2_0_0::AudioSwitchingSetData {
     fn from(input: AudioSwitchingSetData) -> Self {
         Self {
             id: input.id,
@@ -34,7 +35,7 @@ impl From<AudioSwitchingSetData> for crate::AudioSwitchingSetData {
             tracks: input
                 .tracks
                 .into_iter()
-                .map(crate::AudioTrackData::from)
+                .map(v2_0_0::AudioTrackData::from)
                 .collect(),
             align_id: input.align_id,
             base_url: input.base_url,
@@ -73,7 +74,7 @@ pub struct AudioTrackData {
     pub segment_duration: Option<ScaledDuration>,
 }
 
-impl From<AudioTrackData> for crate::AudioTrackData {
+impl From<AudioTrackData> for v2_0_0::AudioTrackData {
     fn from(input: AudioTrackData) -> Self {
         Self {
             id: input.id,

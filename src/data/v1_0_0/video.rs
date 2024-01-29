@@ -1,3 +1,4 @@
+use crate::data::v2_0_0;
 use crate::util::{UInt, Uri};
 use crate::{
     FrameRate, Resolution, ScaledDuration, ScaledValue, SegmentId, Segments,
@@ -42,14 +43,14 @@ pub struct VideoTrackData {
     pub segment_duration: Option<ScaledDuration>,
 }
 
-impl From<VideoSwitchingSetData> for crate::VideoSwitchingSetData {
+impl From<VideoSwitchingSetData> for v2_0_0::VideoSwitchingSetData {
     fn from(input: VideoSwitchingSetData) -> Self {
         Self {
             id: input.id,
             tracks: input
                 .tracks
                 .into_iter()
-                .map(crate::VideoTrackData::from)
+                .map(v2_0_0::VideoTrackData::from)
                 .collect(),
             align_id: input.align_id,
             base_url: input.base_url,
@@ -65,7 +66,7 @@ impl From<VideoSwitchingSetData> for crate::VideoSwitchingSetData {
     }
 }
 
-impl From<VideoTrackData> for crate::VideoTrackData {
+impl From<VideoTrackData> for v2_0_0::VideoTrackData {
     fn from(input: VideoTrackData) -> Self {
         Self {
             id: input.id,

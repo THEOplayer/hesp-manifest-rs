@@ -27,7 +27,7 @@ pub struct MetadataSwitchingSetData {
 impl From<MetadataSwitchingSet> for MetadataSwitchingSetData {
     fn from(input: MetadataSwitchingSet) -> Self {
         Self {
-            id: input.id,
+            id: input.id().to_string(),
             mime_type: input.mime_type,
             tracks: input
                 .tracks
@@ -80,7 +80,7 @@ impl From<MetadataTrack> for MetadataTrackData {
             bandwidth: input.bandwidth.map(UInt::from),
             base_url: input.continuation_pattern.base_url().cloned(),
             codecs: input.codecs,
-            continuation_pattern: Some(input.continuation_pattern.into_pattern()),
+            continuation_pattern: Some(input.continuation_pattern.clone().into_pattern()),
             label: input.label,
             media_time_offset: Some(input.media_time_offset),
             segment_duration: input.segment_duration,

@@ -1,27 +1,28 @@
+use crate::data::VideoTrackData;
 use crate::util::Entity;
 use crate::{
     Address, ContinuationPattern, Error, FrameRate, Initialization, InitializationPattern,
     MediaType, Resolution, Result, ScaledDuration, ScaledValue, Segment, SegmentId, Segments,
-    Track, TrackUid, VideoMimeType, VideoTrackData,
+    Track, TrackUid, VideoMimeType,
 };
 
 #[derive(Debug, Clone)]
 pub struct VideoTrack {
     uid: TrackUid,
-    pub(super) bandwidth: u64,
-    pub(super) resolution: Resolution,
-    pub(super) segments: Segments,
-    pub(super) start_segment_id: SegmentId,
-    pub(super) start_sequence_number: u64,
-    pub(super) average_bandwidth: Option<u64>,
-    pub(super) codecs: String,
-    pub(super) continuation_pattern: ContinuationPattern,
-    pub(super) frame_rate: FrameRate,
-    pub(super) label: Option<String>,
-    pub(super) initialization_pattern: InitializationPattern,
-    pub(super) media_time_offset: ScaledValue,
-    pub(super) mime_type: VideoMimeType,
-    pub(super) segment_duration: Option<ScaledDuration>,
+    pub(crate) bandwidth: u64,
+    pub(crate) resolution: Resolution,
+    pub(crate) segments: Segments,
+    pub(crate) start_segment_id: SegmentId,
+    pub(crate) start_sequence_number: u64,
+    pub(crate) average_bandwidth: Option<u64>,
+    pub(crate) codecs: String,
+    pub(crate) continuation_pattern: ContinuationPattern,
+    pub(crate) frame_rate: FrameRate,
+    pub(crate) label: Option<String>,
+    pub(crate) initialization_pattern: InitializationPattern,
+    pub(crate) media_time_offset: ScaledValue,
+    pub(crate) mime_type: VideoMimeType,
+    pub(crate) segment_duration: Option<ScaledDuration>,
 }
 
 impl VideoTrack {

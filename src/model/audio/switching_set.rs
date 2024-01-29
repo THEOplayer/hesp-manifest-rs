@@ -1,21 +1,22 @@
 use serde::{Deserialize, Serialize};
 
+use crate::data::AudioSwitchingSetData;
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
-    Address, AudioMimeType, AudioSwitchingSetData, AudioTrack, Language, MediaType, Result, Scale,
-    SwitchingSet, SwitchingSetProtection,
+    Address, AudioMimeType, AudioTrack, Language, MediaType, Result, Scale, SwitchingSet,
+    SwitchingSetProtection,
 };
 
 #[derive(Debug, Clone)]
 pub struct AudioSwitchingSet {
-    pub(super) id: String,
-    pub(super) language: Language,
-    pub(super) tracks: EntityMap<AudioTrack>,
-    pub(super) align_id: Option<String>,
-    pub(super) channels: Option<u64>,
-    pub(super) label: Option<String>,
-    pub(super) mime_type: AudioMimeType,
-    pub(super) protection: Option<SwitchingSetProtection>,
+    pub(crate) id: String,
+    pub(crate) language: Language,
+    pub(crate) tracks: EntityMap<AudioTrack>,
+    pub(crate) align_id: Option<String>,
+    pub(crate) channels: Option<u64>,
+    pub(crate) label: Option<String>,
+    pub(crate) mime_type: AudioMimeType,
+    pub(crate) protection: Option<SwitchingSetProtection>,
 }
 
 impl AudioSwitchingSet {

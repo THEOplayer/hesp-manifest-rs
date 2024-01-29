@@ -1,4 +1,4 @@
-use crate::data::{v1_0_0, v1_1_0};
+use crate::data::{v1_0_0, v1_1_0, v2_0_0};
 use crate::util::Uri;
 use crate::{PresentationEvent, TimeBounds, UnsignedScaledValue};
 use serde::Deserialize;
@@ -20,7 +20,7 @@ pub struct PresentationData {
     pub video: Vec<v1_0_0::VideoSwitchingSetData>,
 }
 
-impl From<PresentationData> for crate::PresentationData {
+impl From<PresentationData> for v2_0_0::PresentationData {
     fn from(input: PresentationData) -> Self {
         Self {
             id: input.id,
@@ -28,19 +28,19 @@ impl From<PresentationData> for crate::PresentationData {
             audio: input
                 .audio
                 .into_iter()
-                .map(crate::AudioSwitchingSetData::from)
+                .map(v2_0_0::AudioSwitchingSetData::from)
                 .collect(),
             base_url: input.base_url,
             events: input.events,
             metadata: input
                 .metadata
                 .into_iter()
-                .map(crate::MetadataSwitchingSetData::from)
+                .map(v2_0_0::MetadataSwitchingSetData::from)
                 .collect(),
             video: input
                 .video
                 .into_iter()
-                .map(crate::VideoSwitchingSetData::from)
+                .map(v2_0_0::VideoSwitchingSetData::from)
                 .collect(),
         }
     }

@@ -1,17 +1,16 @@
+use crate::data::MetadataSwitchingSetData;
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
-use crate::{
-    Address, Language, MediaType, MetadataSwitchingSetData, MetadataTrack, Result, SwitchingSet,
-};
+use crate::{Address, Language, MediaType, MetadataTrack, Result, SwitchingSet};
 
 #[derive(Clone, Debug)]
 pub struct MetadataSwitchingSet {
-    pub(super) id: String,
-    pub(super) language: Option<Language>,
-    pub(super) tracks: EntityMap<MetadataTrack>,
-    pub(super) scheme_id: String,
-    pub(super) align_id: Option<String>,
-    pub(super) label: Option<String>,
-    pub(super) mime_type: String,
+    pub(crate) id: String,
+    pub(crate) language: Option<Language>,
+    pub(crate) tracks: EntityMap<MetadataTrack>,
+    pub(crate) scheme_id: String,
+    pub(crate) align_id: Option<String>,
+    pub(crate) label: Option<String>,
+    pub(crate) mime_type: String,
 }
 
 impl MetadataSwitchingSet {

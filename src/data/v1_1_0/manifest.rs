@@ -1,4 +1,4 @@
-use crate::data::v1_1_0;
+use crate::data::{v1_1_0, v2_0_0};
 use crate::{Error, Result};
 use serde::Deserialize;
 
@@ -15,7 +15,7 @@ pub struct ManifestData {
     pub content_base_url: Option<Uri>,
 }
 
-impl TryFrom<ManifestData> for crate::ManifestData {
+impl TryFrom<ManifestData> for v2_0_0::ManifestData {
     type Error = Error;
 
     fn try_from(value: ManifestData) -> Result<Self> {
@@ -26,7 +26,7 @@ impl TryFrom<ManifestData> for crate::ManifestData {
             presentations: value
                 .presentations
                 .into_iter()
-                .map(crate::PresentationData::from)
+                .map(v2_0_0::PresentationData::from)
                 .collect(),
             content_base_url: value.content_base_url,
         })

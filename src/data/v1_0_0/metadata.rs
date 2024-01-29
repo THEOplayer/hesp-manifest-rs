@@ -1,3 +1,4 @@
+use crate::data::v2_0_0;
 use crate::util::{UInt, Uri};
 use crate::{Language, ScaledDuration, ScaledValue, SegmentId, Segments};
 use serde::Deserialize;
@@ -34,7 +35,7 @@ pub struct MetadataTrackData {
     pub segment_duration: Option<ScaledDuration>,
 }
 
-impl From<MetadataSwitchingSetData> for crate::MetadataSwitchingSetData {
+impl From<MetadataSwitchingSetData> for v2_0_0::MetadataSwitchingSetData {
     fn from(input: MetadataSwitchingSetData) -> Self {
         Self {
             id: input.id,
@@ -42,7 +43,7 @@ impl From<MetadataSwitchingSetData> for crate::MetadataSwitchingSetData {
             tracks: input
                 .tracks
                 .into_iter()
-                .map(crate::MetadataTrackData::from)
+                .map(v2_0_0::MetadataTrackData::from)
                 .collect(),
             scheme_id: input.scheme_id,
             align_id: input.align_id,
@@ -56,7 +57,7 @@ impl From<MetadataSwitchingSetData> for crate::MetadataSwitchingSetData {
     }
 }
 
-impl From<MetadataTrackData> for crate::MetadataTrackData {
+impl From<MetadataTrackData> for v2_0_0::MetadataTrackData {
     fn from(input: MetadataTrackData) -> Self {
         Self {
             id: input.id,

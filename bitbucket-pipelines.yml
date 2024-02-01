@@ -1,5 +1,5 @@
 image:
-  name: instrumentisto/rust:1.75-bookworm
+  name: cimg/rust:1.75
 
 definitions:
   steps:

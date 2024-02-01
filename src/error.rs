@@ -51,8 +51,6 @@ pub enum Error {
     DuplicateId(String),
     #[error("Pattern '{0}' must contain {1}")]
     InvalidPattern(String, &'static str),
-    #[error("'{0:?}' is not a valid version for a unicast manifest")]
-    InvalidUnicastVersion(&'static str),
     #[error("Track path '{0}' must contain exactly 3 forward slashes")]
     InvalidTrackPath(String),
     #[error("'{0}' is not a valid MediaType")]

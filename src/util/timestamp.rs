@@ -1,7 +1,8 @@
-use chrono::{DateTime, FixedOffset, ParseError, ParseResult};
-use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::str::FromStr;
+
+use chrono::{DateTime, FixedOffset, ParseError, ParseResult};
+use serde::{Deserialize, Serialize};
 
 #[derive(PartialEq, Deserialize, Serialize, Clone, Debug, Eq, Hash)]
 #[serde(try_from = "String", into = "String")]
@@ -41,8 +42,9 @@ impl From<DateTime<FixedOffset>> for Timestamp {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use chrono::TimeZone;
+
+    use super::*;
 
     #[test]
     fn serialize_timestamp() -> anyhow::Result<()> {

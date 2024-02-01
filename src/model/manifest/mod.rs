@@ -1,13 +1,15 @@
+use chrono::{DateTime, FixedOffset};
+use serde::Serialize;
+use url::Url;
+
+pub use stream::*;
+
 use crate::data::{ManifestData, ManifestDeserialize, ManifestSerialize};
 use crate::util::{Entity, EntityIter, EntityIterMut, EntityMap, FromEntities};
 use crate::{
     Address, AudioTrack, Error, InitializableTrack, MetadataTrack, Presentation, Track, TrackUid,
     VideoTrack,
 };
-use chrono::{DateTime, FixedOffset};
-use serde::Serialize;
-pub use stream::*;
-use url::Url;
 
 mod stream;
 

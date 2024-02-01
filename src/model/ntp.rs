@@ -1,7 +1,8 @@
-use chrono::{DateTime, TimeZone};
-use serde::{self, Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::time::{SystemTime, UNIX_EPOCH};
+
+use chrono::{DateTime, TimeZone};
+use serde::{self, Deserialize, Serialize};
 
 const EPOCH_0_TIMESTAMP: i64 = -2_208_988_800;
 const WRAP: i64 = 2_i64.pow(32);
@@ -83,8 +84,9 @@ impl PartialOrd for NtpTime {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use chrono::Utc;
+
+    use super::*;
 
     #[test]
     fn historic_ntp_times() {

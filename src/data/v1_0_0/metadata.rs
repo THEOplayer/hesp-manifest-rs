@@ -1,7 +1,8 @@
+use serde::Deserialize;
+
 use crate::data::v2_0_0;
 use crate::util::{UInt, Uri};
 use crate::{Language, ScaledDuration, ScaledValue, SegmentId, Segments};
-use serde::Deserialize;
 
 #[derive(Clone, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]

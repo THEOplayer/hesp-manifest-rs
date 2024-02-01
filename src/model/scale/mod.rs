@@ -1,5 +1,6 @@
-use serde::{Deserialize, Serialize};
 use std::fmt;
+
+use serde::{Deserialize, Serialize};
 
 pub use scaled_value::ScaledValue;
 pub use unsigned_scaled_value::UnsignedScaledValue;

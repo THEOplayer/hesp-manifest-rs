@@ -1,8 +1,8 @@
-use crate::data::{v1_0_0, v1_1_0};
-use crate::{Error, Result};
 use serde::Deserialize;
 
+use crate::data::{v1_0_0, v1_1_0};
 use crate::util::{Timestamp, UInt, Uri};
+use crate::{Error, Result};
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]

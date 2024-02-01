@@ -1,5 +1,6 @@
-use crate::{Scale, UnsignedScaledValue};
 use serde::{Deserialize, Serialize};
+
+use crate::{Scale, UnsignedScaledValue};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, Default, Eq, PartialEq)]
 pub struct FrameRate(UnsignedScaledValue);

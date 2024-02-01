@@ -1,6 +1,7 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use std::collections::HashMap;
 use uuid::Uuid;
 
 use crate::{Error, Fairplay, Result};

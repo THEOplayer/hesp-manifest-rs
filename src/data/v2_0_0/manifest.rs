@@ -3,25 +3,7 @@ use serde_with::skip_serializing_none;
 
 use crate::data::PresentationData;
 use crate::util::{Timestamp, UInt, Uri};
-use crate::{data, Manifest, StreamType};
-
-#[derive(Deserialize, Debug, Clone)]
-#[serde(tag = "manifestVersion")]
-pub enum ManifestDeserialize {
-    #[serde(rename = "1.0.0")]
-    V1_0_0(data::v1_0_0::ManifestData),
-    #[serde(rename = "1.1.0")]
-    V1_1_0(data::v1_1_0::ManifestData),
-    #[serde(rename = "2.0.0")]
-    V2_0_0(data::v2_0_0::ManifestData),
-}
-
-#[derive(Serialize, Debug, Clone)]
-#[serde(tag = "manifestVersion")]
-pub enum ManifestSerialize {
-    #[serde(rename = "2.0.0")]
-    V2_0_0(data::v2_0_0::ManifestData),
-}
+use crate::{Manifest, StreamType};
 
 #[skip_serializing_none]
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -58,11 +40,5 @@ impl From<Manifest> for ManifestData {
         };
         result.normalize();
         result
-    }
-}
-
-impl From<Manifest> for ManifestSerialize {
-    fn from(input: Manifest) -> Self {
-        Self::V2_0_0(ManifestData::from(input))
     }
 }

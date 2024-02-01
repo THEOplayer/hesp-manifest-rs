@@ -1,10 +1,11 @@
+use serde::Deserialize;
+
 use crate::data::v2_0_0;
 use crate::util::{UInt, Uri};
 use crate::{
     FrameRate, Resolution, ScaledDuration, ScaledValue, SegmentId, Segments,
     SwitchingSetProtection, VideoMimeType,
 };
-use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]

@@ -120,8 +120,9 @@ impl AudioSwitchingSet {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use url::Url;
+
+    use super::*;
 
     #[test]
     fn codecs_in_set() -> anyhow::Result<()> {

@@ -1,5 +1,6 @@
-use serde::{Deserialize, Serialize};
 use std::fmt;
+
+use serde::{Deserialize, Serialize};
 
 use crate::util::{try_convert_i64_to_float, try_convert_u64_to_float, Int};
 use crate::{Error, Result, Scale};

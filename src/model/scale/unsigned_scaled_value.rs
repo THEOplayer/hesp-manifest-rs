@@ -1,7 +1,8 @@
-use gcd::Gcd;
-use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::fmt;
+
+use gcd::Gcd;
+use serde::{Deserialize, Serialize};
 
 use crate::util::UInt;
 use crate::Scale;

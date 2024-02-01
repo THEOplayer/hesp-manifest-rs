@@ -174,8 +174,9 @@ impl<E: Entity, I: IntoIterator<Item = Result<E>>> FromEntities<E> for I {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use anyhow::Result;
+
+    use super::*;
 
     #[test]
     fn entity_map_retains_order() -> Result<()> {
@@ -199,6 +200,7 @@ mod tests {
     }
 
     struct DummyEntity(&'static str);
+
     impl Entity for DummyEntity {
         fn id(&self) -> &str {
             self.0

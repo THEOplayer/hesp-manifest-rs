@@ -1,7 +1,8 @@
+use serde::Deserialize;
+
 use crate::data::{v1_0_0, v1_1_0, v2_0_0};
 use crate::util::Uri;
 use crate::{PresentationEvent, TimeBounds, UnsignedScaledValue};
-use serde::Deserialize;
 
 #[derive(Clone, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]

@@ -85,4 +85,5 @@ pub trait Track: Entity {
 }
 
 pub trait InitializableTrack: Track + Initialization + Send {}
+
 impl<T: Track + Initialization + Send> InitializableTrack for T {}

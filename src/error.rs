@@ -1,4 +1,5 @@
 use std::num::ParseIntError;
+
 use thiserror::Error;
 
 use crate::SegmentId;

@@ -1,11 +1,13 @@
-use super::ProtectionSystemData;
-use itertools::Itertools;
 use std::collections::HashMap;
 use std::fmt;
 use std::str::FromStr;
+
+use itertools::Itertools;
 use uuid::{uuid, Uuid};
 
 use crate::{Error, Result};
+
+use super::ProtectionSystemData;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Fairplay {
@@ -81,9 +83,11 @@ impl fmt::Display for KeyFormatVersions {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::{ProtectionSystemAttributes, SwitchingSetProtectionSystem};
     use anyhow::Result;
+
+    use crate::{ProtectionSystemAttributes, SwitchingSetProtectionSystem};
+
+    use super::*;
 
     #[test]
     fn serialize_fairplay() -> Result<()> {

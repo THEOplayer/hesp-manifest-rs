@@ -19,6 +19,19 @@ impl TryFrom<ManifestData> for v2_0_0::ManifestData {
     type Error = Error;
 
     fn try_from(value: ManifestData) -> Result<Self> {
+        if let v1_1_0::StreamType::Live(live) = &value.stream_type {
+            if let Some(active_presentation) = value
+                .presentations
+                .iter()
+                .find(|p| p.id == live.active_presentation)
+            {
+                active_presentation.validate_legacy_active()?;
+            } else {
+                return Err(Error::InvalidActivePresentationId(
+                    live.active_presentation.clone(),
+                ));
+            }
+        }
         Ok(Self {
             creation_date: value.creation_date,
             fallback_poll_rate: value.fallback_poll_rate,

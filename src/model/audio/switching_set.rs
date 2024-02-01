@@ -137,7 +137,7 @@ mod tests {
                     }
                 ]
             }"#;
-        let address = Address::new(Url::parse("https://www.theoplayer.com").unwrap(), None)?;
+        let address = Address::new(Url::parse("http://localhost").unwrap(), None)?;
         let data = serde_json::from_str::<AudioSwitchingSetData>(data).unwrap();
         let result = AudioSwitchingSet::new("p1", &address, data);
 

@@ -181,7 +181,7 @@ mod tests {
                 ],
                 "streamType": "vod"
             }"#;
-        let location = Url::parse("https://www.theoplayer.com")?;
+        let location = Url::parse("http://localhost")?;
         let result = Manifest::from_json(location, data);
 
         assert!(result.is_err());
@@ -210,7 +210,7 @@ mod tests {
                 "streamType": "live",
                 "activePresentation": "0"
             }"#;
-        let location = Url::parse("https://www.theoplayer.com")?;
+        let location = Url::parse("http://localhost")?;
         let result = Manifest::from_json(location, data);
 
         assert!(result.is_err());

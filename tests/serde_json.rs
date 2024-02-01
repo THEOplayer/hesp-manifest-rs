@@ -4,7 +4,7 @@ use url::Url;
 
 #[test]
 fn deserialize_v1_0_0_manifest() -> anyhow::Result<()> {
-    let location = Url::parse("https://www.theoplayer.com/")?;
+    let location = Url::parse("http://localhost")?;
     let input = fs::read_to_string("tests/v1_0_0-manifest.json")?;
     Manifest::from_json(location, &input)?;
 
@@ -13,7 +13,7 @@ fn deserialize_v1_0_0_manifest() -> anyhow::Result<()> {
 
 #[test]
 fn deserialize_v1_1_0_manifest() -> anyhow::Result<()> {
-    let location = Url::parse("https://www.theoplayer.com/")?;
+    let location = Url::parse("http://localhost")?;
     let input = fs::read_to_string("tests/v1_1_0-manifest.json")?;
     Manifest::from_json(location, &input)?;
 
@@ -22,7 +22,7 @@ fn deserialize_v1_1_0_manifest() -> anyhow::Result<()> {
 
 #[test]
 fn deserialize_v2_0_0_manifest() -> anyhow::Result<()> {
-    let location = Url::parse("https://www.theoplayer.com/")?;
+    let location = Url::parse("http://localhost")?;
     let input = fs::read_to_string("tests/v2_0_0-manifest.json")?;
     Manifest::from_json(location, &input)?;
 
@@ -31,7 +31,7 @@ fn deserialize_v2_0_0_manifest() -> anyhow::Result<()> {
 
 #[test]
 fn validate_empty_manifest() -> anyhow::Result<()> {
-    let location = Url::parse("https://www.theoplayer.com/")?;
+    let location = Url::parse("http://localhost")?;
     let input = fs::read_to_string("tests/empty-manifest.json")?;
 
     let result = Manifest::from_json(location, &input);

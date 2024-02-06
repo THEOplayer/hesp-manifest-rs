@@ -74,8 +74,8 @@ impl From<VideoTrackData> for v2_0_0::VideoTrackData {
             bandwidth: input.bandwidth,
             resolution: input.resolution,
             segments: input.segments,
-            start_segment_id: SegmentId::default(), //TODO: calculate?
-            start_sequence_number: UInt::default(), //TODO: calculate?
+            start_segment_id: SegmentId::default(),
+            start_sequence_number: UInt::default(),
             average_bandwidth: input.average_bandwidth,
             base_url: input.base_url,
             codecs: input.codecs,

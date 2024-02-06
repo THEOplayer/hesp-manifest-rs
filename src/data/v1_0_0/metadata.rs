@@ -63,7 +63,6 @@ impl From<MetadataTrackData> for v2_0_0::MetadataTrackData {
         Self {
             id: input.id,
             segments: input.segments,
-            //TODO should this be calculated? And if so, how?
             start_segment_id: SegmentId::default(),
             average_bandwidth: input.average_bandwidth,
             bandwidth: input.bandwidth,

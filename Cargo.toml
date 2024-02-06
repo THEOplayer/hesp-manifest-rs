@@ -3,6 +3,11 @@ name = "hesp-manifest"
 version = "2.0.0"
 edition = "2021"
 authors = ["THEO Technologies <info@theoplayer.com>"]
+description = "Rust library for serialization and deserialization the HESP manifest"
+license = "MIT"
+homepage = "https://github.com/THEOplayer/hesp-manifest-rs"
+repository = "https://github.com/THEOplayer/hesp-manifest-rs"
+readme = "README.md"
 
 [dependencies]
 chrono = "0.4"

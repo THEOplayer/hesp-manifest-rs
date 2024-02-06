@@ -1,0 +1,34 @@
+image:
+  name: cimg/rust:1.75
+
+definitions:
+  steps:
+    - step: &build
+        name: Build
+        script:
+          - cargo build --workspace --release --all-targets
+    - step: &test
+        name: Test
+        script:
+          - cargo test --release --no-fail-fast --all-targets --workspace -- --nocapture --test
+    - step: &checks
+        name: Checks
+        script:
+          - cargo clippy --release --all-targets --workspace -- -D warnings
+          - cargo fmt --all -- --check
+
+pipelines:
+  default:
+    - step: *build
+    - step: *test
+  pull-requests:
+    "**":
+      - step: *checks
+  tags:
+    v*:
+      - step: *build
+      - step: *checks
+      - step:
+          name: Publish
+          script:
+            - cargo publish

@@ -1,10 +1,2 @@
-# Log files
-*.log
-
-# Added by cargo
 /target
-
-# Libs dont need lock files
 Cargo.lock
-
-/rust-cache

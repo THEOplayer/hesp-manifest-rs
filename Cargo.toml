@@ -3,7 +3,6 @@ name = "hesp-manifest"
 version = "2.0.0"
 edition = "2021"
 authors = ["THEO Technologies <info@theoplayer.com>"]
-publish = ["theo"]
 
 [dependencies]
 chrono = "0.4"

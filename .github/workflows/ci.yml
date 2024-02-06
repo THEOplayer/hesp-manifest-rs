@@ -27,6 +27,3 @@ jobs:
       - name: Publish dry run
         if: github.ref != 'refs/heads/main'
         run: cargo publish --dry-run
-      - name: Publish
-        if: github.ref == 'refs/heads/main'
-        run: cargo publish --token ${{ secrets.CRATES_IO_TOKEN }}

@@ -10,6 +10,11 @@ impl FrameRate {
     pub const fn new(value: u64, scale: Scale) -> Self {
         Self(UnsignedScaledValue::new(value, scale))
     }
+
+    #[must_use]
+    pub fn to_f64(self) -> f64 {
+        self.0.to_f64()
+    }
 }
 
 impl From<FrameRate> for UnsignedScaledValue {

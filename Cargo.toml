@@ -1,6 +1,6 @@
 [package]
 name = "hesp-manifest"
-version = "2.0.1"
+version = "2.0.2"
 edition = "2021"
 authors = ["THEO Technologies <info@theoplayer.com>"]
 description = "Rust library for serialization and deserialization the HESP manifest"

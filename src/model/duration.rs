@@ -16,7 +16,7 @@ impl ScaledDuration {
 
     #[must_use]
     pub fn to_secs(self) -> f64 {
-        self.0.to_secs()
+        self.0.to_f64()
     }
 }
 

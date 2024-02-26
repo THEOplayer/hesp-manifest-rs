@@ -69,13 +69,16 @@ impl From<VideoSwitchingSetData> for v2_0_0::VideoSwitchingSetData {
 
 impl From<VideoTrackData> for v2_0_0::VideoTrackData {
     fn from(input: VideoTrackData) -> Self {
+        #[allow(deprecated)]
         Self {
             id: input.id,
             bandwidth: input.bandwidth,
             resolution: input.resolution,
             segments: input.segments,
             start_segment_id: SegmentId::default(),
+            active_segment_id: input.active_segment,
             start_sequence_number: UInt::default(),
+            active_sequence_number: input.active_sequence_number,
             average_bandwidth: input.average_bandwidth,
             base_url: input.base_url,
             codecs: input.codecs,

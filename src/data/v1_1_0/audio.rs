@@ -76,12 +76,15 @@ pub struct AudioTrackData {
 
 impl From<AudioTrackData> for v2_0_0::AudioTrackData {
     fn from(input: AudioTrackData) -> Self {
+        #[allow(deprecated)]
         Self {
             id: input.id,
             bandwidth: input.bandwidth,
             segments: input.segments,
             start_segment_id: SegmentId::default(),
+            active_segment_id: input.active_segment,
             start_sequence_number: UInt::default(),
+            active_sequence_number: input.active_sequence_number,
             average_bandwidth: input.average_bandwidth,
             base_url: input.base_url,
             channels: input.channels,

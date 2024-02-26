@@ -22,11 +22,8 @@ pub trait Track: Entity {
     fn segments(&self) -> &[Segment];
 
     fn start_segment_id(&self) -> SegmentId;
-
-    fn start_segment(&self) -> Option<&Segment> {
-        self.segment(self.start_segment_id())
-    }
-
+    #[deprecated(note = "please use `start_segment_id` instead")]
+    fn active_segment_id(&self) -> Option<SegmentId>;
     fn segment_duration(&self) -> Option<ScaledDuration>;
     fn duration_for_segment(&self, segment_id: SegmentId) -> Option<ScaledDuration> {
         self.segment_duration().or_else(|| {

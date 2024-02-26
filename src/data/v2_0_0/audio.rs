@@ -74,7 +74,13 @@ pub struct AudioTrackData {
     #[serde(default)]
     pub start_segment_id: SegmentId,
     #[serde(default)]
+    #[deprecated(note = "please use `start_segment_id` instead")]
+    pub active_segment_id: Option<SegmentId>,
+    #[serde(default)]
     pub start_sequence_number: UInt,
+    #[serde(default)]
+    #[deprecated(note = "please use `start_sequence_number` instead")]
+    pub active_sequence_number: Option<UInt>,
     pub average_bandwidth: Option<UInt>,
     pub base_url: Option<Uri>,
     pub channels: Option<UInt>,
@@ -105,12 +111,15 @@ impl From<AudioTrack> for AudioTrackData {
                     input.initialization_pattern.clone().into_full_pattern(),
                 )
             };
+        #[allow(deprecated)]
         Self {
             id,
             bandwidth: UInt::from(input.bandwidth),
             segments: input.segments,
             start_segment_id: SegmentId::default(),
+            active_segment_id: input.active_segment_id,
             start_sequence_number: UInt::default(),
+            active_sequence_number: input.active_sequence_number.map(UInt::from),
             average_bandwidth: input.average_bandwidth.map(UInt::from),
             base_url,
             channels: input.channels.map(UInt::from),

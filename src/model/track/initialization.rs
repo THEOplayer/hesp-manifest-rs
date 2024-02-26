@@ -11,6 +11,8 @@ pub trait Initialization: Track {
     fn initialization_pattern(&self) -> &InitializationPattern;
     fn initialization_pattern_mut(&mut self) -> &mut InitializationPattern;
     fn start_sequence_number(&self) -> u64;
+    #[deprecated(note = "please use `start_sequence_number` instead")]
+    fn active_sequence_number(&self) -> Option<u64>;
     fn frame_rate(&self) -> FrameRate;
 }
 

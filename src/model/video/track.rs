@@ -13,7 +13,11 @@ pub struct VideoTrack {
     pub(crate) resolution: Resolution,
     pub(crate) segments: Segments,
     pub(crate) start_segment_id: SegmentId,
+    #[deprecated(note = "please use `start_segment_id` instead")]
+    pub(crate) active_segment_id: Option<SegmentId>,
     pub(crate) start_sequence_number: u64,
+    #[deprecated(note = "please use `start_sequence_number` instead")]
+    pub(crate) active_sequence_number: Option<u64>,
     pub(crate) average_bandwidth: Option<u64>,
     pub(crate) codecs: String,
     pub(crate) continuation_pattern: ContinuationPattern,
@@ -46,6 +50,11 @@ impl Track for VideoTrack {
 
     fn start_segment_id(&self) -> SegmentId {
         self.start_segment_id
+    }
+
+    #[allow(deprecated)]
+    fn active_segment_id(&self) -> Option<SegmentId> {
+        self.active_segment_id
     }
 
     fn segment_duration(&self) -> Option<ScaledDuration> {
@@ -90,6 +99,11 @@ impl Initialization for VideoTrack {
         self.start_sequence_number
     }
 
+    #[allow(deprecated)]
+    fn active_sequence_number(&self) -> Option<u64> {
+        self.active_sequence_number
+    }
+
     fn frame_rate(&self) -> FrameRate {
         self.frame_rate
     }
@@ -120,13 +134,16 @@ impl VideoTrack {
         if data.segment_duration.is_none() {
             data.segments.ensure_time_bounds_defined(&id)?;
         }
+        #[allow(deprecated)]
         Ok(Self {
             bandwidth: data.bandwidth.into(),
             uid: TrackUid::new(presentation_id, Self::MEDIA_TYPE, switching_set_id, id),
             resolution: data.resolution,
             segments: data.segments,
             start_segment_id: data.start_segment_id,
+            active_segment_id: data.active_segment_id,
             start_sequence_number: data.start_sequence_number.into(),
+            active_sequence_number: data.active_sequence_number.map(u64::from),
             average_bandwidth: data.average_bandwidth.map(u64::from),
             codecs,
             continuation_pattern: ContinuationPattern::new(address.clone(), continuation_pattern)?,

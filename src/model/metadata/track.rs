@@ -42,6 +42,11 @@ impl Track for MetadataTrack {
     fn start_segment_id(&self) -> SegmentId {
         self.start_segment_id
     }
+
+    fn active_segment_id(&self) -> Option<SegmentId> {
+        None
+    }
+
     fn segment_duration(&self) -> Option<ScaledDuration> {
         self.segment_duration
     }

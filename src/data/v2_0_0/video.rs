@@ -68,7 +68,13 @@ pub struct VideoTrackData {
     #[serde(default)]
     pub start_segment_id: SegmentId,
     #[serde(default)]
+    #[deprecated(note = "please use `start_segment_id` instead")]
+    pub active_segment_id: Option<SegmentId>,
+    #[serde(default)]
     pub start_sequence_number: UInt,
+    #[serde(default)]
+    #[deprecated(note = "please use `start_sequence_number` instead")]
+    pub active_sequence_number: Option<UInt>,
     pub average_bandwidth: Option<UInt>,
     pub base_url: Option<Uri>,
     pub codecs: Option<String>,
@@ -97,13 +103,16 @@ impl From<VideoTrack> for VideoTrackData {
                     input.initialization_pattern.into_full_pattern(),
                 )
             };
+        #[allow(deprecated)]
         Self {
             id,
             bandwidth: UInt::from(input.bandwidth),
             resolution: input.resolution,
             segments: input.segments,
             start_segment_id: input.start_segment_id,
+            active_segment_id: input.active_segment_id,
             start_sequence_number: input.start_sequence_number.into(),
+            active_sequence_number: input.active_sequence_number.map(UInt::from),
             average_bandwidth: input.average_bandwidth.map(UInt::from),
             base_url,
             codecs: Some(input.codecs),
